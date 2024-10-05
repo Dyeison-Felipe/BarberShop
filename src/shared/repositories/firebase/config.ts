@@ -1,10 +1,14 @@
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
-import { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore';
-import serviceAccount from '../../../../serviceAccountKey.json'
+import admin, { ServiceAccount } from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 
+const config: ServiceAccount = {
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+};
 
-initializeApp({
-  credential: cert(serviceAccount)
+admin.initializeApp({
+  credential: admin.credential.cert(config),
 });
 
 export const db = getFirestore();

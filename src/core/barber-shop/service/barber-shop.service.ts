@@ -1,6 +1,9 @@
-import { PaginationInput, PaginationOutput } from "../../../shared/repositories/pagination.repository";
-import { BarberShop } from "../entities/barber-shop.entity";
-import { BarberShopList, BarberShopRepository } from "../repositories/barber-shop.repository";
+import {
+  PaginationInput,
+  PaginationOutput,
+} from '../../../shared/repositories/pagination.repository.js';
+import { BarberShop } from '../entities/barber-shop.entity.js';
+import { BarberShopList } from '../repositories/barber-shop.repository.js';
 
 export type BarberShopInput = {
   name: string;
@@ -11,11 +14,11 @@ export type BarberShopInput = {
   city: string;
   state: string;
   phone: number;
-}
+};
 
 export type CreateBarberShopInput = BarberShopInput;
 
-export type UpdateBarberShopInput = BarberShopInput & {id: number};
+export type UpdateBarberShopInput = BarberShopInput & { id: number };
 
 export type BarberShopOutput = {
   id: string;
@@ -28,9 +31,11 @@ export type BarberShopOutput = {
   state: string;
   phone: number;
   rating: number;
-}
+};
 
 export interface BarberShopService {
-  getBarbersShop(pagination: PaginationInput): Promise<PaginationOutput<BarberShopList>>;
+  getBarbersShop(
+    pagination: PaginationInput,
+  ): Promise<PaginationOutput<BarberShopList>>;
   createBarberShop(barberShop: BarberShop): Promise<BarberShopOutput>;
 }
