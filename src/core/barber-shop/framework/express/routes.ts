@@ -15,7 +15,6 @@ const barberShopRepository = new BarberShopFirebaseRepository(db);
 const barberShopService = new BarberShopServiceImpl(barberShopRepository);
 
 const barberShopController = new BarberShopController(barberShopService);
-console.log('🚀 ~ barberShopController:', barberShopController);
 
 applyRoutes(app, barberShopController);
 

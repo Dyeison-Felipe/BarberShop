@@ -1,45 +1,36 @@
 import { Request, Response } from 'express';
+import { resolveQueryParams } from './route-param.decorator.js';
 
-// Objeto para armazenar todas as rotas
+const formatPath = (path: string) => (path.startsWith('/') ? path : `/${path}`);
+
 const routes: {
   [key: string]: { method: string; path: string; handler: Function }[];
 } = {};
 
-// Função para registrar rotas (auxiliar interna)
-function registerRoute(
-  target: any,
-  method: string,
-  path: string,
-  propertyKey: string,
-) {
-  if (!routes[target.constructor.name]) {
-    routes[target.constructor.name] = [];
-  }
-  routes[target.constructor.name].push({
-    method,
-    path,
-    handler: target[propertyKey],
-  });
-}
-
-const formatPath = (path: string) => (path.startsWith('/') ? path : `/${path}`);
-
-// Decorator `@Get()`
+// Decorator para registrar rotas HTTP `GET`
 export function Get(path = '') {
-  const formatedPath = formatPath(path);
   return function (target: any, propertyKey: string) {
-    registerRoute(target, 'get', formatedPath, propertyKey);
+    const formatedPath = formatPath(path);
+    if (!routes[target.constructor.name]) {
+      routes[target.constructor.name] = [];
+    }
+    routes[target.constructor.name].push({
+      method: 'get',
+      path: formatedPath,
+      handler: target[propertyKey],
+    });
   };
 }
 
-// Decorator `@Controller()`
+// Decorator `@Controller` para agrupar rotas
 export function Controller(prefix: string = '') {
   return function (target: any) {
-    target.prototype.prefix = formatPath(prefix);
+    const formatedPrefix = formatPath(prefix);
+    target.prototype.prefix = formatedPrefix;
   };
 }
 
-// Função para aplicar as rotas ao app Express
+// Função para aplicar rotas no Express
 export function applyRoutes(app: any, controllerInstance: any) {
   const controllerName = controllerInstance.constructor.name;
   const controllerRoutes = routes[controllerName];
@@ -49,7 +40,11 @@ export function applyRoutes(app: any, controllerInstance: any) {
     controllerRoutes.forEach((route) => {
       const fullPath = `${prefix}${route.path}`;
       app[route.method](fullPath, (req: Request, res: Response) => {
-        route.handler.call(controllerInstance, req, res);
+        const args: any[] = []; // Apenas para os parâmetros injetados pelos decorators
+        // Resolver query params
+        resolveQueryParams(req, controllerInstance, route.handler.name, args);
+        // Chama o handler do controlador, passando apenas os parâmetros injetados
+        route.handler.apply(controllerInstance, args);
       });
     });
   }
