@@ -17,22 +17,14 @@ export class BarberShopController {
 
   @Get()
   async getBarberShop(
-    // req: Request,
-    // res: Response,
     @Query('limit') limit: string,
     @Query('page') page: string,
-    // pagination: PaginationInput,
   ): Promise<PaginationOutput<ReturnBarberShopDto>> {
-    console.log('🚀 ~ BarberShopController ~ limit:', limit);
-    console.log('🚀 ~ BarberShopController ~ page:', page);
     const pagination: PaginationInput = {
       limit: +(limit ?? 24),
       page: +(page ?? 1),
-      // limit: +(req.query.limit ?? 24),
-      // page: +(req.query.page ?? 1),
     };
     const result = await this.barberShopService.getBarbersShop(pagination);
-    // res.status(200).send(result);
     return result;
   }
 }

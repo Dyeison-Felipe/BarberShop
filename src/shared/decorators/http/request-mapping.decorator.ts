@@ -39,12 +39,16 @@ export function applyRoutes(app: any, controllerInstance: any) {
   if (controllerRoutes) {
     controllerRoutes.forEach((route) => {
       const fullPath = `${prefix}${route.path}`;
-      app[route.method](fullPath, (req: Request, res: Response) => {
-        const args: any[] = []; // Apenas para os parâmetros injetados pelos decorators
+      app[route.method](fullPath, async (req: Request, res: Response) => {
+        const args: any[] = [req, res];
         // Resolver query params
         resolveQueryParams(req, controllerInstance, route.handler.name, args);
-        // Chama o handler do controlador, passando apenas os parâmetros injetados
-        route.handler.apply(controllerInstance, args);
+        // Executar o método do controlador e capturar o retorno
+        const result = await route.handler.apply(controllerInstance, args);
+        // Enviar automaticamente o resultado como resposta
+        if (result !== undefined) {
+          res.send(result);
+        }
       });
     });
   }
