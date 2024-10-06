@@ -5,6 +5,9 @@ import { BarberShopController } from '../../controller/barber-shop.controller.js
 import { BarberShopServiceImpl } from '../../service/implementations/barber-shop.service.js';
 import { PaginationInput } from '../../../../shared/repositories/pagination.repository.js';
 import { applyRoutes } from '../../../../shared/decorators/http/request-mapping.decorator.js';
+import { ClientController } from '../../../client/controller/client.controller.js';
+import { ClientServiceImpl } from '../../../client/service/implementation/client.service.js';
+import { ClientFirebaseRepository } from '../../../client/repositories/firebase/client-firebase.repository.js';
 
 const app = express();
 app.use(express.json());
@@ -17,7 +20,17 @@ const barberShopService = new BarberShopServiceImpl(barberShopRepository);
 
 const barberShopController = new BarberShopController(barberShopService);
 
+// -------------------------------------------------------------------------------
+
+const clientRepository = new ClientFirebaseRepository(db)
+
+const clientService = new ClientServiceImpl(clientRepository)
+
+const clientController = new ClientController(clientService)
+
 applyRoutes(app, barberShopController);
+
+applyRoutes(app, clientController)
 
 // app.get('/api/barber-shop/v1', async (req, res) => {
 //   const pagination: PaginationInput = {
