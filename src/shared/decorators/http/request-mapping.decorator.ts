@@ -7,36 +7,46 @@ const routes: {
   [key: string]: { method: string; path: string; handler: Function }[];
 } = {};
 
-// Decorator para registrar rotas HTTP `GET`
+const requestMapping = (path: string, method: string) => {
+  return function (target: any, propertyKey: string) {
+    const formatedPath = formatPath(path);
+    if (!routes[target.constructor.name]) {
+      routes[target.constructor.name] = [];
+    }
+    routes[target.constructor.name].push({
+      method: method,
+      path: formatedPath,
+      handler: target[propertyKey],
+    });
+  };
+};
+
+// Decorator para registrar rotas HTTP `GET` @Get()
 export function Get(path = '') {
-  return function (target: any, propertyKey: string) {
-    const formatedPath = formatPath(path);
-    if (!routes[target.constructor.name]) {
-      routes[target.constructor.name] = [];
-    }
-    routes[target.constructor.name].push({
-      method: 'get',
-      path: formatedPath,
-      handler: target[propertyKey],
-    });
-  };
+  return requestMapping(path, 'get');
 }
 
+// Decorator para registrar rotas HTTP `POST` @Post()
 export function Post(path = '') {
-  return function (target: any, propertyKey: string) {
-    const formatedPath = formatPath(path);
-    if (!routes[target.constructor.name]) {
-      routes[target.constructor.name] = [];
-    }
-    routes[target.constructor.name].push({
-      method: 'post',
-      path: formatedPath,
-      handler: target[propertyKey],
-    });
-  };
+  return requestMapping(path, 'post');
 }
 
-// Decorator `@Controller` para agrupar rotas
+// Decorator para registrar rotas HTTP `PUT` @Put()
+export function Put(path = '') {
+  return requestMapping(path, 'put');
+}
+
+// Decorator para registrar rotas HTTP `PATCH` @Patch()
+export function Patch(path = '') {
+  return requestMapping(path, 'patch');
+}
+
+// Decorator para registrar rotas HTTP `DELETE` @Delete()
+export function Delete(path = '') {
+  return requestMapping(path, 'delete');
+}
+
+// Decorator `@Controller()` para agrupar rotas
 export function Controller(prefix: string = '') {
   return function (target: any) {
     const formatedPrefix = formatPath(prefix);
