@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { Get } from '../../../shared/decorators/http/request-mapping.decorator.js';
+import {
+  Controller,
+  Get,
+} from '../../../shared/decorators/http/request-mapping.decorator.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -7,10 +10,11 @@ import {
 import { BarberShopService } from '../service/barber-shop.service.js';
 import { ReturnBarberShopDto } from './dto/return-barber-shop.dto.js';
 
+@Controller('/api/barber-shop/v1')
 export class BarberShopController {
   constructor(private readonly barberShopService: BarberShopService) {}
 
-  @Get('/api/barber-shop/v1')
+  @Get()
   async getBarberShop(
     req: Request,
     res: Response,
