@@ -38,7 +38,16 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       },
     };
   }
-  createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
-    throw new Error('Method not implemented.');
+  async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
+
+    try {
+      const {id,...barberShopData} = barberShop.toObject();
+      const db = await this.firebaseRepository.collection('Barber-Shop').doc(id).set(barberShopData);
+      return barberShop;
+
+    } catch (error) {
+      console.log("🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:", error)
+      return null;
+    }
   }
 }

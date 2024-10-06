@@ -2,14 +2,17 @@ import { Request, Response } from 'express';
 import {
   Controller,
   Get,
+  Post,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import {
   PaginationInput,
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
 import { BarberShopService } from '../service/barber-shop.service.js';
-import { ReturnBarberShopDto } from './dto/return-barber-shop.dto.js';
+import { ReturnGetBarberShopDto } from './dto/return-get-barber-shop.dto.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
+import { CreateBarberShopDto } from './dto/create-barber-shop.dto.js';
+import { ReturnCreateBarberShopDto } from './dto/return-create-barber-shop.dto.js';
 
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
@@ -19,12 +22,22 @@ export class BarberShopController {
   async getBarberShop(
     @Query('limit') limit: string,
     @Query('page') page: string,
-  ): Promise<PaginationOutput<ReturnBarberShopDto>> {
+  ): Promise<PaginationOutput<ReturnGetBarberShopDto>> {
     const pagination: PaginationInput = {
       limit: +(limit ?? 24),
       page: +(page ?? 1),
     };
     const result = await this.barberShopService.getBarbersShop(pagination);
     return result;
+  }
+
+  @Post()
+  async createBarberShop(req: Request): Promise<ReturnCreateBarberShopDto> {
+    const createBarberShopDto: CreateBarberShopDto = req.body;
+    console.log("🚀 ~ BarberShopController ~ createBarberShop ~ req:", req)
+    console.log("🚀 ~ BarberShopController ~ createBarberShop ~ createBarberShopDto:", createBarberShopDto)
+    const barberShop = await this.barberShopService.createBarberShop(createBarberShopDto);
+
+    return barberShop;
   }
 }

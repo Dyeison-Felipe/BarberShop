@@ -1,4 +1,4 @@
-import { OpeningHours } from "./opening-hours.entity";
+import { OpeningHours } from "./opening-hours.entity.js";
 
 export type OpeningWeekDaysProps = {
   name: string;

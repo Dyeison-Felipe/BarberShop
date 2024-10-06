@@ -22,6 +22,20 @@ export function Get(path = '') {
   };
 }
 
+export function Post(path = '') {
+  return function (target: any, propertyKey: string) {
+    const formatedPath = formatPath(path);
+    if (!routes[target.constructor.name]) {
+      routes[target.constructor.name] = [];
+    }
+    routes[target.constructor.name].push({
+      method: 'post',
+      path: formatedPath,
+      handler: target[propertyKey],
+    });
+  };
+}
+
 // Decorator `@Controller` para agrupar rotas
 export function Controller(prefix: string = '') {
   return function (target: any) {

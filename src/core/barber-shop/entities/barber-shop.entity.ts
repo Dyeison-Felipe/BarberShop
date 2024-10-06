@@ -1,5 +1,5 @@
-import { OpeningWeekDays } from "./opening-week-days.entity";
-import { Services } from "./service.entity";
+import { OpeningWeekDays } from "./opening-week-days.entity.js";
+import { Services } from "./service.entity.js";
 
 export type BarberShopProps = {
   id: string;
@@ -29,7 +29,7 @@ export type CreateBarberShop = {
 }
 
 export class BarberShop {
-private constructor(readonly props:BarberShopProps) {}
+private constructor(private readonly props:BarberShopProps) {}
 
   get id() {
     return this.props.id;
@@ -73,10 +73,6 @@ private constructor(readonly props:BarberShopProps) {}
     return this.props.rating;
   }
 
-  teste() {
-    
-  }
-
   static createBarberShop( create: CreateBarberShop ): BarberShop {
     return new BarberShop({
       id: crypto.randomUUID().toString(),
@@ -93,6 +89,24 @@ private constructor(readonly props:BarberShopProps) {}
       openingWeekDays: [],
       services: [],
     });
+  }
+
+  toObject() {
+    return {
+      id: this.id,
+      name: this.name,
+      cnpj: this.cnpj,
+      cep: this.cep,
+      number: this.number,
+      neighborhood: this.neighborhood,
+      city: this.city,
+      state: this.state,
+      phone: this.phone,
+      rating: this.rating,
+      photoUrl: this.photoUrl,
+      openingWeekDays: this.props.openingWeekDays,
+      services: this.props.services,
+    };
   }
   
 }

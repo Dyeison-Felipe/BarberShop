@@ -29,6 +29,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     createbarberShopInput: CreateBarberShopInput,
   ): Promise<BarberShopOutput> {
     const barberShopEntity = BarberShop.createBarberShop(createbarberShopInput);
+    console.log("🚀 ~ BarberShopServiceImpl ~ barberShopEntity:", barberShopEntity)
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
       barberShopEntity,
     );

@@ -37,5 +37,5 @@ export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>>;
-  createBarberShop(barberShop: BarberShop): Promise<BarberShopOutput>;
+  createBarberShop(createBarberShopInput: CreateBarberShopInput): Promise<BarberShopOutput>;
 }

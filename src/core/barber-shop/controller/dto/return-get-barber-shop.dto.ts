@@ -1,4 +1,4 @@
-export class ReturnBarberShopDto {
+export class ReturnGetBarberShopDto {
   id: string;
   name: string;
   rating: number;

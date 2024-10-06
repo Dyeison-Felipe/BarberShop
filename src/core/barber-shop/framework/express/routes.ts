@@ -7,6 +7,7 @@ import { PaginationInput } from '../../../../shared/repositories/pagination.repo
 import { applyRoutes } from '../../../../shared/decorators/http/request-mapping.decorator.js';
 
 const app = express();
+app.use(express.json());
 
 const port = 3333;
 
