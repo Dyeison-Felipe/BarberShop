@@ -1,5 +1,5 @@
 export type BuildModule = {
-  controllers: unknown[];
+  controllers: Object[];
 };
 
 export interface IModule {
