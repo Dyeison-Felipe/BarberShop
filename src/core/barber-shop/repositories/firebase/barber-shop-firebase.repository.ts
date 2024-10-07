@@ -1,3 +1,5 @@
+import { admin } from '../../../../shared/repositories/firebase/config.js';
+import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -15,38 +17,44 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   async getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>> {
-    const snapshot = await this.firebaseRepository
+    const query = this.firebaseRepository
       .collection('Barber-Shop')
-      .get();
+      .orderBy(admin.firestore.FieldPath.documentId());
+
+    const { snapshot, meta } = await FirebasePagination.paginate(
+      query,
+      pagination,
+    );
 
     const barberShopList: BarberShopList[] = [];
     snapshot.forEach((element) => {
+      const elementData = element.data();
       barberShopList.push({
         id: element.id,
-        ...element.data(),
-      } as BarberShopList);
+        name: elementData.name,
+        photoUrl: elementData.photoUrl,
+        rating: elementData.rating,
+      });
     });
 
     return {
       data: barberShopList,
-      meta: {
-        itemCount: 3,
-        totalItems: 4,
-        itemsPerPage: 5,
-        totalPages: 6,
-        currentPage: 7,
-      },
+      meta,
     };
   }
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
-
     try {
-      const {id,...barberShopData} = barberShop.toObject();
-      const db = await this.firebaseRepository.collection('Barber-Shop').doc(id).set(barberShopData);
+      const { id, ...barberShopData } = barberShop.toObject();
+      const db = await this.firebaseRepository
+        .collection('Barber-Shop')
+        .doc(id)
+        .set(barberShopData);
       return barberShop;
-
     } catch (error) {
-      console.log("🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:", error)
+      console.log(
+        '🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:',
+        error,
+      );
       return null;
     }
   }

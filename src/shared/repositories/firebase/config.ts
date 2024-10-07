@@ -11,4 +11,6 @@ admin.initializeApp({
   credential: admin.credential.cert(config),
 });
 
-export const db = getFirestore();
+const db = getFirestore();
+
+export { db, admin };
