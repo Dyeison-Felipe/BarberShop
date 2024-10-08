@@ -87,6 +87,38 @@ export function resolveBodyParams(
   });
 }
 
+export function Param(param?: string) {
+  return function (target: any, propertyKey: string, parameterIndex: number) {
+    if (!target.routeParams) {
+      target.routeParams = {};
+    }
+
+    if (!target.routeParams[propertyKey]) {
+      target.routeParams[propertyKey] = [];
+    }
+
+    target.routeParams[propertyKey][parameterIndex] = param;
+  };
+}
+
+// Função para resolver e injetar os parâmetros de rota
+export function resolveRouteParams(
+  req: Request,
+  target: any,
+  propertyKey: string,
+  args: any[],
+) {
+  const routeParams = target.routeParams?.[propertyKey] || [];
+
+  routeParams.forEach((param: string | undefined, index: number) => {
+    if (param) {
+      args[index] = req.params[param]; // Injeta o valor do parâmetro de rota específico
+    } else {
+      args[index] = req.params; // Injeta o objeto completo de parâmetros de rota
+    }
+  });
+}
+
 // Função para aplicar rotas no Express
 export function applyRoutes(app: any, controllerInstance: any) {
   const controllerName = controllerInstance.constructor.name;
@@ -102,6 +134,9 @@ export function applyRoutes(app: any, controllerInstance: any) {
         resolveQueryParams(req, controllerInstance, route.handler.name, args);
 
         resolveBodyParams(req, controllerInstance, route.handler.name, args);
+
+        // Resolver route params (parâmetros da URL)
+        resolveRouteParams(req, controllerInstance, route.handler.name, args);
         // Executar o método do controlador e capturar o retorno
         const result = await route.handler.apply(controllerInstance, args);
         // Enviar automaticamente o resultado como resposta
