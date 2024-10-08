@@ -54,6 +54,39 @@ export function Controller(prefix: string = '') {
   };
 }
 
+// Decorator para capturar o corpo da requisição
+export function Body(param?: string) {
+  return function (target: any, propertyKey: string, parameterIndex: number) {
+    if (!target.bodyParams) {
+      target.bodyParams = {};
+    }
+
+    if (!target.bodyParams[propertyKey]) {
+      target.bodyParams[propertyKey] = [];
+    }
+
+    target.bodyParams[propertyKey][parameterIndex] = param;
+  };
+}
+
+// Função para resolver e injetar o corpo da requisição
+export function resolveBodyParams(
+  req: Request,
+  target: any,
+  propertyKey: string,
+  args: any[],
+) {
+  const bodyParams = target.bodyParams?.[propertyKey] || [];
+
+  bodyParams.forEach((param: string | undefined, index: number) => {
+    if (param) {
+      args[index] = req.body[param]; // Injeta o valor específico do parâmetro
+    } else {
+      args[index] = req.body; // Injeta o objeto completo do corpo da requisição
+    }
+  });
+}
+
 // Função para aplicar rotas no Express
 export function applyRoutes(app: any, controllerInstance: any) {
   const controllerName = controllerInstance.constructor.name;
@@ -67,6 +100,8 @@ export function applyRoutes(app: any, controllerInstance: any) {
         const args: any[] = [req, res];
         // Resolver query params
         resolveQueryParams(req, controllerInstance, route.handler.name, args);
+
+        resolveBodyParams(req, controllerInstance, route.handler.name, args);
         // Executar o método do controlador e capturar o retorno
         const result = await route.handler.apply(controllerInstance, args);
         // Enviar automaticamente o resultado como resposta

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  Body,
   Controller,
   Get,
   Post,
@@ -32,11 +33,12 @@ export class BarberShopController {
   }
 
   @Post()
-  async createBarberShop(req: Request): Promise<ReturnCreateBarberShopDto> {
-    const createBarberShopDto: CreateBarberShopDto = req.body;
-    console.log("🚀 ~ BarberShopController ~ createBarberShop ~ req:", req)
-    console.log("🚀 ~ BarberShopController ~ createBarberShop ~ createBarberShopDto:", createBarberShopDto)
-    const barberShop = await this.barberShopService.createBarberShop(createBarberShopDto);
+  async createBarberShop(
+    @Body() createBarberShopDto: CreateBarberShopDto,
+  ): Promise<ReturnCreateBarberShopDto | null> {
+    const barberShop = await this.barberShopService.createBarberShop(
+      createBarberShopDto,
+    );
 
     return barberShop;
   }
