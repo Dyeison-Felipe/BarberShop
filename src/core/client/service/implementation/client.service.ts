@@ -16,6 +16,16 @@ export class ClientServiceImpl implements ClientService {
     return barbersShop;
   }
 
+  async getClientById(id: string): Promise<ClientOutput> {
+    const client = await this.clientRepository.getClientById(id);
+
+    if (!client) {
+      throw new Error('Cliente não encontrado');
+    }
+
+    return client;
+  }
+
   async createClient(
     createclientInput: CreateClientInput,
   ): Promise<ClientOutput> {
@@ -34,6 +44,7 @@ export class ClientServiceImpl implements ClientService {
       email: createdClient.email,
       password: createdClient.password,
       phoneNumber: createdClient.phoneNumber,
+      photoUrl: createdClient.photoUrl,
     };
 
     return ClientOutput;
