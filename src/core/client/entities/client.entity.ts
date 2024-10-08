@@ -7,22 +7,21 @@ export type ClientProps = {
   email: string;
   password: string;
   phoneNumber: number
-  photoUrl?: string;
+  photoUrl: string;
   appointments: Appointments[];
   favoriteList: FavoriteList[];
 }
 
-export type UpdateClient = CreateClient &{id: string, photoUrl: string}
+export type UpdateClient = CreateClient &{id: string, photoUrl?: string}
 
 export type CreateClient = {
   name: string;
   email: string;
-  password: string;
   phoneNumber: number;
 }
 
 export class Client {
-  private constructor(private readonly props: ClientProps) {}
+  constructor(private readonly props: ClientProps) {}
 
   get id() {
     return this.props.id;
@@ -56,30 +55,24 @@ export class Client {
     return this.props.favoriteList;
   }
 
-  static createClient(create: CreateClient): Client {
-    return new Client ({
-      id: crypto.randomUUID().toString(),
-      name: create.name,
-      email: create.email,
-      password: create.password,
-      phoneNumber: create.phoneNumber,
-      photoUrl: '',
-      appointments: [],
-      favoriteList: [],
-    });
-  }
+  // static createClient(create: CreateClient): Client {
+  //   return new Client ({
+  //     id: crypto.randomUUID().toString(),
+  //     name: create.name,
+  //     email: create.email,
+  //     password: create.password,
+  //     phoneNumber: create.phoneNumber,
+  //     photoUrl: '',
+  //     appointments: [],
+  //     favoriteList: [],
+  //   });
+  // }
 
-  static updateClient(id: string, update: UpdateClient, existingClient: Client): Client {
-    return new Client({
-      id: id,
-      name: update.name,
-      email: update.email,
-      password: update.password,
-      phoneNumber: update.phoneNumber,
-      photoUrl: update.photoUrl,
-      appointments: existingClient.appointments,
-      favoriteList: existingClient.favoriteList,
-    })
+  updateClient(update: UpdateClient) {
+    this.props.name  = update.name;
+    this.props.email = update.email;
+    this.props.phoneNumber = update.phoneNumber;
+    this.props.photoUrl = update.photoUrl ?? '';
   }
 
   toObject() {

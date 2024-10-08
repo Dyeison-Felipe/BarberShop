@@ -1,5 +1,5 @@
 import { PaginationInput, PaginationOutput } from "../../../../shared/repositories/pagination.repository.js";
-import { Client } from "../../entities/client.entity.js";
+import { Client, ClientProps } from "../../entities/client.entity.js";
 import { ClientList, ClientRepository } from "../client.repository.js";
 
 export class ClientFirebaseRepository implements ClientRepository {
@@ -32,9 +32,22 @@ export class ClientFirebaseRepository implements ClientRepository {
     };
   }
 
-  async createClient(client: Client): Promise<Client | null> {
+  // async createClient(client: Client): Promise<Client | null> {
+  //   try {
+  //     const {id,...clientData} = client.toObject();
+  //     const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
+  //     return client;
+
+  //   } catch (error) {
+  //     console.log("🚀 ~ ClientFirebaseRepository ~ createClient ~ error:", error)
+  //     return null;
+  //   }
+  // }
+
+  async updateClient(client: Client): Promise<Client | null> {
     try {
       const {id,...clientData} = client.toObject();
+      console.log("🚀 ~ ClientFirebaseRepository ~ updateClient ~ clientData:", clientData)
       const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
       return client;
 
@@ -54,9 +67,14 @@ export class ClientFirebaseRepository implements ClientRepository {
       return null;
     }
 
-    return {
+    const clientProps = {
       id: snapshot.id,
-      ...snapshot.data(), // Retorna os dados do cliente
-    } as Client; // Retorna o cliente encontrado
+      ...snapshot.data()
+    } as ClientProps
+    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", snapshot.data())
+
+    const clientEntity = new Client(clientProps)
+
+    return clientEntity
   }
 }
