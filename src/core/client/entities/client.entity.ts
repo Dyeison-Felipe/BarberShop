@@ -12,6 +12,8 @@ export type ClientProps = {
   favoriteList: FavoriteList[];
 }
 
+export type UpdateClient = CreateClient &{id: string, photoUrl: string}
+
 export type CreateClient = {
   name: string;
   email: string;
@@ -65,6 +67,19 @@ export class Client {
       appointments: [],
       favoriteList: [],
     });
+  }
+
+  static updateClient(id: string, update: UpdateClient, existingClient: Client): Client {
+    return new Client({
+      id: id,
+      name: update.name,
+      email: update.email,
+      password: update.password,
+      phoneNumber: update.phoneNumber,
+      photoUrl: update.photoUrl,
+      appointments: existingClient.appointments,
+      favoriteList: existingClient.favoriteList,
+    })
   }
 
   toObject() {
