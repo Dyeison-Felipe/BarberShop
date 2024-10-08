@@ -46,6 +46,7 @@ export class ClientFirebaseRepository implements ClientRepository {
 
   async getClientById(id: string): Promise<Client | null> {
     const snapshot = await this.firebaseRepository
+    .collection('Client')
       .doc(id)
       .get();
 
