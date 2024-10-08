@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Controller, Get, Post } from "../../../shared/decorators/http/request-mapping.decorator.js";
+import { Body, Controller, Get, Param, Post } from "../../../shared/decorators/http/request-mapping.decorator.js";
 import { Query } from "../../../shared/decorators/http/route-param.decorator.js";
 import { PaginationInput, PaginationOutput } from "../../../shared/repositories/pagination.repository.js";
 import { ClientService } from "../service/client.service.js";
@@ -25,10 +25,16 @@ export class ClientController {
   }
 
   @Post()
-  async createClient(req: Request): Promise<ReturnCreateClientDto> {
-    const createClientDto: CreateClientDto = req.body;
+  async createClient(@Body() createClientDto: CreateClientDto): Promise<ReturnCreateClientDto> {
     const client = await this.clientService.createClient(createClientDto);
 
     return client;
+  }
+
+  @Get('/:id')
+  async getClientById(@Param('id') id: string): Promise<ReturnGetClientDto> {
+    const client = await this.clientService.getClientById(id)
+
+    return client
   }
 }

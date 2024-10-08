@@ -43,4 +43,19 @@ export class ClientFirebaseRepository implements ClientRepository {
       return null;
     }
   }
+
+  async getClientById(id: string): Promise<Client | null> {
+    const snapshot = await this.firebaseRepository
+      .doc(id)
+      .get();
+
+    if(!snapshot.exists) {
+      return null;
+    }
+
+    return {
+      id: snapshot.id,
+      ...snapshot.data(), // Retorna os dados do cliente
+    } as Client; // Retorna o cliente encontrado
+  }
 }

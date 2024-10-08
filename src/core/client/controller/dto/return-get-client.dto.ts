@@ -3,5 +3,5 @@ export class ReturnGetClientDto {
   name: string;
   email:string;
   phoneNumber: number;
-  photoUrl: string;
+  photoUrl: string | undefined;
 }
