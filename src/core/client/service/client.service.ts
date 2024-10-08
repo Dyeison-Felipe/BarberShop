@@ -10,7 +10,9 @@ export type ClientInput = {
 
 export type CreateClientInput = ClientInput;
 
-export type UpdateClientInput = ClientInput & { id: number };
+export type UpdateClientInput = ClientInput & { id: string, photoUrl: string };
+
+export type UpdateClientOutput = ClientOutput & { photoUrl: string }
 
 export type ClientOutput = {
   id: string;
@@ -19,9 +21,13 @@ export type ClientOutput = {
   password: string;
   phoneNumber: number
 }
+
+
 export interface ClientService {
   getClient(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientList>>;
+  // findClientById(id: string): Promise<ClientOutput>;
   createClient(createClientInput: CreateClientInput): Promise<ClientOutput>;
+  // updateClient(id: string, updateClientInput: UpdateClientInput): Promise<UpdateClientOutput>;
 }

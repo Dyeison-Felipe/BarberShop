@@ -12,5 +12,7 @@ export type ClientList = {
 
 export interface ClientRepository {
   getClient(pagination: PaginationInput):Promise<PaginationOutput<ClientList>>;
+  // findClientById(id: string): Promise<ClientList>;
   createClient(client: Client): Promise<Client | null>;
+  // updateClient(id: string, client: Client): Promise<Client | null>;
 }
