@@ -1,24 +1,23 @@
-import { Appointments } from "./appointments.entity.js";
-import { FavoriteList } from "./favorite_list.entity.js";
+import { FavoriteList } from './favorite_list.entity.js';
 
 export type ClientProps = {
   id: string;
   name: string;
   email: string;
   password: string;
-  phoneNumber: number
+  phoneNumber: number;
   photoUrl: string;
-  appointments: Appointments[];
-  favoriteList: FavoriteList[];
-}
+  // appointments: Appointments[];
+  // favoriteList: FavoriteList[];
+};
 
-export type UpdateClient = CreateClient &{id: string, photoUrl?: string}
+export type UpdateClient = CreateClient & { id: string; photoUrl?: string };
 
 export type CreateClient = {
   name: string;
   email: string;
   phoneNumber: number;
-}
+};
 
 export class Client {
   constructor(private readonly props: ClientProps) {}
@@ -47,13 +46,13 @@ export class Client {
     return this.props.photoUrl;
   }
 
-  get appointments() {
-    return this.props.appointments;
-  }
+  // get appointments() {
+  //   return this.props.appointments;
+  // }
 
-  get favoriteList() {
-    return this.props.favoriteList;
-  }
+  // get favoriteList() {
+  //   return this.props.favoriteList;
+  // }
 
   // static createClient(create: CreateClient): Client {
   //   return new Client ({
@@ -69,7 +68,7 @@ export class Client {
   // }
 
   updateClient(update: UpdateClient) {
-    this.props.name  = update.name;
+    this.props.name = update.name;
     this.props.email = update.email;
     this.props.phoneNumber = update.phoneNumber;
     this.props.photoUrl = update.photoUrl ?? '';
@@ -83,8 +82,8 @@ export class Client {
       password: this.password,
       phoneNumber: this.phoneNumber,
       photoUrl: this.photoUrl,
-      appointments: this.appointments,
-      favoriteList: this.favoriteList,
+      // appointments: this.appointments,
+      // favoriteList: this.favoriteList,
     };
   }
 }
