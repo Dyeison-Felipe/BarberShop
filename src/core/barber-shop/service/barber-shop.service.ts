@@ -2,6 +2,7 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
+import { Image } from '../../../shared/services/image/image.service.js';
 import { BarberShop } from '../entities/barber-shop.entity.js';
 import { BarberShopList } from '../repositories/barber-shop.repository.js';
 
@@ -20,7 +21,7 @@ export type CreateBarberShopInput = BarberShopInput;
 
 export type UpdateBarberShopInput = Partial<BarberShopInput> & {
   id: string;
-  photo?: Express.Multer.File;
+  photo?: Image | null;
 };
 
 export type BarberShopOutput = {

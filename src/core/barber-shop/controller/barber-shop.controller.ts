@@ -60,7 +60,11 @@ export class BarberShopController {
     console.log('🚀 ~ BarberShopController ~ req:', req);
     const barberShop = await this.barberShopService.updateBarberShop({
       id,
-      photo: req.file,
+      photo: req.file ? {
+        buffer: req.file.buffer,
+        mimetype: req.file.mimetype,
+        originalname: req.file.originalname
+      } : null,
       ...updateBarberShopDto,
     });
 

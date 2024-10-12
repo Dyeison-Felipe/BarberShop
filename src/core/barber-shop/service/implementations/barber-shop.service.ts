@@ -1,8 +1,8 @@
-import { bucket } from '../../../../shared/repositories/firebase/config.js';
 import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
+import { ImageService } from '../../../../shared/services/image/image.service.js';
 import { BarberShop } from '../../entities/barber-shop.entity.js';
 import {
   BarberShopRepository,
@@ -16,7 +16,10 @@ import {
 } from '../barber-shop.service.js';
 
 export class BarberShopServiceImpl implements BarberShopService {
-  constructor(private readonly barberShopRepository: BarberShopRepository) {}
+  constructor(
+    private readonly barberShopRepository: BarberShopRepository,
+    private readonly imageService: ImageService,
+  ) {}
 
   async getBarbersShop(
     pagination: PaginationInput,
@@ -90,11 +93,13 @@ export class BarberShopServiceImpl implements BarberShopService {
       const url = foundBarberShop.photoUrl;
       console.log('🚀 ~ BarberShopServiceImpl ~ url:', url);
 
-      const currentFileName = url?.split('barber-shop%2F')[1] ?? null;
+      const currentFileName =
+        url?.split('barber-shop%2F')[1].split('?')[0] ?? null;
 
-      photoUrl = await this.uploadBarberShopPhoto(
+      photoUrl = await this.imageService.uploadImage(
         updateBarberShopInput.photo,
         currentFileName,
+        'barber-shop',
       );
     }
     console.log('🚀 ~ BarberShopServiceImpl ~ photoUrl:', photoUrl);
@@ -124,27 +129,5 @@ export class BarberShopServiceImpl implements BarberShopService {
     };
 
     return updateBarberShopOutput;
-  }
-
-  private async uploadBarberShopPhoto(
-    photo: Express.Multer.File,
-    currentName: string | null,
-  ) {
-    console.log('🚀 ~ BarberShopServiceImpl ~ currentName:', currentName);
-    const fileName = currentName ?? `${Date.now()}_${photo.originalname}`;
-    const filePath = `barber-shop/${fileName}`;
-    const file = bucket.file(`barber-shop/${fileName}`);
-    await file.save(photo.buffer, {
-      metadata: {
-        contentType: photo.mimetype,
-      },
-    });
-
-    await file.makePublic();
-    const url = `https://firebasestorage.googleapis.com/v0/b/${
-      bucket.name
-    }/o/${encodeURIComponent(filePath)}?alt=media`;
-
-    return url;
   }
 }
