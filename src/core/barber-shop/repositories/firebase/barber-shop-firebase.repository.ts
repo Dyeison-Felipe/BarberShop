@@ -4,7 +4,10 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
-import { BarberShop } from '../../entities/barber-shop.entity.js';
+import {
+  BarberShop,
+  BarberShopProps,
+} from '../../entities/barber-shop.entity.js';
 import {
   BarberShopRepository,
   BarberShopList,
@@ -14,6 +17,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   constructor(
     private readonly firebaseRepository: FirebaseFirestore.Firestore,
   ) {}
+
   async getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>> {
@@ -42,7 +46,49 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       meta,
     };
   }
+
+  async getBarberShopById(id: string): Promise<BarberShop | null> {
+    const snapshot = await this.firebaseRepository
+      .collection('Barber-Shop')
+      .doc(id)
+      .get();
+
+    if (!snapshot.exists) {
+      return null;
+    }
+
+    const barberShopProps = {
+      id: snapshot.id,
+      ...snapshot.data(),
+    } as BarberShopProps;
+    console.log(
+      '🚀 ~ BarberShopFirebaseRepository ~ getBarberShopById ~ barberShopProps.snapshot.data():',
+      snapshot.data(),
+    );
+
+    const barberShopEntity = new BarberShop(barberShopProps);
+
+    return barberShopEntity;
+  }
+
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
+    try {
+      const { id, ...barberShopData } = barberShop.toObject();
+      await this.firebaseRepository
+        .collection('Barber-Shop')
+        .doc(id)
+        .set(barberShopData);
+      return barberShop;
+    } catch (error) {
+      console.log(
+        '🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:',
+        error,
+      );
+      return null;
+    }
+  }
+
+  async update(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
       const { id, ...barberShopData } = barberShop.toObject();
       const db = await this.firebaseRepository

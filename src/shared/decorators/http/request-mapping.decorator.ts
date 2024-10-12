@@ -54,6 +54,22 @@ export function Controller(prefix: string = '') {
   };
 }
 
+// Decorator @Middleware() para adicionar um middleware nas rotas
+export function Middleware(...middlewares: Function[]) {
+  return function (target: any, propertyKey: string) {
+    if (!target.middlewares) {
+      target.middlewares = {};
+    }
+
+    if (!target.middlewares[propertyKey]) {
+      target.middlewares[propertyKey] = [];
+    }
+
+    // Armazena middlewares para a rota especificada
+    target.middlewares[propertyKey].push(...middlewares);
+  };
+}
+
 // Decorator para capturar o corpo da requisição
 export function Body(param?: string) {
   return function (target: any, propertyKey: string, parameterIndex: number) {
@@ -128,22 +144,29 @@ export function applyRoutes(app: any, controllerInstance: any) {
   if (controllerRoutes) {
     controllerRoutes.forEach((route) => {
       const fullPath = `${prefix}${route.path}`;
-      app[route.method](fullPath, async (req: Request, res: Response) => {
-        const args: any[] = [req, res];
-        // Resolver query params
-        resolveQueryParams(req, controllerInstance, route.handler.name, args);
+      const middlewares =
+        controllerInstance.middlewares?.[route.handler.name] || [];
 
-        resolveBodyParams(req, controllerInstance, route.handler.name, args);
+      app[route.method](
+        fullPath,
+        ...middlewares,
+        async (req: Request, res: Response) => {
+          const args: any[] = [req, res];
+          // Resolver query params
+          resolveQueryParams(req, controllerInstance, route.handler.name, args);
 
-        // Resolver route params (parâmetros da URL)
-        resolveRouteParams(req, controllerInstance, route.handler.name, args);
-        // Executar o método do controlador e capturar o retorno
-        const result = await route.handler.apply(controllerInstance, args);
-        // Enviar automaticamente o resultado como resposta
-        if (result !== undefined) {
-          res.send(result);
-        }
-      });
+          resolveBodyParams(req, controllerInstance, route.handler.name, args);
+
+          // Resolver route params (parâmetros da URL)
+          resolveRouteParams(req, controllerInstance, route.handler.name, args);
+          // Executar o método do controlador e capturar o retorno
+          const result = await route.handler.apply(controllerInstance, args);
+          // Enviar automaticamente o resultado como resposta
+          if (result !== undefined) {
+            res.send(result);
+          }
+        },
+      );
     });
   }
 }

@@ -1,5 +1,6 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 
 const config: ServiceAccount = {
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
@@ -9,8 +10,11 @@ const config: ServiceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(config),
+  storageBucket: process.env.FIREBASE_BUCKET_NAME,
 });
 
 const db = getFirestore();
 
-export { db, admin };
+const bucket = getStorage().bucket();
+
+export { db, admin, bucket };

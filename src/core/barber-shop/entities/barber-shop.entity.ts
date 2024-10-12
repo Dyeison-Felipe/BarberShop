@@ -13,11 +13,10 @@ export type BarberShopProps = {
   phone: number;
   rating: number;
   photoUrl?: string | null;
-  // openingWeekDays: OpeningWeekDays[];
-  // services: Services[];
+  clientId: string;
 };
 
-export type CreateBarberShop = {
+type UpsertBarberShop = {
   name: string;
   cnpj: number;
   cep: number;
@@ -26,10 +25,17 @@ export type CreateBarberShop = {
   city: string;
   state: string;
   phone: number;
+  clientId: string;
+};
+
+export type CreateBarberShop = UpsertBarberShop;
+
+type UpdateBarberShop = Partial<UpsertBarberShop> & {
+  photoUrl?: string;
 };
 
 export class BarberShop {
-  private constructor(private readonly props: BarberShopProps) {}
+  constructor(private props: BarberShopProps) {}
 
   get id() {
     return this.props.id;
@@ -73,6 +79,10 @@ export class BarberShop {
     return this.props.rating;
   }
 
+  get clientId() {
+    return this.props.clientId;
+  }
+
   static createBarberShop(create: CreateBarberShop): BarberShop {
     return new BarberShop({
       id: crypto.randomUUID().toString(),
@@ -84,11 +94,17 @@ export class BarberShop {
       city: create.city,
       state: create.state,
       phone: create.phone,
+      clientId: create.clientId,
       rating: 5,
       photoUrl: null,
-      // openingWeekDays: [],
-      // services: [],
     });
+  }
+
+  updateBarberShop(update: UpdateBarberShop) {
+    this.props = {
+      ...this.props,
+      ...update,
+    };
   }
 
   toObject() {
@@ -104,8 +120,6 @@ export class BarberShop {
       phone: this.phone,
       rating: this.rating,
       photoUrl: this.photoUrl,
-      // openingWeekDays: this.props.openingWeekDays,
-      // services: this.props.services,
     };
   }
 }

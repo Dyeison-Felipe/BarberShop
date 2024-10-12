@@ -18,7 +18,10 @@ export type BarberShopInput = {
 
 export type CreateBarberShopInput = BarberShopInput;
 
-export type UpdateBarberShopInput = BarberShopInput & { id: number };
+export type UpdateBarberShopInput = Partial<BarberShopInput> & {
+  id: string;
+  photo?: Express.Multer.File;
+};
 
 export type BarberShopOutput = {
   id: string;
@@ -31,11 +34,18 @@ export type BarberShopOutput = {
   state: string;
   phone: number;
   rating: number;
+  clientId: string;
+  photoUrl?: string | null;
 };
 
 export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>>;
-  createBarberShop(createBarberShopInput: CreateBarberShopInput): Promise<BarberShopOutput>;
+  createBarberShop(
+    createBarberShopInput: CreateBarberShopInput,
+  ): Promise<BarberShopOutput>;
+  updateBarberShop(
+    updateBarberShopInput: UpdateBarberShopInput,
+  ): Promise<BarberShopOutput>;
 }

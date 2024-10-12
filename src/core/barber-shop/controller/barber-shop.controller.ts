@@ -1,10 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   Body,
   Controller,
   Get,
+  Middleware,
   Param,
   Post,
+  Put,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import {
   PaginationInput,
@@ -15,6 +17,10 @@ import { ReturnGetBarberShopDto } from './dto/return-get-barber-shop.dto.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
 import { CreateBarberShopDto } from './dto/create-barber-shop.dto.js';
 import { ReturnCreateBarberShopDto } from './dto/return-create-barber-shop.dto.js';
+import { ReturnUpdateBarberShopDto } from './dto/return-update-barber-shop.dto.js';
+import { UpdateBarberShopDto } from './dto/update-barber-shop.dto.js';
+import { upload } from '../../../shared/configs/multer-config.js';
+import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
 
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
@@ -36,10 +42,27 @@ export class BarberShopController {
   @Post()
   async createBarberShop(
     @Body() createBarberShopDto: CreateBarberShopDto,
-  ): Promise<ReturnCreateBarberShopDto | null> {
+  ): Promise<ReturnCreateBarberShopDto> {
     const barberShop = await this.barberShopService.createBarberShop(
       createBarberShopDto,
     );
+
+    return barberShop;
+  }
+
+  @Middleware(upload.single('file'), parseFormDataDto)
+  @Put('/:id')
+  async updateBarberShop(
+    req: Request,
+    @Param('id') id: string,
+    @Body() updateBarberShopDto: UpdateBarberShopDto,
+  ): Promise<ReturnUpdateBarberShopDto | null> {
+    console.log('🚀 ~ BarberShopController ~ req:', req);
+    const barberShop = await this.barberShopService.updateBarberShop({
+      id,
+      photo: req.file,
+      ...updateBarberShopDto,
+    });
 
     return barberShop;
   }

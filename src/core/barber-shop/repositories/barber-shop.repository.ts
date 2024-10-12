@@ -15,5 +15,10 @@ export interface BarberShopRepository {
   getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>>;
+
+  getBarberShopById(id: string): Promise<BarberShop | null>;
+
   createBarberShop(barberShop: BarberShop): Promise<BarberShop | null>;
+
+  update(barberShop: BarberShop): Promise<BarberShop | null>;
 }
