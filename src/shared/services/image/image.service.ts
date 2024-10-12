@@ -10,4 +10,6 @@ export interface ImageService {
     name?: string | null,
     path?: string,
   ): Promise<string>;
+
+  getImageNameByUrl(url: string): string | null;
 }

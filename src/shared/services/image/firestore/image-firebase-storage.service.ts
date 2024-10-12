@@ -3,6 +3,11 @@ import { bucket } from '../../../repositories/firebase/config.js';
 import { Image, ImageService } from '../image.service.js';
 
 export class ImageFirebaseStorageService implements ImageService {
+  getImageNameByUrl(url: string): string | null {
+    const imageName = url.split('%2F')[1]?.split('?')[0] ?? null;
+    return imageName;
+  }
+
   async uploadImage(
     image: Image,
     name?: string | null,
@@ -25,5 +30,15 @@ export class ImageFirebaseStorageService implements ImageService {
     // }/o/${encodeURIComponent(filePath)}?alt=media`;
 
     return url;
+  }
+
+  static imageAdapter(image?: Express.Multer.File | null): Image | null {
+    if (!image) return null;
+
+    return {
+      buffer: image.buffer,
+      mimetype: image.mimetype,
+      originalname: image.originalname,
+    };
   }
 }

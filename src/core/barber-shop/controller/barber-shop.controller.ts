@@ -21,6 +21,7 @@ import { ReturnUpdateBarberShopDto } from './dto/return-update-barber-shop.dto.j
 import { UpdateBarberShopDto } from './dto/update-barber-shop.dto.js';
 import { upload } from '../../../shared/configs/multer-config.js';
 import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
+import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
 
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
@@ -56,15 +57,11 @@ export class BarberShopController {
     req: Request,
     @Param('id') id: string,
     @Body() updateBarberShopDto: UpdateBarberShopDto,
-  ): Promise<ReturnUpdateBarberShopDto | null> {
+  ): Promise<ReturnUpdateBarberShopDto> {
     console.log('🚀 ~ BarberShopController ~ req:', req);
     const barberShop = await this.barberShopService.updateBarberShop({
       id,
-      photo: req.file ? {
-        buffer: req.file.buffer,
-        mimetype: req.file.mimetype,
-        originalname: req.file.originalname
-      } : null,
+      photo: ImageFirebaseStorageService.imageAdapter(req.file),
       ...updateBarberShopDto,
     });
 

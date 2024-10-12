@@ -7,11 +7,9 @@ export type ClientProps = {
   password: string;
   phoneNumber: number;
   photoUrl: string;
-  // appointments: Appointments[];
-  // favoriteList: FavoriteList[];
 };
 
-export type UpdateClient = CreateClient & { id: string; photoUrl?: string };
+export type UpdateClient = { id: string; photoUrl?: string; name?: string };
 
 export type CreateClient = {
   name: string;
@@ -20,7 +18,7 @@ export type CreateClient = {
 };
 
 export class Client {
-  constructor(private readonly props: ClientProps) {}
+  constructor(private props: ClientProps) {}
 
   get id() {
     return this.props.id;
@@ -46,14 +44,6 @@ export class Client {
     return this.props.photoUrl;
   }
 
-  // get appointments() {
-  //   return this.props.appointments;
-  // }
-
-  // get favoriteList() {
-  //   return this.props.favoriteList;
-  // }
-
   // static createClient(create: CreateClient): Client {
   //   return new Client ({
   //     id: crypto.randomUUID().toString(),
@@ -68,10 +58,10 @@ export class Client {
   // }
 
   updateClient(update: UpdateClient) {
-    this.props.name = update.name;
-    this.props.email = update.email;
-    this.props.phoneNumber = update.phoneNumber;
-    this.props.photoUrl = update.photoUrl ?? '';
+    this.props = {
+      ...this.props,
+      ...update,
+    };
   }
 
   toObject() {
@@ -82,8 +72,6 @@ export class Client {
       password: this.password,
       phoneNumber: this.phoneNumber,
       photoUrl: this.photoUrl,
-      // appointments: this.appointments,
-      // favoriteList: this.favoriteList,
     };
   }
 }
