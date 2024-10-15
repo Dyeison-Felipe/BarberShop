@@ -1,3 +1,4 @@
+import { BarberOpeningHoursModule } from './core/barber-opening-hour/modules/barber-opening-hour.module.js';
 import { BarberServiceModule } from './core/barber-service/modules/barber-service.module.js';
 import { BarberShopModule } from './core/barber-shop/modules/barber-shop.module.js';
 import { ClientModule } from './core/client/modules/client.module.js';
@@ -16,7 +17,12 @@ interface IAppModule {
 export class AppModule implements IAppModule {
   buildAppModule(): BuildAppModule {
     return {
-      modules: [BarberShopModule, ClientModule, BarberServiceModule],
+      modules: [
+        BarberShopModule,
+        ClientModule,
+        BarberServiceModule,
+        BarberOpeningHoursModule,
+      ],
     };
   }
 }

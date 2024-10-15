@@ -13,12 +13,12 @@ import {
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
 import { BarberShopService } from '../service/barber-shop.service.js';
-import { ReturnGetBarberShopDto } from './dto/return-get-barber-shop.dto.js';
+import { ReturnGetBarberShopDto } from '../dto/return-get-barber-shop.dto.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
-import { CreateBarberShopDto } from './dto/create-barber-shop.dto.js';
-import { ReturnCreateBarberShopDto } from './dto/return-create-barber-shop.dto.js';
-import { ReturnUpdateBarberShopDto } from './dto/return-update-barber-shop.dto.js';
-import { UpdateBarberShopDto } from './dto/update-barber-shop.dto.js';
+import { CreateBarberShopDto } from '../dto/create-barber-shop.dto.js';
+import { ReturnCreateBarberShopDto } from '../dto/return-create-barber-shop.dto.js';
+import { ReturnUpdateBarberShopDto } from '../dto/return-update-barber-shop.dto.js';
+import { UpdateBarberShopDto } from '../dto/update-barber-shop.dto.js';
 import { upload } from '../../../shared/configs/multer-config.js';
 import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
