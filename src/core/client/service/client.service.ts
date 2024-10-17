@@ -34,4 +34,5 @@ export interface ClientService {
   getClientById(id: string): Promise<ClientOutput>;
   // createClient(createClientInput: CreateClientInput): Promise<ClientOutput>;
   updateClient(updateClientInput: UpdateClientInput): Promise<ClientOutput>;
+  deleteClient(id: string): Promise<void>;
 }

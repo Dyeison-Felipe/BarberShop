@@ -15,4 +15,5 @@ export interface ClientRepository {
   getClientById(id: string): Promise<Client | null>;
   // createClient(client: Client): Promise<Client | null>;
   updateClient(client: Client): Promise<Client | null>
+  deleteClient(id: string): Promise<void>;
 }

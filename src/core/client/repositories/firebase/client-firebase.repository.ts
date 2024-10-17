@@ -77,4 +77,21 @@ export class ClientFirebaseRepository implements ClientRepository {
 
     return clientEntity
   }
+
+  async deleteClient(id: string): Promise<void> {
+    try {
+      const snapshot = await this.firebaseRepository
+        .collection('Client')
+        .doc(id)
+        .get();
+  
+      if (!snapshot.exists) {
+        return;
+      }
+  
+      await this.firebaseRepository.collection('Client').doc(id).delete();
+    } catch (error) {
+      return;
+    }
+  }
 }

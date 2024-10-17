@@ -2,6 +2,7 @@ import { Request } from 'express';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Middleware,
   Param,
@@ -68,6 +69,13 @@ export class ClientController {
   @Get('/:id')
   async getClientById(@Param('id') id: string): Promise<ReturnGetClientDto> {
     const client = await this.clientService.getClientById(id);
+
+    return client;
+  }
+
+  @Delete('/:id')
+  async deleteClient(@Param('id') id: string): Promise<void> {
+    const client = await this.clientService.deleteClient(id);
 
     return client;
   }
