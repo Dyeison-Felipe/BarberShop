@@ -1,3 +1,4 @@
+
 export type OpeningHourOutput = {
   id: string;
   start: string;
@@ -9,12 +10,24 @@ type WeekdayOutput = {
   openingHours: OpeningHourOutput[];
 };
 
+export type CreateOpeningHoursInput = {
+  weekday: string;
+  start: string;
+  end: string;
+  barberShopId: string;
+};
+
+export type CreateOpeningHoursOutput = {
+  weekdays: (CreateOpeningHoursInput & {id: string})[];
+}
+
 export type ReturnGetBarberOpeningHoursOutput = {
   weekdays: WeekdayOutput[];
 };
 
 export interface BarberOpeningHoursService {
   getBarberOpeningHours(
-    barberShopId: string,
+    barberShopId: string
   ): Promise<ReturnGetBarberOpeningHoursOutput>;
+  createOpeningHours(createOpeningHoursInput: CreateOpeningHoursInput[]): Promise<CreateOpeningHoursOutput>;
 }

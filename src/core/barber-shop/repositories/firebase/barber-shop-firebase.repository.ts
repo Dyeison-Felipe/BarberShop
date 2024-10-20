@@ -104,4 +104,21 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       return null;
     }
   }
+
+  async deleteBarberShop(id: string): Promise<void> {
+    try {
+      const snapshot = await this.firebaseRepository
+        .collection('Barber-Shop')
+        .doc(id)
+        .get();
+  
+      if (!snapshot.exists) {
+        return;
+      }
+  
+      await this.firebaseRepository.collection('Barber-Shop').doc(id).delete();
+    } catch (error) {
+      return;
+    }
+  }
 }

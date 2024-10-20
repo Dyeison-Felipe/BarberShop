@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, request, Request, Response } from 'express';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Middleware,
   Param,
@@ -66,5 +67,16 @@ export class BarberShopController {
     });
 
     return barberShop;
+  }
+
+  @Delete('/:id')
+  async deleteBarberShop(@Param('id') id: string, res: Response): Promise<void> {
+    
+    try {
+      await this.barberShopService.deleteBarberShop(id);
+      res.status(200).json({ message: 'Barbearia excluída com sucesso.' });
+    } catch (error) {
+      res.status(404).json({ message: 'Erro ao deletar'});
+    }
   }
 }

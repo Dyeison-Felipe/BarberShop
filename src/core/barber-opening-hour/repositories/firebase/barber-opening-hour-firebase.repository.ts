@@ -1,3 +1,5 @@
+import { OpeningHours } from '../../entities/barber-opening-hour.entity.js';
+import { CreateOpeningHoursInput, ReturnGetBarberOpeningHoursOutput } from '../../services/barber-opening-hour.service.js';
 import {
   GetAllBarberOpeningHours,
   BarberOpeningHoursRepository,
@@ -9,6 +11,7 @@ export class BarberOpeningHoursFirebaseRepository
   constructor(
     private readonly firebaseRepository: FirebaseFirestore.Firestore,
   ) {}
+
 
   async getAllByBarberShopId(
     barberShopId: string,
@@ -31,5 +34,22 @@ export class BarberOpeningHoursFirebaseRepository
     });
 
     return barberShopList;
+  }
+
+  async createOpeningHours(openingHours: OpeningHours): Promise<OpeningHours | null> {
+    try {
+      const { id, ...openingHoursData } = openingHours.toObject();
+      await this.firebaseRepository
+        .collection('Barber-Opening-Hours')
+        .doc(id)
+        .set(openingHoursData);
+      return openingHours;
+    } catch (error) {
+      console.log(
+        '🚀 ~ OpeningHoursFirebaseRepository ~ createOpeningHours ~ error:',
+        error,
+      );
+      return null;
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   PaginationInput,
   PaginationOutput,
@@ -129,5 +130,12 @@ export class BarberShopServiceImpl implements BarberShopService {
     };
 
     return updateBarberShopOutput;
+  }
+
+   async deleteBarberShop(id: string): Promise<void>{
+    const barberShop = this.barberShopRepository.deleteBarberShop(id);
+    if (!barberShop) {
+      throw new Error(`BarberShop id ${id} NotFound`)
+    }
   }
 }

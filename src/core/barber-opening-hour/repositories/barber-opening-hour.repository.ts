@@ -1,3 +1,5 @@
+import { OpeningHours } from "../entities/barber-opening-hour.entity.js";
+
 export type GetAllBarberOpeningHours = {
   id: string;
   weekday: string;
@@ -10,4 +12,5 @@ export interface BarberOpeningHoursRepository {
   getAllByBarberShopId(
     barberShopId: string,
   ): Promise<GetAllBarberOpeningHours[]>;
+  createOpeningHours(openingHours: OpeningHours): Promise<OpeningHours | null>;
 }
