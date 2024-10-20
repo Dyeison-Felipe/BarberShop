@@ -12,6 +12,7 @@ import {
 } from '../../../shared/repositories/pagination.repository.js';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto.js';
 import { ReturnCreateAppointmentDto } from '../dtos/return-crete-appointment.dto.js';
+import { ReturnGetBarberShopAppointmentsDto } from '../dtos/return-get-barber-shop-appointments.dto.js';
 import { ReturnGetClientAppointmentsDto } from '../dtos/return-get-client-appointments.dto.js';
 import { AppointmentService } from '../service/appointment.service.js';
 
@@ -20,7 +21,7 @@ export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
   @Get('/client-appointments')
-  async getBarberShop(
+  async getClientAppointments(
     @Query('limit') limit: string,
     @Query('page') page: string,
   ): Promise<PaginationOutput<ReturnGetClientAppointmentsDto>> {
@@ -29,6 +30,24 @@ export class AppointmentController {
       page: +(page ?? 1),
     };
     const result = await this.appointmentService.getClientAppointments({
+      pagination,
+    });
+
+    return result;
+  }
+
+  @Get('/barber-shop-appointments/barber-shop-id/:barberShopId')
+  async getBarberShopAppointments(
+    @Param('barberShopId') barberShopId: string,
+    @Query('limit') limit: string,
+    @Query('page') page: string,
+  ): Promise<PaginationOutput<ReturnGetBarberShopAppointmentsDto>> {
+    const pagination: PaginationInput = {
+      limit: +(limit ?? 24),
+      page: +(page ?? 1),
+    };
+    const result = await this.appointmentService.getBarberShopAppointments({
+      barberShopId,
       pagination,
     });
 

@@ -4,7 +4,7 @@ import {
 } from '../../../shared/repositories/pagination.repository.js';
 import { Appointment } from '../entities/appoiment.entity.js';
 
-export type ClientAppointment = {
+type AppointmentBase = {
   id: string;
   date: Date;
   service: {
@@ -12,7 +12,18 @@ export type ClientAppointment = {
     name: string;
     price: number;
   };
+};
+
+export type ClientAppointment = AppointmentBase & {
   barber: {
+    id: string;
+    photoUrl: string;
+    name: string;
+  };
+};
+
+export type BarberShopAppointment = AppointmentBase & {
+  client: {
     id: string;
     photoUrl: string;
     name: string;
@@ -26,4 +37,9 @@ export interface AppointmentRepository {
     clientId: string,
     pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientAppointment>>;
+
+  getAppointmentsByBarberId(
+    barberId: string,
+    pagination: PaginationInput,
+  ): Promise<PaginationOutput<BarberShopAppointment>>;
 }

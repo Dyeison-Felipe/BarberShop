@@ -5,12 +5,14 @@ import {
 import { Appointment } from '../../entities/appoiment.entity.js';
 import {
   AppointmentRepository,
+  BarberShopAppointment,
   ClientAppointment,
 } from '../../repositories/appointment.repository.js';
 import {
   AppointmentOutput,
   AppointmentService,
   CreateAppointmentInput,
+  GetBarberShopAppointmentsInput,
   GetClientAppointmentsInput,
 } from '../appointment.service.js';
 
@@ -26,6 +28,21 @@ export class AppointmentServiceImpl implements AppointmentService {
     const appointments =
       await this.appointmentRepository.getAppointmentsByClientId(
         clientId,
+        pagination,
+      );
+
+    return appointments;
+  }
+
+  async getBarberShopAppointments({
+    pagination,
+    barberShopId,
+  }: GetBarberShopAppointmentsInput): Promise<
+    PaginationOutput<BarberShopAppointment>
+  > {
+    const appointments =
+      await this.appointmentRepository.getAppointmentsByBarberId(
+        barberShopId,
         pagination,
       );
 

@@ -2,10 +2,19 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
-import { ClientAppointment } from '../repositories/appointment.repository.js';
+import {
+  BarberShopAppointment,
+  ClientAppointment,
+} from '../repositories/appointment.repository.js';
 
-export type GetClientAppointmentsInput = {
+type GetAppointmentPaginated = {
   pagination: PaginationInput;
+};
+
+export type GetClientAppointmentsInput = GetAppointmentPaginated;
+
+export type GetBarberShopAppointmentsInput = GetAppointmentPaginated & {
+  barberShopId: string;
 };
 
 export type CreateAppointmentInput = {
@@ -26,6 +35,10 @@ export interface AppointmentService {
   getClientAppointments(
     input: GetClientAppointmentsInput,
   ): Promise<PaginationOutput<ClientAppointment>>;
+
+  getBarberShopAppointments(
+    input: GetBarberShopAppointmentsInput,
+  ): Promise<PaginationOutput<BarberShopAppointment>>;
 
   createAppointment(
     createAppointmentInput: CreateAppointmentInput,
