@@ -21,4 +21,6 @@ export interface BarberShopRepository {
   createBarberShop(barberShop: BarberShop): Promise<BarberShop | null>;
 
   update(barberShop: BarberShop): Promise<BarberShop | null>;
+
+  deleteBarberShop(id: string): Promise<void>;
 }

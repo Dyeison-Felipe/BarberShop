@@ -48,4 +48,5 @@ export interface BarberShopService {
   updateBarberShop(
     updateBarberShopInput: UpdateBarberShopInput,
   ): Promise<BarberShopOutput>;
+  deleteBarberShop(id: string):Promise<void>;
 }
