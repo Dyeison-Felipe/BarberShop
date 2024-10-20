@@ -1,3 +1,6 @@
+import { create } from "domain";
+import { start } from "repl";
+
 export type OpeningHoursProps = {
   id: string;
   weekday: string;
@@ -5,6 +8,13 @@ export type OpeningHoursProps = {
   end: string;
   barberShopId: string;
 };
+
+export type CreateOpeningHours = {
+  weekday: string;
+  start: string;
+  end: string;
+  barberShopId: string;
+}
 
 export class OpeningHours {
   constructor(private readonly props: OpeningHoursProps) {
@@ -30,4 +40,25 @@ export class OpeningHours {
   get barberShopId() {
     return this.props.barberShopId;
   }
+
+  static createOpeningHours(createOpeningHours: CreateOpeningHours) {
+    return new OpeningHours({
+      id: crypto.randomUUID().toString(),
+      weekday: createOpeningHours.weekday,
+      start: createOpeningHours.start,
+      end: createOpeningHours.end,
+      barberShopId: createOpeningHours.barberShopId,
+    })
+  }
+
+  toObject() {
+    return {
+      id: this.id,
+      weekday: this.weekday,
+      start: this.start,
+      end: this.end,
+      barberShopId: this.barberShopId,
+    };
+  }
+
 }
