@@ -1,15 +1,14 @@
 import {
   PaginationInput,
   PaginationOutput,
-} from '../../../shared/repositories/pagination.repository.js';
-import { Image } from '../../../shared/services/image/image.service.js';
-import { ClientList } from '../repositories/client.repository.js';
+} from "../../../shared/repositories/pagination.repository.js";
+import { Image } from "../../../shared/services/image/image.service.js";
+import { ClientList } from "../repositories/client.repository.js";
 
 export type ClientInput = {
   name: string;
   email: string;
-  phoneNumber: number;
-  photoUrl?: string;
+  password: string;
 };
 
 export type CreateClientInput = ClientInput;
@@ -21,18 +20,28 @@ export type UpdateClientInput = {
   photo?: Image | null;
 };
 
-export type ClientOutput = {
+export type CreateClientOutput = {
   id: string;
   name: string;
   email: string;
-  phoneNumber: number;
-  photoUrl: string | undefined;
+};
+
+export type UpdateClientOutput = {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  photoUrl: string;
 };
 
 export interface ClientService {
   getClient(pagination: PaginationInput): Promise<PaginationOutput<ClientList>>;
-  getClientById(id: string): Promise<ClientOutput>;
-  // createClient(createClientInput: CreateClientInput): Promise<ClientOutput>;
-  updateClient(updateClientInput: UpdateClientInput): Promise<ClientOutput>;
+  getClientById(id: string): Promise<UpdateClientOutput>;
+  createClient(
+    createClientInput: CreateClientInput
+  ): Promise<CreateClientOutput>;
+  updateClient(
+    updateClientInput: UpdateClientInput
+  ): Promise<UpdateClientOutput>;
   deleteClient(id: string): Promise<void>;
 }

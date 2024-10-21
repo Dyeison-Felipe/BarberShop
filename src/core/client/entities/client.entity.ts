@@ -5,7 +5,7 @@ export type ClientProps = {
   name: string;
   email: string;
   password: string;
-  phoneNumber: number;
+  phoneNumber: string;
   photoUrl: string;
 };
 
@@ -14,7 +14,7 @@ export type UpdateClient = { id: string; photoUrl?: string; name?: string };
 export type CreateClient = {
   name: string;
   email: string;
-  phoneNumber: number;
+  password: string
 };
 
 export class Client {
@@ -44,18 +44,16 @@ export class Client {
     return this.props.photoUrl;
   }
 
-  // static createClient(create: CreateClient): Client {
-  //   return new Client ({
-  //     id: crypto.randomUUID().toString(),
-  //     name: create.name,
-  //     email: create.email,
-  //     password: create.password,
-  //     phoneNumber: create.phoneNumber,
-  //     photoUrl: '',
-  //     appointments: [],
-  //     favoriteList: [],
-  //   });
-  // }
+  static createClient(create: CreateClient): Client {
+    return new Client ({
+      id: crypto.randomUUID().toString(),
+      name: create.name,
+      email: create.email,
+      password: create.password,
+      phoneNumber: '',
+      photoUrl: '',
+    });
+  }
 
   updateClient(update: UpdateClient) {
     this.props = {
