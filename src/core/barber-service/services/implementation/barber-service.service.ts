@@ -1,5 +1,6 @@
+import { PaginationInput, PaginationOutput } from '../../../../shared/repositories/pagination.repository.js';
 import { BarberService } from '../../entities/barber-service.entity.js';
-import { BarberServiceRepository } from '../../repositories/barber-service.repository.js';
+import { BarberServiceRepository, ServiceList } from '../../repositories/barber-service.repository.js';
 import {
   BarberServiceOutput,
   BarberServiceService,
@@ -10,6 +11,22 @@ export class BarberServiceServiceImpl implements BarberServiceService {
   constructor(
     private readonly barberServiceRepository: BarberServiceRepository,
   ) {}
+
+  async getBarberShopServiceId(barberShopId: string): Promise<BarberServiceOutput[]> {
+    const services = await this.barberServiceRepository.getBarberShopServiceId(barberShopId);
+  
+    if (!services) {
+      throw new Error("Nenhum serviço encontrado");
+    }
+  
+    return services.map(service => ({
+      id: service.id,
+      name: service.name,
+      price: service.price,
+      duration: service.duration,
+      barberShopId: service.barberShopId,
+    }));
+  }
 
   async createBarberService(
     createBarberServiceInput: CreateBarberServiceInput,
