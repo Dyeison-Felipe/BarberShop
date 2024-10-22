@@ -6,14 +6,14 @@ export type ClientList = {
   name: string;
   email:string;
   photoUrl: string;
-  phoneNumber: number;
+  phoneNumber: string;
 };
 
 
 export interface ClientRepository {
   getClient(pagination: PaginationInput):Promise<PaginationOutput<ClientList>>;
   getClientById(id: string): Promise<Client | null>;
-  // createClient(client: Client): Promise<Client | null>;
+  createClient(client: Client): Promise<Client | null>;
   updateClient(client: Client): Promise<Client | null>
   deleteClient(id: string): Promise<void>;
 }

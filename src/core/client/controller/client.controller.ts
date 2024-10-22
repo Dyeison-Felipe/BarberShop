@@ -41,14 +41,14 @@ export class ClientController {
     return result;
   }
 
-  // @Post()
-  // async createClient(
-  //   @Body() createClientDto: CreateClientDto
-  // ): Promise<ReturnCreateClientDto> {
-  //   const client = await this.clientService.createClient(createClientDto);
+  @Post()
+  async createClient(
+    @Body() createClientDto: CreateClientDto
+  ): Promise<ReturnCreateClientDto> {
+    const client = await this.clientService.createClient(createClientDto);
 
-  //   return client;
-  // }
+    return client;
+  }
 
   @Middleware(upload.single('file'), parseFormDataDto)
   @Put('/:id')
