@@ -5,3 +5,4 @@ export class ReturnGetClientDto {
   phoneNumber: string;
   photoUrl: string;
 }
+

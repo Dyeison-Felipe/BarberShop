@@ -1,4 +1,5 @@
 import { AppointmentModule } from './core/appointment/modules/appointment.module.js';
+import { AuthModule } from './core/auth/module/auth.module.js';
 import { BarberOpeningHoursModule } from './core/barber-opening-hour/modules/barber-opening-hour.module.js';
 import { BarberServiceModule } from './core/barber-service/modules/barber-service.module.js';
 import { BarberShopModule } from './core/barber-shop/modules/barber-shop.module.js';
@@ -24,6 +25,7 @@ export class AppModule implements IAppModule {
         BarberServiceModule,
         BarberOpeningHoursModule,
         AppointmentModule,
+        AuthModule,
       ],
     };
   }
