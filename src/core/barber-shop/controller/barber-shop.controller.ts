@@ -23,6 +23,7 @@ import { UpdateBarberShopDto } from '../dto/update-barber-shop.dto.js';
 import { upload } from '../../../shared/configs/multer-config.js';
 import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
+import { ReturnGetBarberShopProfileDto } from '../dto/return-get-barber-shop-profile.dto.js';
 
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
@@ -39,6 +40,16 @@ export class BarberShopController {
     };
     const result = await this.barberShopService.getBarbersShop(pagination);
     return result;
+  }
+
+  @Get('/barber-shop-id/:barberShopId')
+  async getBarberShopProfile(
+    @Param('barberShopId') barberShopId: string,
+  ): Promise<ReturnGetBarberShopProfileDto> {
+    const output = await this.barberShopService.getBarbersShopProfile({
+      id: barberShopId,
+    });
+    return output;
   }
 
   @Post()
@@ -70,13 +81,15 @@ export class BarberShopController {
   }
 
   @Delete('/:id')
-  async deleteBarberShop(@Param('id') id: string, res: Response): Promise<void> {
-    
+  async deleteBarberShop(
+    @Param('id') id: string,
+    res: Response,
+  ): Promise<void> {
     try {
       await this.barberShopService.deleteBarberShop(id);
       res.status(200).json({ message: 'Barbearia excluída com sucesso.' });
     } catch (error) {
-      res.status(404).json({ message: 'Erro ao deletar'});
+      res.status(404).json({ message: 'Erro ao deletar' });
     }
   }
 }

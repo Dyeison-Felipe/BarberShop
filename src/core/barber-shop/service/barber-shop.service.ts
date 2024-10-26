@@ -38,15 +38,22 @@ export type BarberShopOutput = {
   photoUrl?: string | null;
 };
 
+export type BarberShopProfileInput = {
+  id: string;
+};
+
 export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<BarberShopList>>;
+  getBarbersShopProfile({
+    id,
+  }: BarberShopProfileInput): Promise<BarberShopOutput>;
   createBarberShop(
     createBarberShopInput: CreateBarberShopInput,
   ): Promise<BarberShopOutput>;
   updateBarberShop(
     updateBarberShopInput: UpdateBarberShopInput,
   ): Promise<BarberShopOutput>;
-  deleteBarberShop(id: string):Promise<void>;
+  deleteBarberShop(id: string): Promise<void>;
 }
