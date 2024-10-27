@@ -11,6 +11,9 @@ export type GetAllBarberOpeningHours = {
 export interface BarberOpeningHoursRepository {
   getAllByBarberShopId(
     barberShopId: string,
-  ): Promise<GetAllBarberOpeningHours[]>;
+  ): Promise<OpeningHours[]>;
   createOpeningHours(openingHours: OpeningHours): Promise<OpeningHours | null>;
+  updateManyOpeningHours(updateOpeningHours: OpeningHours[]): Promise<OpeningHours[] | null>;
+  deleteOpeningHours(id: string): Promise<void| null>;
+  getOpeningHourById(openingHourId: string): Promise<OpeningHours | null>;
 }

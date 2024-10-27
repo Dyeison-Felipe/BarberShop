@@ -5,7 +5,8 @@ import {
   OpeningHourOutput,
   CreateOpeningHoursInput,
   ReturnGetBarberOpeningHoursOutput,
-  CreateOpeningHoursOutput,
+  UpsertOpeningHoursOutput,
+  UpdateOpeningHours,
 } from "../barber-opening-hour.service.js";
 
 export class BarberOpeningHoursServiceImpl
@@ -14,6 +15,48 @@ export class BarberOpeningHoursServiceImpl
   constructor(
     private readonly barberOpeningHoursRepository: BarberOpeningHoursRepository
   ) {}
+  async deleteOpeningHours(id: string): Promise<void> {
+
+    const openingHour = await this.barberOpeningHoursRepository.getOpeningHourById(id);
+
+    if(!openingHour) {
+      throw new Error("Usuario não encontrado");
+    }
+
+    const deleteOpeningHours = await this.barberOpeningHoursRepository.deleteOpeningHours(id);
+
+    if(deleteOpeningHours === null) {
+      throw new Error("Erro ao deletar")
+    }
+  }
+
+  async updateOpeningHours(
+    updateOpeningHours: UpdateOpeningHours[]
+  ): Promise<UpsertOpeningHoursOutput> {
+    const barberOpeningHours =
+      await this.barberOpeningHoursRepository.getAllByBarberShopId(
+        updateOpeningHours[0].barberShopId
+      );
+
+    barberOpeningHours.forEach((currentBarberOpeningHour) => {
+      updateOpeningHours.forEach((updateBarberOpeningHour) => {
+        if (currentBarberOpeningHour.id === updateBarberOpeningHour.id) {
+          currentBarberOpeningHour.updateOpeningHours(updateBarberOpeningHour);
+        }
+      });
+    });
+
+    const updatedOpeningHours =
+      await this.barberOpeningHoursRepository.updateManyOpeningHours(
+        barberOpeningHours
+      );
+
+    if (!updatedOpeningHours) {
+      throw new Error('Erro ao atualizar horários')
+    }
+    
+    return { weekdays: updatedOpeningHours };
+  }
 
   async getBarberOpeningHours(
     barberShopId: string
@@ -50,27 +93,35 @@ export class BarberOpeningHoursServiceImpl
     return { weekdays };
   }
 
-  async createOpeningHours(createOpeningHoursInput: CreateOpeningHoursInput[]): Promise<CreateOpeningHoursOutput> {
-  console.log("🚀 ~ createOpeningHours ~ createOpeningHoursInput:", createOpeningHoursInput)
+  async createOpeningHours(
+    createOpeningHoursInput: CreateOpeningHoursInput[]
+  ): Promise<UpsertOpeningHoursOutput> {
+    console.log(
+      "🚀 ~ createOpeningHours ~ createOpeningHoursInput:",
+      createOpeningHoursInput
+    );
 
-    const createdOpeningHours = await Promise.all(createOpeningHoursInput.map(async (hours) => {
-      const openingHoursEntity = OpeningHours.createOpeningHours({
-        ...hours,
-        barberShopId: '',
+    const createdOpeningHours = await Promise.all(
+      createOpeningHoursInput.map(async (hours) => {
+        const openingHoursEntity = OpeningHours.createOpeningHours({
+          ...hours,
+        });
+
+        const newOpeningHours =
+          await this.barberOpeningHoursRepository.createOpeningHours(
+            openingHoursEntity
+          );
+
+        if (!newOpeningHours) {
+          throw new Error("Erro ao criar as horas");
+        }
+
+        return newOpeningHours;
       })
-  
-      const newOpeningHours = await this.barberOpeningHoursRepository.createOpeningHours(openingHoursEntity)
-      
-      if(!newOpeningHours) {
-        throw new Error('Erro ao criar as horas')
-      }
+    );
 
-      return newOpeningHours;
-
-    }))
-
-    const createOpeningHoursOutput: CreateOpeningHoursOutput = {
-      weekdays: createdOpeningHours.map((hours) => hours.toObject())
+    const createOpeningHoursOutput: UpsertOpeningHoursOutput = {
+      weekdays: createdOpeningHours.map((hours) => hours.toObject()),
     };
 
     return createOpeningHoursOutput;
