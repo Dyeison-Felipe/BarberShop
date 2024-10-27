@@ -4,13 +4,14 @@
 export type BarberShopProps = {
   id: string;
   name: string;
-  cnpj: number;
-  cep: number;
-  number: number;
+  cnpj: string;
+  cep: string;
+  number: string;
   neighborhood: string;
   city: string;
+  street: string;
   state: string;
-  phone: number;
+  phone: string;
   rating: number;
   photoUrl?: string | null;
   clientId: string;
@@ -18,13 +19,14 @@ export type BarberShopProps = {
 
 type UpsertBarberShop = {
   name: string;
-  cnpj: number;
-  cep: number;
-  number: number;
+  cnpj: string;
+  cep: string;
+  number: string;
   neighborhood: string;
+  street: string;
   city: string;
   state: string;
-  phone: number;
+  phone: string;
   clientId: string;
 };
 
@@ -56,8 +58,13 @@ export class BarberShop {
   get number() {
     return this.props.number;
   }
+
   get neighborhood() {
     return this.props.neighborhood;
+  }
+
+  get street() {
+    return this.props.street;
   }
 
   get city() {
@@ -93,6 +100,7 @@ export class BarberShop {
       neighborhood: create.neighborhood,
       city: create.city,
       state: create.state,
+      street: create.street,
       phone: create.phone,
       clientId: create.clientId,
       rating: 5,
@@ -104,6 +112,7 @@ export class BarberShop {
     this.props = {
       ...this.props,
       ...update,
+      photoUrl: update.photoUrl ?? '',
     };
   }
 

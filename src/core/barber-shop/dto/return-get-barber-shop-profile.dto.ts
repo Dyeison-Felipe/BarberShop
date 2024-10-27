@@ -1,13 +1,13 @@
 export class ReturnGetBarberShopProfileDto {
   id: string;
   name: string;
-  cnpj: number;
-  cep: number;
-  number: number;
+  cnpj: string;
+  cep: string;
+  number: string;
   neighborhood: string;
   city: string;
   state: string;
-  phone: number;
+  phone: string;
   rating: number;
   photoUrl?: string | null;
   clientId: string;

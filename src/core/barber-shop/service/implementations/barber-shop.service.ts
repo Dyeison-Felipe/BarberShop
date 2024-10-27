@@ -55,10 +55,6 @@ export class BarberShopServiceImpl implements BarberShopService {
       // TODO Colocar o ID do cliente logado
       clientId: '',
     });
-    console.log(
-      '🚀 ~ BarberShopServiceImpl ~ barberShopEntity:',
-      barberShopEntity,
-    );
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
       barberShopEntity,
     );
@@ -73,6 +69,7 @@ export class BarberShopServiceImpl implements BarberShopService {
       cnpj: createdBarberShop.cnpj,
       cep: createdBarberShop.cep,
       number: createdBarberShop.number,
+      street: createdBarberShop.street,
       neighborhood: createdBarberShop.neighborhood,
       city: createdBarberShop.city,
       state: createdBarberShop.state,
@@ -90,16 +87,12 @@ export class BarberShopServiceImpl implements BarberShopService {
     const foundBarberShop = await this.barberShopRepository.getBarberShopById(
       updateBarberShopInput.id,
     );
-    console.log(
-      '🚀 ~ ClientServiceImpl ~ updateClient ~ foundBarberShop:',
-      foundBarberShop,
-    );
 
     if (!foundBarberShop) {
       throw new Error('Cliente não encontrado');
     }
 
-    let photoUrl: string | undefined = undefined;
+    let photoUrl: string | undefined = foundBarberShop.photoUrl ?? '';
 
     console.log(
       '🚀 ~ BarberShopServiceImpl ~ updateBarberShopInput.photo:',
@@ -107,18 +100,17 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
     if (updateBarberShopInput.photo) {
       const url = foundBarberShop.photoUrl;
-      console.log('🚀 ~ BarberShopServiceImpl ~ url:', url);
 
       const currentFileName =
-        url?.split('barber-shop%2F')[1].split('?')[0] ?? null;
+        url?.split('barber-shop%2F')[1]?.split('?')[0] ?? null;
 
       photoUrl = await this.imageService.uploadImage(
         updateBarberShopInput.photo,
         currentFileName,
         'barber-shop',
       );
+      console.log('🚀 ~ BarberShopServiceImpl ~ photoUrl:', photoUrl);
     }
-    console.log('🚀 ~ BarberShopServiceImpl ~ photoUrl:', photoUrl);
 
     foundBarberShop.updateBarberShop({ ...updateBarberShopInput, photoUrl });
     const updatedBarberShop = await this.barberShopRepository.update(
@@ -134,6 +126,7 @@ export class BarberShopServiceImpl implements BarberShopService {
       name: updatedBarberShop.name,
       cnpj: updatedBarberShop.cnpj,
       cep: updatedBarberShop.cep,
+      street: updatedBarberShop.street,
       number: updatedBarberShop.number,
       neighborhood: updatedBarberShop.neighborhood,
       city: updatedBarberShop.city,

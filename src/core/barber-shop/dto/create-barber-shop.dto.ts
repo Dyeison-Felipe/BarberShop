@@ -1,18 +1,18 @@
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsString } from 'class-validator';
 
 // TODO Adicionar rua
-export class CreateBarberShopDto{
+export class CreateBarberShopDto {
   @IsString()
   name: string;
 
-  @IsInt()
-  cnpj: number;
+  @IsString()
+  cnpj: string;
 
-  @IsInt()
-  cep: number;
+  @IsString()
+  cep: string;
 
-  @IsInt()
-  number: number;
+  @IsString()
+  number: string;
 
   @IsString()
   neighborhood: string;
@@ -23,6 +23,9 @@ export class CreateBarberShopDto{
   @IsString()
   state: string;
 
-  @IsInt()
-  phone: number;
+  @IsString()
+  phone: string;
+
+  @IsString()
+  street: string;
 }

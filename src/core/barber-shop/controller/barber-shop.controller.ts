@@ -70,7 +70,7 @@ export class BarberShopController {
     @Param('id') id: string,
     @Body() updateBarberShopDto: UpdateBarberShopDto,
   ): Promise<ReturnUpdateBarberShopDto> {
-    console.log('🚀 ~ BarberShopController ~ req:', req);
+    console.log('🚀 ~ BarberShopController ~ req.file:', req.file);
     const barberShop = await this.barberShopService.updateBarberShop({
       id,
       photo: ImageFirebaseStorageService.imageAdapter(req.file),

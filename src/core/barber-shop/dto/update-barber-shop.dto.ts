@@ -1,10 +1,11 @@
 export class UpdateBarberShopDto {
   name?: string;
-  cnpj?: number;
-  cep?: number;
-  number?: number;
+  cnpj?: string;
+  cep?: string;
+  number?: string;
   neighborhood?: string;
+  street?: string;
   city?: string;
   state?: string;
-  phone?: number;
+  phone?: string;
 }
