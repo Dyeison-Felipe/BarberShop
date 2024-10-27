@@ -1,5 +1,3 @@
-import { create } from "domain";
-import { start } from "repl";
 
 export type OpeningHoursProps = {
   id: string;
@@ -9,7 +7,11 @@ export type OpeningHoursProps = {
   barberShopId: string;
 };
 
-export type CreateOpeningHours = {
+export type CreateOpeningHours = UpsertOpeningHours
+
+export type UpdateOpeningHours = UpsertOpeningHours & {id: string}
+
+type UpsertOpeningHours = {
   weekday: string;
   start: string;
   end: string;
@@ -17,7 +19,7 @@ export type CreateOpeningHours = {
 }
 
 export class OpeningHours {
-  constructor(private readonly props: OpeningHoursProps) {
+  constructor(private props: OpeningHoursProps) {
     this.props = props;
   }
 
@@ -49,6 +51,13 @@ export class OpeningHours {
       end: createOpeningHours.end,
       barberShopId: createOpeningHours.barberShopId,
     })
+  }
+
+  updateOpeningHours(updateOpeningHours: UpdateOpeningHours) {
+    this.props = {
+      ...this.props,
+      ...updateOpeningHours,
+    };
   }
 
   toObject() {
