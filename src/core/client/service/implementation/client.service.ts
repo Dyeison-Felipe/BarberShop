@@ -9,17 +9,20 @@ import {
   ClientRepository,
 } from "../../repositories/client.repository.js";
 import {
-  ClientOutput,
+  UpdateClientOutput,
   ClientService,
   CreateClientInput,
   UpdateClientInput,
+  CreateClientOutput,
 } from "../client.service.js";
 import { ImageService } from "../../../../shared/services/image/image.service.js";
+import { HashService } from "../../../../shared/hashService/hash-service.js";
 
 export class ClientServiceImpl implements ClientService {
   constructor(
     private readonly clientRepository: ClientRepository,
-    private readonly imageService: ImageService
+    private readonly imageService: ImageService,
+    private readonly hashService: HashService
   ) {}
 
   async getClient(
@@ -30,7 +33,7 @@ export class ClientServiceImpl implements ClientService {
     return barbersShop;
   }
 
-  async getClientById(id: string): Promise<ClientOutput> {
+  async getClientById(id: string): Promise<UpdateClientOutput> {
     const client = await this.clientRepository.getClientById(id);
 
     if (!client) {
@@ -40,32 +43,36 @@ export class ClientServiceImpl implements ClientService {
     return client;
   }
 
-  // async createClient(
-  //   createclientInput: CreateClientInput,
-  // ): Promise<ClientOutput> {
-  //   const ClientEntity = Client.createClient(createclientInput);
-  //   const createdClient = await this.clientRepository.createClient(
-  //     ClientEntity,
-  //   );
+  async createClient(
+    createClientInput: CreateClientInput
+  ): Promise<CreateClientOutput> {
 
-  //   if (!createdClient) {
-  //     throw new Error('Erro ao criar usuário');
-  //   }
+    const hashPassword = this.hashService.generateHash(createClientInput.password);
 
-  //   const clientOutput: ClientOutput = {
-  //     id: createdClient.id,
-  //     name: createdClient.name,
-  //     email: createdClient.email,
-  //     phoneNumber: createdClient.phoneNumber,
-  //     photoUrl: createdClient.photoUrl,
-  //   };
+    const ClientEntity = Client.createClient({
+      ...createClientInput, 
+      password: hashPassword,
+    });
+    const createdClient = await this.clientRepository.createClient(
+      ClientEntity
+    );
 
-  //   return clientOutput;
-  // }
+    if (!createdClient) {
+      throw new Error("Erro ao criar usuário");
+    }
+
+    const createClientOutput: CreateClientOutput = {
+      id: createdClient.id,
+      name: createdClient.name,
+      email: createdClient.email,
+    };
+
+    return createClientOutput;
+  }
 
   async updateClient(
     updateClientInput: UpdateClientInput
-  ): Promise<ClientOutput> {
+  ): Promise<UpdateClientOutput> {
     const existingClient = await this.clientRepository.getClientById(
       updateClientInput.id
     );
@@ -102,7 +109,7 @@ export class ClientServiceImpl implements ClientService {
       throw new Error("Erro ao atualizar cliente");
     }
 
-    const updateClientOutput: ClientOutput = {
+    const updateClientOutput: UpdateClientOutput = {
       id: updatedClient.id,
       name: updatedClient.name,
       email: updatedClient.email,

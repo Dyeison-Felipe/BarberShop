@@ -107,19 +107,9 @@ export class BarberShop {
     };
   }
 
-  toObject() {
+  toObject(): BarberShopProps {
     return {
-      id: this.id,
-      name: this.name,
-      cnpj: this.cnpj,
-      cep: this.cep,
-      number: this.number,
-      neighborhood: this.neighborhood,
-      city: this.city,
-      state: this.state,
-      phone: this.phone,
-      rating: this.rating,
-      photoUrl: this.photoUrl,
+      ...this.props,
     };
   }
 }

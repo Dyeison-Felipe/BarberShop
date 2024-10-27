@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   PaginationInput,
   PaginationOutput,
@@ -13,6 +14,7 @@ import {
   CreateBarberShopInput,
   BarberShopOutput,
   UpdateBarberShopInput,
+  BarberShopProfileInput,
 } from '../barber-shop.service.js';
 
 export class BarberShopServiceImpl implements BarberShopService {
@@ -20,6 +22,20 @@ export class BarberShopServiceImpl implements BarberShopService {
     private readonly barberShopRepository: BarberShopRepository,
     private readonly imageService: ImageService,
   ) {}
+
+  async getBarbersShopProfile({
+    id,
+  }: BarberShopProfileInput): Promise<BarberShopOutput> {
+    const barberShop = await this.barberShopRepository.getBarberShopById(id);
+
+    if (!barberShop) {
+      throw new Error('Barbearia não encontrada');
+    }
+
+    const barberShopOutput = barberShop.toObject();
+
+    return barberShopOutput;
+  }
 
   async getBarbersShop(
     pagination: PaginationInput,
@@ -129,5 +145,12 @@ export class BarberShopServiceImpl implements BarberShopService {
     };
 
     return updateBarberShopOutput;
+  }
+
+  async deleteBarberShop(id: string): Promise<void> {
+    const barberShop = this.barberShopRepository.deleteBarberShop(id);
+    if (!barberShop) {
+      throw new Error(`BarberShop id ${id} NotFound`);
+    }
   }
 }

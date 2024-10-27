@@ -5,6 +5,29 @@ import { ClientList, ClientRepository } from "../client.repository.js";
 export class ClientFirebaseRepository implements ClientRepository {
   constructor(private readonly firebaseRepository: FirebaseFirestore.Firestore) {}
 
+  async getClientByEmail(email: string): Promise<Client | null> {
+    const snapshot = await this.firebaseRepository
+    .collection('Client')
+      .where('email', '==', email)
+      .get();
+
+    if(snapshot.empty) {
+      return null;
+    }
+
+    const clientFound = snapshot.docs[0];
+
+    const clientProps = {
+      id: clientFound.id,
+      ...clientFound.data()
+    } as ClientProps
+    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", clientFound.data())
+
+    const clientEntity = new Client(clientProps)
+
+    return clientEntity
+  }
+
   async getClient(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientList>> {
@@ -32,17 +55,17 @@ export class ClientFirebaseRepository implements ClientRepository {
     };
   }
 
-  // async createClient(client: Client): Promise<Client | null> {
-  //   try {
-  //     const {id,...clientData} = client.toObject();
-  //     const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
-  //     return client;
+  async createClient(client: Client): Promise<Client | null> {
+    try {
+      const {id,...clientData} = client.toObject();
+      const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
+      return client;
 
-  //   } catch (error) {
-  //     console.log("🚀 ~ ClientFirebaseRepository ~ createClient ~ error:", error)
-  //     return null;
-  //   }
-  // }
+    } catch (error) {
+      console.log("🚀 ~ ClientFirebaseRepository ~ createClient ~ error:", error)
+      return null;
+    }
+  }
 
   async updateClient(client: Client): Promise<Client | null> {
     try {

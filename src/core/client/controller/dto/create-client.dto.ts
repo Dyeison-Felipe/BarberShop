@@ -11,5 +11,5 @@ export class CreateClientDto {
   password: string;
 
   @IsInt()
-  phoneNumber: number;
+  phoneNumber: string;
 }

@@ -1,3 +1,4 @@
+import { HashBcryptService } from '../../../shared/hashService/bcrypt/hash-bcrypt-service.js';
 import { BuildModule, IModule } from '../../../shared/modules/module.js';
 import { db } from '../../../shared/repositories/firebase/config.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
@@ -9,7 +10,8 @@ export class ClientModule implements IModule {
   buildModule(): BuildModule {
     const clientRepository = new ClientFirebaseRepository(db);
     const imageService = new ImageFirebaseStorageService();
-    const clientService = new ClientServiceImpl(clientRepository, imageService);
+    const hashService = new HashBcryptService();
+    const clientService = new ClientServiceImpl(clientRepository, imageService, hashService);
     const clientController = new ClientController(clientService);
 
     return {

@@ -1,6 +1,6 @@
 export class ReturnUpdateClientDto{
   name: string;
   email:string;
-  phoneNumber: number;
+  phoneNumber: string;
   photoUrl?: string;
 }
