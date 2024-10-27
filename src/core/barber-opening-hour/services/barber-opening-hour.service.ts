@@ -38,5 +38,5 @@ export interface BarberOpeningHoursService {
   updateOpeningHours(
     updateOpeningHours: UpdateOpeningHours[]
   ): Promise<UpsertOpeningHoursOutput>;
-  deleteOpeningHours(id: string): Promise<void | null>;
+  deleteOpeningHours(id: string): Promise<void>;
 }

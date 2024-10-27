@@ -19,6 +19,7 @@ import {
   UpdateOpeningHoursDto,
 } from "../dtos/update-opening-hours.dto.js";
 import { ReturnOpeningHoursDto } from "../dtos/return-update-opening-hours.dto.js";
+import { Request, Response } from "express";
 
 @Controller("/api/barber-opening-hours/v1")
 export class BarberOpeningHoursController {
@@ -66,7 +67,9 @@ export class BarberOpeningHoursController {
   }
 
   @Delete('/:id')
-  async deleteOpeningHours(@Param('id') id: string): Promise<void> {
+  async deleteOpeningHours( _: Request, res: Response, @Param('id') id: string): Promise<void> {
     await this.barberOpeningHoursService.deleteOpeningHours(id);
+
+    res.status(204).send();
   }
 }
