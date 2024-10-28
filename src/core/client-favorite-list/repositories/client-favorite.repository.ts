@@ -1,7 +1,12 @@
-import { PaginationInput, PaginationOutput } from "../../../shared/repositories/pagination.repository.js";
+import {
+  PaginationInput,
+  PaginationOutput,
+} from "../../../shared/repositories/pagination.repository.js";
+import { BarberShopList } from "../../barber-shop/repositories/barber-shop.repository.js";
+import { FavoriteList } from "../entities/client-favorite-list.entity.js";
 
 export type ClientFavoriteList = {
-  barberShopId: string;
+  barberShop: BarberShopList;
   clientId: string;
 };
 
@@ -11,12 +16,11 @@ export type PaginationInputFavorite = {
   offset: number;
 };
 
-export type PaginationOutputFavorite<T> = {
-  items: T[]; // Adiciona a propriedade items que será um array do tipo T
-  total: number;
-};
-
-
 export interface ClientFavoriteRepository {
-  clientFavoriteList(pagination: PaginationInput):Promise<PaginationOutput<ClientFavoriteList>>;
+  getClientFavoriteList(
+    clientId: string,
+    pagination: PaginationInput
+  ): Promise<PaginationOutput<ClientFavoriteList>>;
+  createClientFavorite(favoriteList: FavoriteList): Promise<FavoriteList | null>;
+  deleteClientFavoriteList(id: string): Promise<void>;
 }
