@@ -1,9 +1,9 @@
 import {
   PaginationInput,
   PaginationOutput,
-} from "../../../shared/repositories/pagination.repository.js";
-import { Image } from "../../../shared/services/image/image.service.js";
-import { ClientList } from "../repositories/client.repository.js";
+} from '../../../shared/repositories/pagination.repository.js';
+import { Image } from '../../../shared/services/image/image.service.js';
+import { ClientList } from '../repositories/client.repository.js';
 
 export type ClientInput = {
   name: string;
@@ -26,7 +26,7 @@ export type CreateClientOutput = {
   email: string;
 };
 
-export type UpdateClientOutput = {
+export type ClientOutput = {
   id: string;
   name: string;
   email: string;
@@ -36,12 +36,10 @@ export type UpdateClientOutput = {
 
 export interface ClientService {
   getClient(pagination: PaginationInput): Promise<PaginationOutput<ClientList>>;
-  getClientById(id: string): Promise<UpdateClientOutput>;
+  getClientById(id: string): Promise<ClientOutput>;
   createClient(
-    createClientInput: CreateClientInput
+    createClientInput: CreateClientInput,
   ): Promise<CreateClientOutput>;
-  updateClient(
-    updateClientInput: UpdateClientInput
-  ): Promise<UpdateClientOutput>;
+  updateClient(updateClientInput: UpdateClientInput): Promise<ClientOutput>;
   deleteClient(id: string): Promise<void>;
 }

@@ -1,6 +1,7 @@
-export class ReturnUpdateClientDto{
+export class ReturnUpdateClientDto {
+  id: string;
   name: string;
-  email:string;
+  email: string;
   phoneNumber: string;
   photoUrl?: string;
 }

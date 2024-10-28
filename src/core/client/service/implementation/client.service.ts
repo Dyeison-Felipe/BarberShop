@@ -1,64 +1,67 @@
-import e from "express";
+import e from 'express';
 import {
   PaginationInput,
   PaginationOutput,
-} from "../../../../shared/repositories/pagination.repository.js";
-import { Client } from "../../entities/client.entity.js";
+} from '../../../../shared/repositories/pagination.repository.js';
+import { Client } from '../../entities/client.entity.js';
 import {
   ClientList,
   ClientRepository,
-} from "../../repositories/client.repository.js";
+} from '../../repositories/client.repository.js';
 import {
-  UpdateClientOutput,
+  ClientOutput,
   ClientService,
   CreateClientInput,
   UpdateClientInput,
   CreateClientOutput,
-} from "../client.service.js";
-import { ImageService } from "../../../../shared/services/image/image.service.js";
-import { HashService } from "../../../../shared/hashService/hash-service.js";
+} from '../client.service.js';
+import { ImageService } from '../../../../shared/services/image/image.service.js';
+import { HashService } from '../../../../shared/hashService/hash-service.js';
 
 export class ClientServiceImpl implements ClientService {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly imageService: ImageService,
-    private readonly hashService: HashService
+    private readonly hashService: HashService,
   ) {}
 
   async getClient(
-    pagination: PaginationInput
+    pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientList>> {
     const barbersShop = await this.clientRepository.getClient(pagination);
 
     return barbersShop;
   }
 
-  async getClientById(id: string): Promise<UpdateClientOutput> {
+  async getClientById(id: string): Promise<ClientOutput> {
     const client = await this.clientRepository.getClientById(id);
 
     if (!client) {
-      throw new Error("Cliente não encontrado");
+      throw new Error('Cliente não encontrado');
     }
 
-    return client;
+    const { password, ...clientOutput } = client?.toObject();
+
+    return clientOutput;
   }
 
   async createClient(
-    createClientInput: CreateClientInput
+    createClientInput: CreateClientInput,
   ): Promise<CreateClientOutput> {
-
-    const hashPassword = this.hashService.generateHash(createClientInput.password);
+    const hashPassword = this.hashService.generateHash(
+      createClientInput.password,
+    );
 
     const ClientEntity = Client.createClient({
-      ...createClientInput, 
+      ...createClientInput,
       password: hashPassword,
     });
     const createdClient = await this.clientRepository.createClient(
-      ClientEntity
+      ClientEntity,
     );
 
     if (!createdClient) {
-      throw new Error("Erro ao criar usuário");
+      throw new Error('Erro ao criar usuário');
     }
 
     const createClientOutput: CreateClientOutput = {
@@ -71,45 +74,45 @@ export class ClientServiceImpl implements ClientService {
   }
 
   async updateClient(
-    updateClientInput: UpdateClientInput
-  ): Promise<UpdateClientOutput> {
+    updateClientInput: UpdateClientInput,
+  ): Promise<ClientOutput> {
     const existingClient = await this.clientRepository.getClientById(
-      updateClientInput.id
+      updateClientInput.id,
     );
     console.log(
-      "🚀 ~ ClientServiceImpl ~ updateClient ~ existingClient:",
-      existingClient
+      '🚀 ~ ClientServiceImpl ~ updateClient ~ existingClient:',
+      existingClient,
     );
 
     if (!existingClient) {
-      throw new Error("Cliente não encontrado");
+      throw new Error('Cliente não encontrado');
     }
 
     let photoUrl: string | undefined = undefined;
 
     if (updateClientInput.photo) {
       const url = existingClient.photoUrl;
-      console.log("🚀 ~ BarberShopServiceImpl ~ url:", url);
+      console.log('🚀 ~ BarberShopServiceImpl ~ url:', url);
 
       const currentFileName = this.imageService.getImageNameByUrl(url);
 
       photoUrl = await this.imageService.uploadImage(
         updateClientInput.photo,
         currentFileName,
-        "client"
+        'client',
       );
     }
 
     existingClient.updateClient({ ...updateClientInput, photoUrl });
     const updatedClient = await this.clientRepository.updateClient(
-      existingClient
+      existingClient,
     );
 
     if (!updatedClient) {
-      throw new Error("Erro ao atualizar cliente");
+      throw new Error('Erro ao atualizar cliente');
     }
 
-    const updateClientOutput: UpdateClientOutput = {
+    const updateClientOutput: ClientOutput = {
       id: updatedClient.id,
       name: updatedClient.name,
       email: updatedClient.email,
@@ -124,7 +127,7 @@ export class ClientServiceImpl implements ClientService {
     const client = this.clientRepository.deleteClient(id);
 
     if (!client) {
-      throw new Error("Client não encontrado");
+      throw new Error('Client não encontrado');
     }
 
     return client;
