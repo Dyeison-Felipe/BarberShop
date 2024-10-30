@@ -50,6 +50,13 @@ export class BarberShopServiceImpl implements BarberShopService {
   async createBarberShop(
     createbarberShopInput: CreateBarberShopInput,
   ): Promise<BarberShopOutput> {
+
+    const findCnpj = await this.barberShopRepository.getBarberShopByCnpj(createbarberShopInput.cnpj);
+
+    if(findCnpj) {
+      throw new Error(`CNPJ ${createbarberShopInput.cnpj} já esta em uso`)
+    }
+
     const barberShopEntity = BarberShop.createBarberShop({
       ...createbarberShopInput,
       // TODO Colocar o ID do cliente logado

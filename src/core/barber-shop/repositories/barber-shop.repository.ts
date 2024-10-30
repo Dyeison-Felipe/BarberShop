@@ -18,6 +18,8 @@ export interface BarberShopRepository {
 
   getBarberShopById(id: string): Promise<BarberShop | null>;
 
+  getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null>;
+
   createBarberShop(barberShop: BarberShop): Promise<BarberShop | null>;
 
   update(barberShop: BarberShop): Promise<BarberShop | null>;
