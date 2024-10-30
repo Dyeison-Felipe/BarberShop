@@ -52,6 +52,12 @@ export class ClientServiceImpl implements ClientService {
       createClientInput.password,
     );
 
+    const findByEmail = await this.clientRepository.getClientByEmail(createClientInput.email);
+
+    if(findByEmail) {
+      throw new Error(`O email ${createClientInput.email} já esta em uso`)
+    }
+
     const ClientEntity = Client.createClient({
       ...createClientInput,
       password: hashPassword,
