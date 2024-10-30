@@ -71,6 +71,29 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
     return barberShopEntity;
   }
 
+  async getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null> {
+    const snapshot = await this.firebaseRepository
+    .collection('Barber-Shop')
+      .where('cnpj', '==', cnpj)
+      .get();
+
+    if(snapshot.empty) {
+      return null;
+    }
+
+    const barberShopFound = snapshot.docs[0];
+
+    const barberShopProps = {
+      id: barberShopFound.id,
+      ...barberShopFound.data()
+    } as BarberShopProps
+    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", barberShopFound.data())
+
+    const barberShopEntity = new BarberShop(barberShopProps)
+
+    return barberShopEntity
+  }
+
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
       const { id, ...barberShopData } = barberShop.toObject();
