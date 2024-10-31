@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { AppModule } from './app.module.js';
 import { applyRoutes } from './shared/decorators/http/request-mapping.decorator.js';
+import { Middleware } from './shared/modules/module.js';
 
 function start() {
   const app = express();
@@ -20,13 +21,24 @@ function start() {
   const appModule = new AppModule();
   const { modules } = appModule.buildAppModule();
 
+  const allControllers: Object[] = [];
+  const allMiddlewares: Middleware[] = [];
+
   modules.forEach((Module) => {
     const module = new Module();
-    const { controllers } = module.buildModule();
+    const { controllers, middlewares } = module.buildModule();
 
     controllers.forEach((controller) => {
-      applyRoutes(app, controller);
+      allControllers.push(controller);
     });
+
+    middlewares?.forEach((middleare) => {
+      allMiddlewares.push(middleare);
+    });
+  });
+
+  allControllers.forEach((controller) => {
+    applyRoutes(app, controller, allMiddlewares);
   });
 
   app.listen(port, () => {
