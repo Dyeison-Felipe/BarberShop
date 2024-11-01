@@ -138,12 +138,12 @@ export function resolveRouteParams(
 }
 
 // Função para aplicar rotas no Express
-export function applyRoutes(
+export const applyRoutes = (
   app: any,
   controllerInstance: any,
   // Todos os middlewares da aplicação, baseados em classe
   controllerMiddleares?: Middleware[],
-) {
+) => {
   const controllerName = controllerInstance.constructor.name;
   const controllerRoutes = routes[controllerName];
   const prefix = controllerInstance.prefix || '';
@@ -169,8 +169,9 @@ export function applyRoutes(
 
       app[route.method](
         fullPath,
-        ...(classBasedMiddlewares?.map((middleare) => middleare.instance.use) ??
-          []),
+        ...(classBasedMiddlewares?.map((middleare) =>
+          middleare.instance.use.bind(middleare.instance),
+        ) ?? []),
         ...functionBasedMiddlewares,
         async (req: Request, res: Response) => {
           const args: any[] = [req, res];
@@ -191,4 +192,4 @@ export function applyRoutes(
       );
     });
   }
-}
+};

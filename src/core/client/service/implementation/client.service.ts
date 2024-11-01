@@ -17,18 +17,22 @@ import {
 } from '../client.service.js';
 import { ImageService } from '../../../../shared/services/image/image.service.js';
 import { HashService } from '../../../../shared/hashService/hash-service.js';
+import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 
 export class ClientServiceImpl implements ClientService {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly imageService: ImageService,
     private readonly hashService: HashService,
+    private readonly storageRequestService: StorageRequestService,
   ) {}
 
   async getClient(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientList>> {
     const barbersShop = await this.clientRepository.getClient(pagination);
+
+    console.log(this.storageRequestService.get('logged_user'));
 
     return barbersShop;
   }
@@ -52,10 +56,12 @@ export class ClientServiceImpl implements ClientService {
       createClientInput.password,
     );
 
-    const findByEmail = await this.clientRepository.getClientByEmail(createClientInput.email);
+    const findByEmail = await this.clientRepository.getClientByEmail(
+      createClientInput.email,
+    );
 
-    if(findByEmail) {
-      throw new Error(`O email ${createClientInput.email} já esta em uso`)
+    if (findByEmail) {
+      throw new Error(`O email ${createClientInput.email} já esta em uso`);
     }
 
     const ClientEntity = Client.createClient({
