@@ -63,7 +63,7 @@ export class BarberShopController {
     return barberShop;
   }
 
-  // @Middleware(upload.single('file'), parseFormDataDto)
+  @Middleware(upload.single('file'), parseFormDataDto)
   @Put('/:id')
   async updateBarberShop(
     req: Request,

@@ -6,7 +6,7 @@ export class AuthMiddleware implements IMiddleware {
   constructor(private readonly clientRepository: ClientRepository) {}
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
-    console.log('oioi');
+    console.log('class based middleware');
     next();
   }
 }

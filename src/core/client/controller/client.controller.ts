@@ -51,7 +51,7 @@ export class ClientController {
     return client;
   }
 
-  // @Middleware(upload.single('file'), parseFormDataDto)
+  @Middleware(upload.single('file'), parseFormDataDto)
   @Put('/:id')
   async updateClient(
     req: Request,

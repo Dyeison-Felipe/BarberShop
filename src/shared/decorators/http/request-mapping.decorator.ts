@@ -56,23 +56,8 @@ export function Controller(prefix: string = '') {
   };
 }
 
-// // Decorator @Middleware() para adicionar um middleware nas rotas
-// export function Middleware(...middlewares: Function[]) {
-//   return function (target: any, propertyKey: string) {
-//     if (!target.middlewares) {
-//       target.middlewares = {};
-//     }
-
-//     if (!target.middlewares[propertyKey]) {
-//       target.middlewares[propertyKey] = [];
-//     }
-
-//     // Armazena middlewares para a rota especificada
-//     target.middlewares[propertyKey].push(...middlewares);
-//   };
-// }
 // Decorator @Middleware() para adicionar um middleware nas rotas
-export function Middleware(...middlewares: string[]) {
+export function Middleware(...middlewares: string[] | Function[]) {
   return function (target: any, propertyKey: string) {
     if (!target.middlewares) {
       target.middlewares = {};
@@ -156,6 +141,7 @@ export function resolveRouteParams(
 export function applyRoutes(
   app: any,
   controllerInstance: any,
+  // Todos os middlewares da aplicação, baseados em classe
   controllerMiddleares?: Middleware[],
 ) {
   const controllerName = controllerInstance.constructor.name;
@@ -165,19 +151,27 @@ export function applyRoutes(
   if (controllerRoutes) {
     controllerRoutes.forEach((route) => {
       const fullPath = `${prefix}${route.path}`;
-      const middlewareProvides: string[] =
+      // Todos os middlewares do método atual (nome das classes e funções)
+      const middlewareProvides: string[] | Function[] =
         controllerInstance.middlewares?.[route.handler.name] || [];
 
-      const middlewares = controllerMiddleares?.filter((controllerMiddleware) =>
-        middlewareProvides.some(
-          (middleareProvide) =>
-            middleareProvide === controllerMiddleware.provide,
-        ),
+      const classBasedMiddlewares = controllerMiddleares?.filter(
+        (controllerMiddleware) =>
+          middlewareProvides.some(
+            (middleareProvide) =>
+              middleareProvide === controllerMiddleware.provide,
+          ),
+      );
+
+      const functionBasedMiddlewares = middlewareProvides.filter(
+        (middlewareProvide) => typeof middlewareProvide === 'function',
       );
 
       app[route.method](
         fullPath,
-        ...(middlewares?.map((middleare) => middleare.instance.use) ?? []),
+        ...(classBasedMiddlewares?.map((middleare) => middleare.instance.use) ??
+          []),
+        ...functionBasedMiddlewares,
         async (req: Request, res: Response) => {
           const args: any[] = [req, res];
           // Resolver query params
