@@ -30,4 +30,6 @@ export interface BarberServiceService {
   updateBarberService(
     updateBarberServiceInput: UpdateBarberServiceInput,
   ): Promise<BarberServiceOutput>;
+
+  deleteBarberService(barberServiceId: string): Promise<void>;
 }

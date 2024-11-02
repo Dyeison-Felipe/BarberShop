@@ -14,6 +14,7 @@ export class BarberServiceFirebaseRepository
   constructor(
     private readonly firebaseRepository: FirebaseFirestore.Firestore,
   ) {}
+
   async getBarberServiceById(
     barberServiceId: string,
   ): Promise<BarberService | null> {
@@ -98,6 +99,17 @@ export class BarberServiceFirebaseRepository
         '🚀 ~ BarberServiceFirebaseRepository ~ createBarberService ~ error:',
         error,
       );
+      return null;
+    }
+  }
+
+  async deleteBarberService(barberServiceId: string): Promise<void | null> {
+    try {
+      await this.firebaseRepository
+        .collection('Barber-Service')
+        .doc(barberServiceId)
+        .delete();
+    } catch (error) {
       return null;
     }
   }

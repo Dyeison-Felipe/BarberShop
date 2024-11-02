@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   Controller,
   Post,
@@ -5,6 +6,7 @@ import {
   Get,
   Param,
   Put,
+  Delete,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { CreateBarberServiceDto } from '../dtos/create-barber-service.dto.js';
 import { ReturnCreateBarberServiceDto } from '../dtos/return-create-barber-service.dto.js';
@@ -51,5 +53,18 @@ export class BarberServiceController {
     });
 
     return barberShop;
+  }
+
+  @Delete('/:id')
+  async deleteBarberShop(
+    @Param('id') id: string,
+    res: Response,
+  ): Promise<void> {
+    try {
+      await this.barberServiceService.deleteBarberService(id);
+      res.status(200).send();
+    } catch (error) {
+      res.status(404).json({ message: 'Erro ao deletar' });
+    }
   }
 }

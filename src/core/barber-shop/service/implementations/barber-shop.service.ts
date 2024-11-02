@@ -50,11 +50,12 @@ export class BarberShopServiceImpl implements BarberShopService {
   async createBarberShop(
     createbarberShopInput: CreateBarberShopInput,
   ): Promise<BarberShopOutput> {
+    const findCnpj = await this.barberShopRepository.getBarberShopByCnpj(
+      createbarberShopInput.cnpj,
+    );
 
-    const findCnpj = await this.barberShopRepository.getBarberShopByCnpj(createbarberShopInput.cnpj);
-
-    if(findCnpj) {
-      throw new Error(`CNPJ ${createbarberShopInput.cnpj} já esta em uso`)
+    if (findCnpj) {
+      throw new Error(`CNPJ ${createbarberShopInput.cnpj} já esta em uso`);
     }
 
     const barberShopEntity = BarberShop.createBarberShop({
@@ -148,9 +149,12 @@ export class BarberShopServiceImpl implements BarberShopService {
   }
 
   async deleteBarberShop(id: string): Promise<void> {
-    const barberShop = this.barberShopRepository.deleteBarberShop(id);
+    const barberShop = await this.barberShopRepository.getBarberShopById(id);
+
     if (!barberShop) {
-      throw new Error(`BarberShop id ${id} NotFound`);
+      throw new Error(`Barbeiro com o ID ${id} não foi encontrado`);
     }
+
+    await this.barberShopRepository.deleteBarberShop(id);
   }
 }

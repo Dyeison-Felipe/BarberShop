@@ -81,12 +81,29 @@ export class BarberServiceServiceImpl implements BarberServiceService {
       throw new Error('Falha ao atualizar serviço do barbeiro');
     }
 
-    const output = this.toOutput(updatedBarberService);
+    const output = this.toUpdateOutput(updatedBarberService);
 
     return output;
   }
 
-  private toOutput(barberService: BarberService): BarberServiceOutput {
+  async deleteBarberService(barberServiceId: string): Promise<void> {
+    const barberService =
+      await this.barberServiceRepository.getBarberServiceById(barberServiceId);
+
+    if (!barberService) {
+      throw new Error(`Serviço com o ID ${barberServiceId} não foi econtrado`);
+    }
+
+    const deleteRes = await this.barberServiceRepository.deleteBarberService(
+      barberServiceId,
+    );
+
+    if (deleteRes === null) {
+      throw new Error('Falha ao deletar serviço');
+    }
+  }
+
+  private toUpdateOutput(barberService: BarberService): BarberServiceOutput {
     const barberServiceObject = barberService.toObject();
 
     const output: BarberServiceOutput = {

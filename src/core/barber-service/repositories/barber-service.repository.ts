@@ -22,4 +22,6 @@ export interface BarberServiceRepository {
   updateBarberService(
     barberService: BarberService,
   ): Promise<BarberService | null>;
+
+  deleteBarberService(barberServiceId: string): Promise<void | null>;
 }
