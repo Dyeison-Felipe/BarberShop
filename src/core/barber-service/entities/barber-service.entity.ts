@@ -6,15 +6,22 @@ export type BarberServiceProps = {
   barberShopId: string;
 };
 
-type CreateBarberService = {
+type UpsertBarberService = {
   name: string;
   price: number;
   duration: number;
+};
+
+type CreateBarberService = UpsertBarberService & {
   barberShopId: string;
 };
 
+type UpdateBarberService = UpsertBarberService & {
+  id: string;
+};
+
 export class BarberService {
-  constructor(private readonly props: BarberServiceProps) {
+  constructor(private props: BarberServiceProps) {
     this.props = props;
   }
 
@@ -46,6 +53,13 @@ export class BarberService {
       price: create.price,
       name: create.name,
     });
+  }
+
+  updateBarberService(update: UpdateBarberService) {
+    this.props = {
+      ...this.props,
+      ...update,
+    };
   }
 
   toObject() {

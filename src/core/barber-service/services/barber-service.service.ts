@@ -1,14 +1,15 @@
-import {
-  PaginationInput,
-  PaginationOutput,
-} from '../../../shared/repositories/pagination.repository.js';
-import { ServiceList } from '../repositories/barber-service.repository.js';
-
-export type CreateBarberServiceInput = {
+type UpsertBarberServiceInput = {
   name: string;
   price: number;
   duration: number;
+};
+
+export type CreateBarberServiceInput = UpsertBarberServiceInput & {
   barberShopId: string;
+};
+
+export type UpdateBarberServiceInput = UpsertBarberServiceInput & {
+  id: string;
 };
 
 export type BarberServiceOutput = {
@@ -21,7 +22,12 @@ export type BarberServiceOutput = {
 
 export interface BarberServiceService {
   getBarberShopServiceId(barberShopId: string): Promise<BarberServiceOutput[]>;
+
   createBarberService(
     createBarberServiceInput: CreateBarberServiceInput,
+  ): Promise<BarberServiceOutput>;
+
+  updateBarberService(
+    updateBarberServiceInput: UpdateBarberServiceInput,
   ): Promise<BarberServiceOutput>;
 }

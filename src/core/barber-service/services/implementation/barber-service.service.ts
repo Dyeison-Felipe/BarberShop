@@ -1,16 +1,10 @@
-import {
-  PaginationInput,
-  PaginationOutput,
-} from '../../../../shared/repositories/pagination.repository.js';
 import { BarberService } from '../../entities/barber-service.entity.js';
-import {
-  BarberServiceRepository,
-  ServiceList,
-} from '../../repositories/barber-service.repository.js';
+import { BarberServiceRepository } from '../../repositories/barber-service.repository.js';
 import {
   BarberServiceOutput,
   BarberServiceService,
   CreateBarberServiceInput,
+  UpdateBarberServiceInput,
 } from '../barber-service.service.js';
 
 export class BarberServiceServiceImpl implements BarberServiceService {
@@ -62,5 +56,47 @@ export class BarberServiceServiceImpl implements BarberServiceService {
     };
 
     return barberServiceOutput;
+  }
+
+  async updateBarberService(
+    updateBarberServiceInput: UpdateBarberServiceInput,
+  ): Promise<BarberServiceOutput> {
+    const barberService =
+      await this.barberServiceRepository.getBarberServiceById(
+        updateBarberServiceInput.id,
+      );
+
+    if (!barberService) {
+      throw new Error(
+        `Serviço do barbeiro com o ID ${updateBarberServiceInput.id} não foi encontrado`,
+      );
+    }
+
+    barberService.updateBarberService(updateBarberServiceInput);
+
+    const updatedBarberService =
+      await this.barberServiceRepository.updateBarberService(barberService);
+
+    if (!updatedBarberService) {
+      throw new Error('Falha ao atualizar serviço do barbeiro');
+    }
+
+    const output = this.toOutput(updatedBarberService);
+
+    return output;
+  }
+
+  private toOutput(barberService: BarberService): BarberServiceOutput {
+    const barberServiceObject = barberService.toObject();
+
+    const output: BarberServiceOutput = {
+      barberShopId: barberServiceObject.barberShopId,
+      duration: barberServiceObject.duration,
+      id: barberServiceObject.id,
+      name: barberServiceObject.name,
+      price: barberServiceObject.price,
+    };
+
+    return output;
   }
 }
