@@ -33,12 +33,16 @@ export class BarberShopController {
   async getBarberShop(
     @Query('limit') limit: string,
     @Query('page') page: string,
+    @Query('search') search?: string,
   ): Promise<PaginationOutput<ReturnGetBarberShopDto>> {
     const pagination: PaginationInput = {
       limit: +(limit ?? 24),
       page: +(page ?? 1),
     };
-    const result = await this.barberShopService.getBarbersShop(pagination);
+    const result = await this.barberShopService.getBarbersShop(
+      pagination,
+      search,
+    );
     return result;
   }
 

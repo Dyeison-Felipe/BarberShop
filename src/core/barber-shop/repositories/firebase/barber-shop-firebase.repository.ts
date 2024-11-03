@@ -20,10 +20,15 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
   async getBarbersShop(
     pagination: PaginationInput,
+    search?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
-    const query = this.firebaseRepository
+    let query = this.firebaseRepository
       .collection('Barber-Shop')
       .orderBy(admin.firestore.FieldPath.documentId());
+
+    if (search) {
+      query = query.where('name', '==', search);
+    }
 
     const { snapshot, meta } = await FirebasePagination.paginate(
       query,
@@ -73,11 +78,11 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
   async getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null> {
     const snapshot = await this.firebaseRepository
-    .collection('Barber-Shop')
+      .collection('Barber-Shop')
       .where('cnpj', '==', cnpj)
       .get();
 
-    if(snapshot.empty) {
+    if (snapshot.empty) {
       return null;
     }
 
@@ -85,13 +90,16 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
     const barberShopProps = {
       id: barberShopFound.id,
-      ...barberShopFound.data()
-    } as BarberShopProps
-    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", barberShopFound.data())
+      ...barberShopFound.data(),
+    } as BarberShopProps;
+    console.log(
+      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
+      barberShopFound.data(),
+    );
 
-    const barberShopEntity = new BarberShop(barberShopProps)
+    const barberShopEntity = new BarberShop(barberShopProps);
 
-    return barberShopEntity
+    return barberShopEntity;
   }
 
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
@@ -134,11 +142,11 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
         .collection('Barber-Shop')
         .doc(id)
         .get();
-  
+
       if (!snapshot.exists) {
         return;
       }
-  
+
       await this.firebaseRepository.collection('Barber-Shop').doc(id).delete();
     } catch (error) {
       return;

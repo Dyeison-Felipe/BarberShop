@@ -39,9 +39,11 @@ export class BarberShopServiceImpl implements BarberShopService {
 
   async getBarbersShop(
     pagination: PaginationInput,
+    search?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
     const barbersShop = await this.barberShopRepository.getBarbersShop(
       pagination,
+      search,
     );
 
     return barbersShop;

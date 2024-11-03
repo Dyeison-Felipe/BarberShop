@@ -47,6 +47,7 @@ export type BarberShopProfileInput = {
 export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
+    search?: string,
   ): Promise<PaginationOutput<BarberShopList>>;
   getBarbersShopProfile({
     id,

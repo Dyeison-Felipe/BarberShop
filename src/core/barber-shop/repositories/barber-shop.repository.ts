@@ -14,6 +14,7 @@ export type BarberShopList = {
 export interface BarberShopRepository {
   getBarbersShop(
     pagination: PaginationInput,
+    search?: string
   ): Promise<PaginationOutput<BarberShopList>>;
 
   getBarberShopById(id: string): Promise<BarberShop | null>;
