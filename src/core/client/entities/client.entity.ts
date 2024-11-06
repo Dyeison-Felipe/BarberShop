@@ -1,5 +1,3 @@
-import { FavoriteList } from './favorite_list.entity.js';
-
 export type ClientProps = {
   id: string;
   name: string;
@@ -14,7 +12,7 @@ export type UpdateClient = { id: string; photoUrl?: string; name?: string };
 export type CreateClient = {
   name: string;
   email: string;
-  password: string
+  password: string;
 };
 
 export class Client {
@@ -45,7 +43,7 @@ export class Client {
   }
 
   static createClient(create: CreateClient): Client {
-    return new Client ({
+    return new Client({
       id: crypto.randomUUID().toString(),
       name: create.name,
       email: create.email,

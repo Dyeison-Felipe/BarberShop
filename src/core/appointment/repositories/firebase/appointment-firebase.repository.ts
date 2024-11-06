@@ -102,6 +102,13 @@ export class AppointmentFirebaseRepository implements AppointmentRepository {
       pagination,
     );
 
+    snapshot.docs.forEach((element) => {
+      console.log(
+        '🚀 ~ AppointmentFirebaseRepository ~ snapshot.docs.forEach ~ element:',
+        element.data(),
+      );
+    });
+
     const appointments: ClientAppointment[] = await Promise.all(
       snapshot.docs.map(async (element) => {
         const elementData = element.data();

@@ -4,6 +4,7 @@ import {
   Body,
   Get,
   Param,
+  Middleware,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
 import {
@@ -20,6 +21,7 @@ import { AppointmentService } from '../service/appointment.service.js';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
+  @Middleware('AuthMiddleware')
   @Get('/client-appointments')
   async getClientAppointments(
     @Query('limit') limit: string,
@@ -36,6 +38,7 @@ export class AppointmentController {
     return result;
   }
 
+  @Middleware('AuthMiddleware')
   @Get('/barber-shop-appointments/barber-shop-id/:barberShopId')
   async getBarberShopAppointments(
     @Param('barberShopId') barberShopId: string,
@@ -54,6 +57,7 @@ export class AppointmentController {
     return result;
   }
 
+  @Middleware('AuthMiddleware')
   @Post()
   async createAppointment(
     @Body() createAppointmentDto: CreateAppointmentDto,

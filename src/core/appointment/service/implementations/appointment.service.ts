@@ -2,6 +2,9 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
+import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
+import { Contants } from '../../../../shared/utils/constants.js';
+import { ClientProps } from '../../../client/entities/client.entity.js';
 import { Appointment } from '../../entities/appoiment.entity.js';
 import {
   AppointmentRepository,
@@ -17,17 +20,22 @@ import {
 } from '../appointment.service.js';
 
 export class AppointmentServiceImpl implements AppointmentService {
-  constructor(private readonly appointmentRepository: AppointmentRepository) {}
+  constructor(
+    private readonly appointmentRepository: AppointmentRepository,
+    private readonly storageRequestService: StorageRequestService,
+  ) {}
 
   async getClientAppointments({
     pagination,
   }: GetClientAppointmentsInput): Promise<PaginationOutput<ClientAppointment>> {
-    // TODO Colocar o ID do cliente logado
-    const clientId = 'ae97dc5e-7105-43d2-9d53-62b180905094';
+    const loggedUser = this.storageRequestService.get<ClientProps>(
+      Contants.loggedUser,
+    );
+    console.log('🚀 ~ AppointmentServiceImpl ~ loggedUser:', loggedUser);
 
     const appointments =
       await this.appointmentRepository.getAppointmentsByClientId(
-        clientId,
+        loggedUser!.id,
         pagination,
       );
 
@@ -52,10 +60,13 @@ export class AppointmentServiceImpl implements AppointmentService {
   async createAppointment(
     createAppointmentInput: CreateAppointmentInput,
   ): Promise<AppointmentOutput> {
+    const loggedUser = this.storageRequestService.get<ClientProps>(
+      Contants.loggedUser,
+    );
+
     const appointmentEntity = Appointment.createAppointment({
       ...createAppointmentInput,
-      // TODO Colocar o ID do cliente logado
-      clientId: 'ae97dc5e-7105-43d2-9d53-62b180905094',
+      clientId: loggedUser!.id,
     });
     console.log(
       '🚀 ~ AppointmentServiceImpl ~ appointmentEntity:',
