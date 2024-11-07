@@ -1,27 +1,45 @@
-import { Response } from 'express';
+import { Response } from "express";
 import {
   PaginationInput,
   PaginationOutput,
-} from '../../../../shared/repositories/pagination.repository.js';
-import { ImageService } from '../../../../shared/services/image/image.service.js';
-import { BarberShop } from '../../entities/barber-shop.entity.js';
+} from "../../../../shared/repositories/pagination.repository.js";
+import { ImageService } from "../../../../shared/services/image/image.service.js";
+import { BarberShop } from "../../entities/barber-shop.entity.js";
 import {
   BarberShopRepository,
   BarberShopList,
-} from '../../repositories/barber-shop.repository.js';
+} from "../../repositories/barber-shop.repository.js";
 import {
   BarberShopService,
   CreateBarberShopInput,
   BarberShopOutput,
   UpdateBarberShopInput,
   BarberShopProfileInput,
-} from '../barber-shop.service.js';
+  BarberShopByIdClientInput,
+} from "../barber-shop.service.js";
+import { StorageRequestService } from "../../../../shared/storage-request-service/storage-request-service.js";
+import { ClientProps } from "../../../client/entities/client.entity.js";
 
 export class BarberShopServiceImpl implements BarberShopService {
   constructor(
     private readonly barberShopRepository: BarberShopRepository,
     private readonly imageService: ImageService,
+    private readonly storageRequestService: StorageRequestService,
   ) {}
+
+  async getBarberShopByClientId(): Promise<BarberShopOutput> {
+
+    const loggedUser = this.storageRequestService.get<ClientProps>('logged_user');
+
+    const barberShop = await this.barberShopRepository.getBarberShopByClientId(loggedUser!.id);
+
+    if(!barberShop) {
+      throw new Error('Barbearia não encontrada')
+    }
+
+    const barberShopOutput = barberShop.toObject();
+    return barberShopOutput;
+  }
 
   async getBarbersShopProfile({
     id,
@@ -29,7 +47,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     const barberShop = await this.barberShopRepository.getBarberShopById(id);
 
     if (!barberShop) {
-      throw new Error('Barbearia não encontrada');
+      throw new Error("Barbearia não encontrada");
     }
 
     const barberShopOutput = barberShop.toObject();
@@ -39,21 +57,21 @@ export class BarberShopServiceImpl implements BarberShopService {
 
   async getBarbersShop(
     pagination: PaginationInput,
-    search?: string,
+    search?: string
   ): Promise<PaginationOutput<BarberShopList>> {
     const barbersShop = await this.barberShopRepository.getBarbersShop(
       pagination,
-      search,
+      search
     );
 
     return barbersShop;
   }
 
   async createBarberShop(
-    createbarberShopInput: CreateBarberShopInput,
+    createbarberShopInput: CreateBarberShopInput
   ): Promise<BarberShopOutput> {
     const findCnpj = await this.barberShopRepository.getBarberShopByCnpj(
-      createbarberShopInput.cnpj,
+      createbarberShopInput.cnpj
     );
 
     if (findCnpj) {
@@ -63,14 +81,14 @@ export class BarberShopServiceImpl implements BarberShopService {
     const barberShopEntity = BarberShop.createBarberShop({
       ...createbarberShopInput,
       // TODO Colocar o ID do cliente logado
-      clientId: '',
+      clientId: "",
     });
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
-      barberShopEntity,
+      barberShopEntity
     );
 
     if (!createdBarberShop) {
-      throw new Error('Erro ao criar usuário');
+      throw new Error("Erro ao criar usuário");
     }
 
     const barberShopOutput: BarberShopOutput = {
@@ -92,43 +110,43 @@ export class BarberShopServiceImpl implements BarberShopService {
   }
 
   async updateBarberShop(
-    updateBarberShopInput: UpdateBarberShopInput,
+    updateBarberShopInput: UpdateBarberShopInput
   ): Promise<BarberShopOutput> {
     const foundBarberShop = await this.barberShopRepository.getBarberShopById(
-      updateBarberShopInput.id,
+      updateBarberShopInput.id
     );
 
     if (!foundBarberShop) {
-      throw new Error('Cliente não encontrado');
+      throw new Error("Cliente não encontrado");
     }
 
-    let photoUrl: string | undefined = foundBarberShop.photoUrl ?? '';
+    let photoUrl: string | undefined = foundBarberShop.photoUrl ?? "";
 
     console.log(
-      '🚀 ~ BarberShopServiceImpl ~ updateBarberShopInput.photo:',
-      updateBarberShopInput.photo,
+      "🚀 ~ BarberShopServiceImpl ~ updateBarberShopInput.photo:",
+      updateBarberShopInput.photo
     );
     if (updateBarberShopInput.photo) {
       const url = foundBarberShop.photoUrl;
 
       const currentFileName =
-        url?.split('barber-shop%2F')[1]?.split('?')[0] ?? null;
+        url?.split("barber-shop%2F")[1]?.split("?")[0] ?? null;
 
       photoUrl = await this.imageService.uploadImage(
         updateBarberShopInput.photo,
         currentFileName,
-        'barber-shop',
+        "barber-shop"
       );
-      console.log('🚀 ~ BarberShopServiceImpl ~ photoUrl:', photoUrl);
+      console.log("🚀 ~ BarberShopServiceImpl ~ photoUrl:", photoUrl);
     }
 
     foundBarberShop.updateBarberShop({ ...updateBarberShopInput, photoUrl });
     const updatedBarberShop = await this.barberShopRepository.update(
-      foundBarberShop,
+      foundBarberShop
     );
 
     if (!updatedBarberShop) {
-      throw new Error('Erro ao atualizar cliente');
+      throw new Error("Erro ao atualizar cliente");
     }
 
     const updateBarberShopOutput: BarberShopOutput = {

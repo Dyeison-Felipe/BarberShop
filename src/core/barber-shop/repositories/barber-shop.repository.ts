@@ -17,7 +17,9 @@ export interface BarberShopRepository {
     search?: string
   ): Promise<PaginationOutput<BarberShopList>>;
 
-  getBarberShopById(id: string): Promise<BarberShop | null>;
+  getBarberShopByClientId(id: string): Promise<BarberShop | null>;
+
+  getBarberShopById(clientId: string): Promise<BarberShop | null>;
 
   getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null>;
 

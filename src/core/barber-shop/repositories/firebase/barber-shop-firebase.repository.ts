@@ -1,38 +1,38 @@
-import { admin } from '../../../../shared/repositories/firebase/config.js';
-import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
+import { admin } from "../../../../shared/repositories/firebase/config.js";
+import { FirebasePagination } from "../../../../shared/repositories/firebase/pagination.js";
 import {
   PaginationInput,
   PaginationOutput,
-} from '../../../../shared/repositories/pagination.repository.js';
+} from "../../../../shared/repositories/pagination.repository.js";
 import {
   BarberShop,
   BarberShopProps,
-} from '../../entities/barber-shop.entity.js';
+} from "../../entities/barber-shop.entity.js";
 import {
   BarberShopRepository,
   BarberShopList,
-} from '../barber-shop.repository.js';
+} from "../barber-shop.repository.js";
 
 export class BarberShopFirebaseRepository implements BarberShopRepository {
   constructor(
-    private readonly firebaseRepository: FirebaseFirestore.Firestore,
+    private readonly firebaseRepository: FirebaseFirestore.Firestore
   ) {}
 
   async getBarbersShop(
     pagination: PaginationInput,
-    search?: string,
+    search?: string
   ): Promise<PaginationOutput<BarberShopList>> {
     let query = this.firebaseRepository
-      .collection('Barber-Shop')
+      .collection("Barber-Shop")
       .orderBy(admin.firestore.FieldPath.documentId());
 
     if (search) {
-      query = query.where('name', '==', search);
+      query = query.where("name", "==", search);
     }
 
     const { snapshot, meta } = await FirebasePagination.paginate(
       query,
-      pagination,
+      pagination
     );
 
     const barberShopList: BarberShopList[] = [];
@@ -52,34 +52,10 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
     };
   }
 
-  async getBarberShopById(id: string): Promise<BarberShop | null> {
+  async getBarberShopByClientId(clientId: string): Promise<BarberShop | null> {
     const snapshot = await this.firebaseRepository
-      .collection('Barber-Shop')
-      .doc(id)
-      .get();
-
-    if (!snapshot.exists) {
-      return null;
-    }
-
-    const barberShopProps = {
-      id: snapshot.id,
-      ...snapshot.data(),
-    } as BarberShopProps;
-    console.log(
-      '🚀 ~ BarberShopFirebaseRepository ~ getBarberShopById ~ barberShopProps.snapshot.data():',
-      snapshot.data(),
-    );
-
-    const barberShopEntity = new BarberShop(barberShopProps);
-
-    return barberShopEntity;
-  }
-
-  async getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null> {
-    const snapshot = await this.firebaseRepository
-      .collection('Barber-Shop')
-      .where('cnpj', '==', cnpj)
+      .collection("Barber-Shop")
+      .where("clientId", "==", clientId)
       .get();
 
     if (snapshot.empty) {
@@ -93,8 +69,58 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       ...barberShopFound.data(),
     } as BarberShopProps;
     console.log(
-      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
-      barberShopFound.data(),
+      "🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():",
+      barberShopFound.data()
+    );
+
+    const barberShopEntity = new BarberShop(barberShopProps);
+
+    return barberShopEntity;
+  }
+
+  async getBarberShopById(id: string): Promise<BarberShop | null> {
+    const snapshot = await this.firebaseRepository
+      .collection("Barber-Shop")
+      .doc(id)
+      .get();
+
+    if (!snapshot.exists) {
+      return null;
+    }
+
+    const barberShopProps = {
+      id: snapshot.id,
+      ...snapshot.data(),
+    } as BarberShopProps;
+    console.log(
+      "🚀 ~ BarberShopFirebaseRepository ~ getBarberShopById ~ barberShopProps.snapshot.data():",
+      snapshot.data()
+    );
+
+    const barberShopEntity = new BarberShop(barberShopProps);
+
+    return barberShopEntity;
+  }
+
+  async getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null> {
+    const snapshot = await this.firebaseRepository
+      .collection("Barber-Shop")
+      .where("cnpj", "==", cnpj)
+      .get();
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const barberShopFound = snapshot.docs[0];
+
+    const barberShopProps = {
+      id: barberShopFound.id,
+      ...barberShopFound.data(),
+    } as BarberShopProps;
+    console.log(
+      "🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():",
+      barberShopFound.data()
     );
 
     const barberShopEntity = new BarberShop(barberShopProps);
@@ -106,14 +132,14 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
     try {
       const { id, ...barberShopData } = barberShop.toObject();
       await this.firebaseRepository
-        .collection('Barber-Shop')
+        .collection("Barber-Shop")
         .doc(id)
         .set(barberShopData);
       return barberShop;
     } catch (error) {
       console.log(
-        '🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:',
-        error,
+        "🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:",
+        error
       );
       return null;
     }
@@ -123,14 +149,14 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
     try {
       const { id, ...barberShopData } = barberShop.toObject();
       const db = await this.firebaseRepository
-        .collection('Barber-Shop')
+        .collection("Barber-Shop")
         .doc(id)
         .set(barberShopData);
       return barberShop;
     } catch (error) {
       console.log(
-        '🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:',
-        error,
+        "🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:",
+        error
       );
       return null;
     }
@@ -139,7 +165,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   async deleteBarberShop(id: string): Promise<void> {
     try {
       const snapshot = await this.firebaseRepository
-        .collection('Barber-Shop')
+        .collection("Barber-Shop")
         .doc(id)
         .get();
 
@@ -147,7 +173,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
         return;
       }
 
-      await this.firebaseRepository.collection('Barber-Shop').doc(id).delete();
+      await this.firebaseRepository.collection("Barber-Shop").doc(id).delete();
     } catch (error) {
       return;
     }

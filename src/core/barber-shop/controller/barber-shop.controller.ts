@@ -24,6 +24,7 @@ import { upload } from '../../../shared/configs/multer-config.js';
 import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
 import { ReturnGetBarberShopProfileDto } from '../dto/return-get-barber-shop-profile.dto.js';
+import { ReturnGetBarberShopClientDto } from '../dto/return-barber-shop-client.dto.js';
 
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
@@ -44,6 +45,15 @@ export class BarberShopController {
       search,
     );
     return result;
+  }
+
+  @Middleware('AuthMiddleware')
+  @Get('/barber-shop-client-id')
+  async getBarberShopByClientById(): Promise<ReturnGetBarberShopClientDto> {
+
+    const output = await this.barberShopService.getBarberShopByClientId()
+
+    return output;
   }
 
   @Get('/barber-shop-id/:barberShopId')
