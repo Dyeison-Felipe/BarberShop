@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { resolveQueryParams } from './route-param.decorator.js';
-import { IMiddleware } from '../../middlewares/middleware.js';
 import { Middleware } from '../../modules/module.js';
 
 const formatPath = (path: string) => (path.startsWith('/') ? path : `/${path}`);
@@ -137,6 +136,24 @@ export function resolveRouteParams(
   });
 }
 
+export const validateRoutes = (res: Response, error: unknown) => {
+  console.log('🚀 ~ validateRoutes ~ error:', error);
+  if (error instanceof Error) {
+    res.status(500).send({
+      statusCode: 500,
+      error: error.name,
+      message: error.message ?? '',
+    });
+    return;
+  }
+
+  res.status(500).send({
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: JSON.stringify(error),
+  });
+};
+
 // Função para aplicar rotas no Express
 export const applyRoutes = (
   app: any,
@@ -169,11 +186,24 @@ export const applyRoutes = (
 
       app[route.method](
         fullPath,
-        ...(classBasedMiddlewares?.map((middleare) =>
-          middleare.instance.use.bind(middleare.instance),
+        ...(classBasedMiddlewares?.map(
+          (middleare) =>
+            async (req: Request, res: Response, next: NextFunction) => {
+              try {
+                return await middleare.instance.use.bind(middleare.instance)(
+                  req,
+                  res,
+                  next,
+                );
+              } catch (error) {
+                console.log('🚀 ~ controllerRoutes.forEach ~ error:', error);
+                validateRoutes(res, error);
+              }
+            },
         ) ?? []),
         ...functionBasedMiddlewares,
         async (req: Request, res: Response) => {
+          // try {
           const args: any[] = [req, res];
           // Resolver query params
           resolveQueryParams(req, controllerInstance, route.handler.name, args);
@@ -183,10 +213,16 @@ export const applyRoutes = (
           // Resolver route params (parâmetros da URL)
           resolveRouteParams(req, controllerInstance, route.handler.name, args);
           // Executar o método do controlador e capturar o retorno
-          const result = await route.handler.apply(controllerInstance, args);
-          // Enviar automaticamente o resultado como resposta
-          if (result !== undefined) {
-            res.send(result);
+          try {
+            console.log('aqui');
+            const result = await route.handler.apply(controllerInstance, args);
+            if (result !== undefined) {
+              // Enviar automaticamente o resultado como resposta
+              res.send(result);
+            }
+          } catch (error) {
+            // console.log('🚀 ~ error:', error);
+            validateRoutes(res, error);
           }
         },
       );
