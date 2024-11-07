@@ -32,8 +32,6 @@ export class ClientServiceImpl implements ClientService {
   ): Promise<PaginationOutput<ClientList>> {
     const barbersShop = await this.clientRepository.getClient(pagination);
 
-    console.log(this.storageRequestService.get('logged_user'));
-
     return barbersShop;
   }
 

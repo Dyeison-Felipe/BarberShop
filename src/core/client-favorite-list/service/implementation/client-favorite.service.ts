@@ -1,53 +1,67 @@
 import {
   PaginationInput,
   PaginationOutput,
-} from "../../../../shared/repositories/pagination.repository.js";
-import { FavoriteList } from "../../entities/client-favorite-list.entity.js";
+} from '../../../../shared/repositories/pagination.repository.js';
+import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
+import { Constants } from '../../../../shared/utils/constants.js';
+import { ClientProps } from '../../../client/entities/client.entity.js';
+import { FavoriteList } from '../../entities/client-favorite-list.entity.js';
 import {
   ClientFavoriteList,
   ClientFavoriteRepository,
-} from "../../repositories/client-favorite.repository.js";
-import { ClientFavoriteService, CreateFavoriteInput, CreateFavoriteListOutput, FavoriteOutput } from "../client-favorite.service.js";
+} from '../../repositories/client-favorite.repository.js';
+import {
+  ClientFavoriteService,
+  CreateFavoriteInput,
+  CreateFavoriteListOutput,
+} from '../client-favorite.service.js';
 
 export class ClientFavoriteServiceImpl implements ClientFavoriteService {
   constructor(
-    private readonly clientFavoriteRepository: ClientFavoriteRepository
+    private readonly clientFavoriteRepository: ClientFavoriteRepository,
+    private readonly storageRequestService: StorageRequestService,
   ) {}
-  
-  async getClientFavoriteList(
-    pagination: PaginationInput
-  ): Promise<PaginationOutput<ClientFavoriteList>> {
 
-    //TODO pegar id do token
-    const clientId = '38332610-fa4d-4382-addd-38fbc6ea9be5'
+  async getClientFavoriteList(
+    pagination: PaginationInput,
+  ): Promise<PaginationOutput<ClientFavoriteList>> {
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
     const barbersShopFavorite =
-    await this.clientFavoriteRepository.getClientFavoriteList(clientId,pagination);
-    
+      await this.clientFavoriteRepository.getClientFavoriteList(
+        client!.id,
+        pagination,
+      );
+
     return barbersShopFavorite;
   }
 
-
-  async createClientFavorite(createFavoriteInput: CreateFavoriteInput): Promise<CreateFavoriteListOutput> {
+  async createClientFavorite(
+    createFavoriteInput: CreateFavoriteInput,
+  ): Promise<CreateFavoriteListOutput> {
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
     const favoriteEntity = FavoriteList.createClientFavorite({
       ...createFavoriteInput,
-          //TODO pegar id do token
-      clientId: '8024a5cc-144a-4709-9a89-6bf32905febf',
-    })
-    
-    const createFavorite = await this.clientFavoriteRepository.createClientFavorite(favoriteEntity);
-    
-    if(!createFavorite) {
-      throw new Error ('erro ao adicionar aos favoritos')
+      clientId: client!.id,
+    });
+
+    const createFavorite =
+      await this.clientFavoriteRepository.createClientFavorite(favoriteEntity);
+
+    if (!createFavorite) {
+      throw new Error('erro ao adicionar aos favoritos');
     }
-    
+
     const favoriteOutput: CreateFavoriteListOutput = {
       barberShopId: createFavorite.barberShopId,
-      clientId: createFavorite.clientId
-    }
-    
+      clientId: createFavorite.clientId,
+    };
+
     return favoriteOutput;
   }
-
 
   async deleteClientFavorite(id: string): Promise<void> {
     const favorite = this.clientFavoriteRepository.deleteClientFavoriteList(id);

@@ -56,6 +56,7 @@ export class BarberShopController {
     return output;
   }
 
+  @Middleware('AuthMiddleware')
   @Post()
   async createBarberShop(
     @Body() createBarberShopDto: CreateBarberShopDto,
@@ -67,6 +68,7 @@ export class BarberShopController {
     return barberShop;
   }
 
+  @Middleware('AuthMiddleware')
   @Middleware(upload.single('file'), parseFormDataDto)
   @Put('/:id')
   async updateBarberShop(
@@ -84,6 +86,7 @@ export class BarberShopController {
     return barberShop;
   }
 
+  @Middleware('AuthMiddleware')
   @Delete('/:id')
   async deleteBarberShop(
     @Param('id') id: string,

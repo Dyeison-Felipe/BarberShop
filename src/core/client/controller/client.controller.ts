@@ -28,7 +28,6 @@ import { ImageFirebaseStorageService } from '../../../shared/services/image/fire
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
-  @Middleware('AuthMiddleware')
   @Get()
   async getClient(
     @Query('limit') limit: string,
@@ -51,6 +50,7 @@ export class ClientController {
     return client;
   }
 
+  @Middleware('AuthMiddleware')
   @Middleware(upload.single('file'), parseFormDataDto)
   @Put('/:id')
   async updateClient(
@@ -74,6 +74,7 @@ export class ClientController {
     return client;
   }
 
+  @Middleware('AuthMiddleware')
   @Delete('/:id')
   async deleteClient(@Param('id') id: string): Promise<void> {
     const client = await this.clientService.deleteClient(id);

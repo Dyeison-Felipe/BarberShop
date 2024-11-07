@@ -16,11 +16,15 @@ import {
   UpdateBarberShopInput,
   BarberShopProfileInput,
 } from '../barber-shop.service.js';
+import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
+import { Constants } from '../../../../shared/utils/constants.js';
+import { ClientProps } from '../../../client/entities/client.entity.js';
 
 export class BarberShopServiceImpl implements BarberShopService {
   constructor(
     private readonly barberShopRepository: BarberShopRepository,
     private readonly imageService: ImageService,
+    private readonly storageRequestService: StorageRequestService,
   ) {}
 
   async getBarbersShopProfile({
@@ -60,10 +64,13 @@ export class BarberShopServiceImpl implements BarberShopService {
       throw new Error(`CNPJ ${createbarberShopInput.cnpj} já esta em uso`);
     }
 
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
+
     const barberShopEntity = BarberShop.createBarberShop({
       ...createbarberShopInput,
-      // TODO Colocar o ID do cliente logado
-      clientId: '',
+      clientId: client!.id,
     });
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
       barberShopEntity,
@@ -104,10 +111,6 @@ export class BarberShopServiceImpl implements BarberShopService {
 
     let photoUrl: string | undefined = foundBarberShop.photoUrl ?? '';
 
-    console.log(
-      '🚀 ~ BarberShopServiceImpl ~ updateBarberShopInput.photo:',
-      updateBarberShopInput.photo,
-    );
     if (updateBarberShopInput.photo) {
       const url = foundBarberShop.photoUrl;
 
