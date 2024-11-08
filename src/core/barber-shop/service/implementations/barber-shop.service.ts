@@ -78,10 +78,14 @@ export class BarberShopServiceImpl implements BarberShopService {
       throw new Error(`CNPJ ${createbarberShopInput.cnpj} já esta em uso`);
     }
 
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
+
     const barberShopEntity = BarberShop.createBarberShop({
       ...createbarberShopInput,
       // TODO Colocar o ID do cliente logado
-      clientId: "",
+      clientId: client!.id,
     });
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
       barberShopEntity

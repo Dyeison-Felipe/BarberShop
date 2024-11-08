@@ -3,7 +3,7 @@ import {
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
-import { Contants } from '../../../../shared/utils/constants.js';
+import { Constants } from '../../../../shared/utils/constants.js';
 import { ClientProps } from '../../../client/entities/client.entity.js';
 import { Appointment } from '../../entities/appoiment.entity.js';
 import {
@@ -29,7 +29,7 @@ export class AppointmentServiceImpl implements AppointmentService {
     pagination,
   }: GetClientAppointmentsInput): Promise<PaginationOutput<ClientAppointment>> {
     const loggedUser = this.storageRequestService.get<ClientProps>(
-      Contants.loggedUser,
+      Constants.loggedUser,
     );
     console.log('🚀 ~ AppointmentServiceImpl ~ loggedUser:', loggedUser);
 
@@ -61,7 +61,7 @@ export class AppointmentServiceImpl implements AppointmentService {
     createAppointmentInput: CreateAppointmentInput,
   ): Promise<AppointmentOutput> {
     const loggedUser = this.storageRequestService.get<ClientProps>(
-      Contants.loggedUser,
+      Constants.loggedUser,
     );
 
     const appointmentEntity = Appointment.createAppointment({

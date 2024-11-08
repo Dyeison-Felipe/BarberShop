@@ -22,6 +22,7 @@ import { ReturnCreateFavoriteListDto } from '../dtos/return-favorite-list.dto.js
 export class ClientFavoriteController {
   constructor(private readonly clientFavoriteService: ClientFavoriteService) {}
 
+  @Middleware('AuthMiddleware')
   @Get()
   async getClientFavoriteList(
     @Query('limit') limit: string,
@@ -39,6 +40,7 @@ export class ClientFavoriteController {
     return favoriteList;
   }
 
+  @Middleware('AuthMiddleware')
   @Post('/create-favorite')
   async createFavoriteList(
     @Body() createFavoriteListDto: CreateFavoriteListDto,
@@ -50,6 +52,7 @@ export class ClientFavoriteController {
     return favoriteList;
   }
 
+  @Middleware('AuthMiddleware')
   @Delete('/:id')
   async deleteBarberShop(
     @Param('id') id: string,

@@ -27,26 +27,21 @@ export class AuthMiddleware implements IMiddleware {
         throw new Error('jwtSecret invalido');
       }
 
-      console.log('🚀 ~ AuthMiddleware ~ use ~ token:', token);
       if (!token) {
         throw new Error('Acesso não autorizado');
       }
 
       const isJwtValid = this.jwtService.verifyJwt(token, jwtSecret);
-      console.log('🚀 ~ AuthMiddleware ~ use ~ jwtSecret:', jwtSecret);
-      console.log('🚀 ~ AuthMiddleware ~ use ~ isJwtValid:', isJwtValid);
 
       if (!isJwtValid) {
         throw new Error('Acesso não autorizado');
       }
 
       const jwtPayload = this.jwtService.decodeJwt<LoginPayload>(token);
-      console.log('🚀 ~ AuthMiddleware ~ use ~ jwtPayload:', jwtPayload);
 
       const loggedUser = await this.clientRepository.getClientById(
         jwtPayload.id,
       );
-      console.log('🚀 ~ AuthMiddleware ~ use ~ loggedUser:', loggedUser);
 
       this.storageRequestService.run(new Map<string, Client>(), () => {
         this.storageRequestService.set('logged_user', loggedUser?.toObject());
@@ -54,7 +49,6 @@ export class AuthMiddleware implements IMiddleware {
         next();
       });
     } catch (error) {
-      console.log('🚀 ~ AuthMiddleware ~ use ~ error:', error);
       throw new Error('Acesso não autorizado');
     }
   }

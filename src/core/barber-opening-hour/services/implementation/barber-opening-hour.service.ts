@@ -1,5 +1,5 @@
-import { OpeningHours } from "../../entities/barber-opening-hour.entity.js";
-import { BarberOpeningHoursRepository } from "../../repositories/barber-opening-hour.repository.js";
+import { OpeningHours } from '../../entities/barber-opening-hour.entity.js';
+import { BarberOpeningHoursRepository } from '../../repositories/barber-opening-hour.repository.js';
 import {
   BarberOpeningHoursService,
   OpeningHourOutput,
@@ -7,35 +7,36 @@ import {
   ReturnGetBarberOpeningHoursOutput,
   UpsertOpeningHoursOutput,
   UpdateOpeningHours,
-} from "../barber-opening-hour.service.js";
+} from '../barber-opening-hour.service.js';
 
 export class BarberOpeningHoursServiceImpl
   implements BarberOpeningHoursService
 {
   constructor(
-    private readonly barberOpeningHoursRepository: BarberOpeningHoursRepository
+    private readonly barberOpeningHoursRepository: BarberOpeningHoursRepository,
   ) {}
   async deleteOpeningHours(id: string): Promise<void> {
+    const openingHour =
+      await this.barberOpeningHoursRepository.getOpeningHourById(id);
 
-    const openingHour = await this.barberOpeningHoursRepository.getOpeningHourById(id);
-
-    if(!openingHour) {
-      throw new Error("Usuario não encontrado");
+    if (!openingHour) {
+      throw new Error('Usuario não encontrado');
     }
 
-    const deleteOpeningHours = await this.barberOpeningHoursRepository.deleteOpeningHours(id);
+    const deleteOpeningHours =
+      await this.barberOpeningHoursRepository.deleteOpeningHours(id);
 
-    if(deleteOpeningHours === null) {
-      throw new Error("Erro ao deletar")
+    if (deleteOpeningHours === null) {
+      throw new Error('Erro ao deletar');
     }
   }
 
   async updateOpeningHours(
-    updateOpeningHours: UpdateOpeningHours[]
+    updateOpeningHours: UpdateOpeningHours[],
   ): Promise<UpsertOpeningHoursOutput> {
     const barberOpeningHours =
       await this.barberOpeningHoursRepository.getAllByBarberShopId(
-        updateOpeningHours[0].barberShopId
+        updateOpeningHours[0].barberShopId,
       );
 
     barberOpeningHours.forEach((currentBarberOpeningHour) => {
@@ -48,22 +49,22 @@ export class BarberOpeningHoursServiceImpl
 
     const updatedOpeningHours =
       await this.barberOpeningHoursRepository.updateManyOpeningHours(
-        barberOpeningHours
+        barberOpeningHours,
       );
 
     if (!updatedOpeningHours) {
-      throw new Error('Erro ao atualizar horários')
+      throw new Error('Erro ao atualizar horários');
     }
-    
+
     return { weekdays: updatedOpeningHours };
   }
 
   async getBarberOpeningHours(
-    barberShopId: string
+    barberShopId: string,
   ): Promise<ReturnGetBarberOpeningHoursOutput> {
     const barberOpeningHours =
       await this.barberOpeningHoursRepository.getAllByBarberShopId(
-        barberShopId
+        barberShopId,
       );
 
     const weekdaysMap: Record<string, OpeningHourOutput[]> = {};
@@ -81,26 +82,21 @@ export class BarberOpeningHoursServiceImpl
       ([name, openingHours]) => ({
         name,
         openingHours,
-      })
+      }),
     );
 
-    const correctOrder = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+    const correctOrder = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 
     weekdays.sort(
-      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name)
+      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name),
     );
 
     return { weekdays };
   }
 
   async createOpeningHours(
-    createOpeningHoursInput: CreateOpeningHoursInput[]
+    createOpeningHoursInput: CreateOpeningHoursInput[],
   ): Promise<UpsertOpeningHoursOutput> {
-    console.log(
-      "🚀 ~ createOpeningHours ~ createOpeningHoursInput:",
-      createOpeningHoursInput
-    );
-
     const createdOpeningHours = await Promise.all(
       createOpeningHoursInput.map(async (hours) => {
         const openingHoursEntity = OpeningHours.createOpeningHours({
@@ -109,15 +105,15 @@ export class BarberOpeningHoursServiceImpl
 
         const newOpeningHours =
           await this.barberOpeningHoursRepository.createOpeningHours(
-            openingHoursEntity
+            openingHoursEntity,
           );
 
         if (!newOpeningHours) {
-          throw new Error("Erro ao criar as horas");
+          throw new Error('Erro ao criar as horas');
         }
 
         return newOpeningHours;
-      })
+      }),
     );
 
     const createOpeningHoursOutput: UpsertOpeningHoursOutput = {

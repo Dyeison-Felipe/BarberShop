@@ -1,3 +1,3 @@
-export class Contants {
+export class Constants {
   static loggedUser = 'logged_user';
 }

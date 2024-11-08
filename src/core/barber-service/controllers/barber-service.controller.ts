@@ -7,6 +7,7 @@ import {
   Param,
   Put,
   Delete,
+  Middleware,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { CreateBarberServiceDto } from '../dtos/create-barber-service.dto.js';
 import { ReturnCreateBarberServiceDto } from '../dtos/return-create-barber-service.dto.js';
@@ -31,6 +32,7 @@ export class BarberServiceController {
     return barberService;
   }
 
+  @Middleware('AuthMiddleware')
   @Post()
   async createBarberService(
     @Body() createBarberServiceDto: CreateBarberServiceDto,
@@ -42,6 +44,7 @@ export class BarberServiceController {
     return barberService;
   }
 
+  @Middleware('AuthMiddleware')
   @Put('/:id')
   async updateBarberService(
     @Param('id') id: string,
@@ -55,6 +58,7 @@ export class BarberServiceController {
     return barberShop;
   }
 
+  @Middleware('AuthMiddleware')
   @Delete('/:id')
   async deleteBarberShop(
     @Param('id') id: string,
