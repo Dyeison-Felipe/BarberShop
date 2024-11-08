@@ -1,11 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import { resolveQueryParams } from './route-param.decorator.js';
 import { Middleware } from '../../modules/module.js';
+import { bodyValidationMiddleware } from '../../middlewares/body-validation.middleware.js';
 
 const formatPath = (path: string) => (path.startsWith('/') ? path : `/${path}`);
 
 const routes: {
-  [key: string]: { method: string; path: string; handler: Function }[];
+  [key: string]: {
+    method: string;
+    path: string;
+    handler: Function;
+    bodyClass?: Object;
+  }[];
 } = {};
 
 const requestMapping = (path: string, method: string) => {
@@ -86,6 +92,21 @@ export function Body(param?: string) {
   };
 }
 
+// Decorator @Valid para capturar o corpo da requisição
+export function Valid(classDto?: new () => unknown) {
+  return function (target: any, propertyKey: string, parameterIndex: number) {
+    if (!target.body) {
+      target.body = {};
+    }
+
+    if (!target.body[propertyKey]) {
+      target.body[propertyKey] = [];
+    }
+
+    target.body[propertyKey][parameterIndex] = classDto;
+  };
+}
+
 // Função para resolver e injetar o corpo da requisição
 export function resolveBodyParams(
   req: Request,
@@ -137,7 +158,6 @@ export function resolveRouteParams(
 }
 
 export const validateRoutes = (res: Response, error: unknown) => {
-  console.log('🚀 ~ validateRoutes ~ error:', error);
   if (error instanceof Error) {
     res.status(500).send({
       statusCode: 500,
@@ -184,6 +204,14 @@ export const applyRoutes = (
         (middlewareProvide) => typeof middlewareProvide === 'function',
       );
 
+      // Obtem a classe de validação do body da rota
+      const classBody = controllerInstance.body?.[route.handler.name]?.[0];
+      console.log('classBody', classBody);
+      functionBasedMiddlewares.push(
+        (req: Request, res: Response, next: NextFunction) =>
+          bodyValidationMiddleware(req, res, next, classBody),
+      );
+
       app[route.method](
         fullPath,
         ...(classBasedMiddlewares?.map(
@@ -196,7 +224,6 @@ export const applyRoutes = (
                   next,
                 );
               } catch (error) {
-                console.log('🚀 ~ controllerRoutes.forEach ~ error:', error);
                 validateRoutes(res, error);
               }
             },
@@ -214,14 +241,12 @@ export const applyRoutes = (
           resolveRouteParams(req, controllerInstance, route.handler.name, args);
           // Executar o método do controlador e capturar o retorno
           try {
-            console.log('aqui');
             const result = await route.handler.apply(controllerInstance, args);
             if (result !== undefined) {
               // Enviar automaticamente o resultado como resposta
               res.send(result);
             }
           } catch (error) {
-            // console.log('🚀 ~ error:', error);
             validateRoutes(res, error);
           }
         },
