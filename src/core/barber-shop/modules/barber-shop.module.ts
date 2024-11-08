@@ -11,7 +11,6 @@ export class BarberShopModule implements IModule {
     const barberShopRepository = new BarberShopFirebaseRepository(db);
     const imageService = new ImageFirebaseStorageService();
     const asyncLocalStorageService = new AsyncLocalStorageService();
-    const asyncLocalStorageService = new AsyncLocalStorageService();
     const barberShopService = new BarberShopServiceImpl(
       barberShopRepository,
       imageService,

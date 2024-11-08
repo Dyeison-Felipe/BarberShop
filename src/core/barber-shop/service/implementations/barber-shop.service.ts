@@ -19,6 +19,7 @@ import {
 } from "../barber-shop.service.js";
 import { StorageRequestService } from "../../../../shared/storage-request-service/storage-request-service.js";
 import { ClientProps } from "../../../client/entities/client.entity.js";
+import { Constants } from "../../../../shared/utils/constants.js";
 
 export class BarberShopServiceImpl implements BarberShopService {
   constructor(
@@ -29,7 +30,9 @@ export class BarberShopServiceImpl implements BarberShopService {
 
   async getBarberShopByClientId(): Promise<BarberShopOutput> {
 
-    const loggedUser = this.storageRequestService.get<ClientProps>('logged_user');
+    const loggedUser = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
 
     const barberShop = await this.barberShopRepository.getBarberShopByClientId(loggedUser!.id);
 
@@ -81,6 +84,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     const client = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
+    console.log("🚀 ~ BarberShopServiceImpl ~ client:", client)
 
     const barberShopEntity = BarberShop.createBarberShop({
       ...createbarberShopInput,
