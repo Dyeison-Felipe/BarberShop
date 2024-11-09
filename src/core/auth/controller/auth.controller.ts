@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import {
   Body,
   Controller,
@@ -12,9 +13,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  async login(@Valid(LoginDto) @Body() login: LoginDto) {
-    console.log('🚀 ~ AuthController ~ login ~ login:', login);
+  async login(
+    req: Request,
+    res: Response,
+    @Valid(LoginDto) @Body() login: LoginDto,
+  ) {
     const loginOutput = await this.authService.login(login);
+
+    res.cookie('token', loginOutput.token, {
+      maxAge: Number(process.env.AUTH_COOKIES_EXPIRES_IN),
+      httpOnly: true,
+    });
 
     return loginOutput;
   }

@@ -3,18 +3,31 @@ import cors from 'cors';
 import { AppModule } from './app.module.js';
 import { applyRoutes } from './shared/decorators/http/request-mapping.decorator.js';
 import { Middleware } from './shared/modules/module.js';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
 
 function start() {
   const app = express();
   app.use(express.json());
 
   const corsOptions: cors.CorsOptions = {
-    origin: process.env.FRONTEND_URL, // Allow only this origin
+    origin: process.env.ALLOWED_ORIGIN, // Allow only this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow only these methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow only these headers
+    credentials: true,
   };
 
-  app.use(cors());
+  app.use(cors(corsOptions));
+
+  app.use(cookieParser());
+
+  app.use(
+    session({
+      secret: process.env.COOKIES_SECRET!, // chave para acessar os cookies
+      resave: false, // evita gravar sessões sem alterações
+      saveUninitialized: true, // salvar na guia anônima
+    }),
+  );
 
   const port = 3333;
 
@@ -32,8 +45,8 @@ function start() {
       allControllers.push(controller);
     });
 
-    middlewares?.forEach((middleare) => {
-      allMiddlewares.push(middleare);
+    middlewares?.forEach((middleware) => {
+      allMiddlewares.push(middleware);
     });
   });
 

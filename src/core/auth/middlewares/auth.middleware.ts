@@ -15,9 +15,7 @@ export class AuthMiddleware implements IMiddleware {
     this.extractTokenFromHeader = this.extractTokenFromHeader.bind(this);
   }
 
-  async use(req: Request, _: Response, next: NextFunction): Promise<void> {
-    // const [type, tokenAuth] = req.headers.authorization?.split(' ') ?? [];
-    // const token = type === 'Bearer' ? tokenAuth : null;
+  async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     const token = this.extractTokenFromHeader(req);
 
     try {
