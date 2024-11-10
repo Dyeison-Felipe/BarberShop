@@ -13,10 +13,7 @@ import {
   BarberShopRepository,
 } from '../barber-shop.repository.js';
 import { MongoPagination } from '../../../../shared/repositories/mongo/pagination.js';
-
-export type NullableOptional<T> = {
-  [P in keyof T]?: T[P] | null;
-};
+import { NullableOptional } from '../../../../shared/utils/types.js';
 
 export class BarberShopMongoRepository implements BarberShopRepository {
   async getBarbersShop(

@@ -3,7 +3,7 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
-import { Client } from '../../entities/client.entity.js';
+import { Client, ClientProps } from '../../entities/client.entity.js';
 import {
   ClientList,
   ClientRepository,
@@ -18,6 +18,7 @@ import {
 import { ImageService } from '../../../../shared/services/image/image.service.js';
 import { HashService } from '../../../../shared/hashService/hash-service.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
+import { Constants } from '../../../../shared/utils/constants.js';
 
 export class ClientServiceImpl implements ClientService {
   constructor(
@@ -35,8 +36,12 @@ export class ClientServiceImpl implements ClientService {
     return barbersShop;
   }
 
-  async getClientById(id: string): Promise<ClientOutput> {
-    const client = await this.clientRepository.getClientById(id);
+  async getClientById(): Promise<ClientOutput> {
+    const loggedClient = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
+
+    const client = await this.clientRepository.getClientById(loggedClient!.id);
 
     if (!client) {
       throw new Error('Cliente não encontrado');
@@ -86,12 +91,16 @@ export class ClientServiceImpl implements ClientService {
   async updateClient(
     updateClientInput: UpdateClientInput,
   ): Promise<ClientOutput> {
-    const existingClient = await this.clientRepository.getClientById(
-      updateClientInput.id,
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
     );
-    console.log(
-      '🚀 ~ ClientServiceImpl ~ updateClient ~ existingClient:',
-      existingClient,
+
+    if (!client?.id) {
+      throw new Error('Cliente não encontrado');
+    }
+
+    const existingClient = await this.clientRepository.getClientById(
+      client?.id,
     );
 
     if (!existingClient) {
@@ -133,13 +142,27 @@ export class ClientServiceImpl implements ClientService {
     return updateClientOutput;
   }
 
-  deleteClient(id: string): Promise<void> {
-    const client = this.clientRepository.deleteClient(id);
+  async deleteClient(): Promise<void> {
+    const loggedClient = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
 
-    if (!client) {
-      throw new Error('Client não encontrado');
+    if (!loggedClient?.id) {
+      throw new Error('Cliente não encontrado');
     }
 
-    return client;
+    const foundClient = await this.clientRepository.getClientById(
+      loggedClient?.id,
+    );
+
+    if (!foundClient) {
+      throw new Error('Cliente não encontrado');
+    }
+
+    const client = await this.clientRepository.deleteClient(loggedClient.id);
+
+    if (!client) {
+      throw new Error('Falha ao deletar cliente');
+    }
   }
 }

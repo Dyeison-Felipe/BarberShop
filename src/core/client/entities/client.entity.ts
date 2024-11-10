@@ -7,7 +7,7 @@ export type ClientProps = {
   photoUrl: string;
 };
 
-export type UpdateClient = { id: string; photoUrl?: string; name?: string };
+export type UpdateClient = { photoUrl?: string; name?: string };
 
 export type CreateClient = {
   name: string;

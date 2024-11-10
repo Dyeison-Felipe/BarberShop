@@ -1,17 +1,22 @@
-import { PaginationInput, PaginationOutput } from "../../../../shared/repositories/pagination.repository.js";
-import { Client, ClientProps } from "../../entities/client.entity.js";
-import { ClientList, ClientRepository } from "../client.repository.js";
+import {
+  PaginationInput,
+  PaginationOutput,
+} from '../../../../shared/repositories/pagination.repository.js';
+import { Client, ClientProps } from '../../entities/client.entity.js';
+import { ClientList, ClientRepository } from '../client.repository.js';
 
 export class ClientFirebaseRepository implements ClientRepository {
-  constructor(private readonly firebaseRepository: FirebaseFirestore.Firestore) {}
+  constructor(
+    private readonly firebaseRepository: FirebaseFirestore.Firestore,
+  ) {}
 
   async getClientByEmail(email: string): Promise<Client | null> {
     const snapshot = await this.firebaseRepository
-    .collection('Client')
+      .collection('Client')
       .where('email', '==', email)
       .get();
 
-    if(snapshot.empty) {
+    if (snapshot.empty) {
       return null;
     }
 
@@ -19,21 +24,22 @@ export class ClientFirebaseRepository implements ClientRepository {
 
     const clientProps = {
       id: clientFound.id,
-      ...clientFound.data()
-    } as ClientProps
-    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", clientFound.data())
+      ...clientFound.data(),
+    } as ClientProps;
+    console.log(
+      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
+      clientFound.data(),
+    );
 
-    const clientEntity = new Client(clientProps)
+    const clientEntity = new Client(clientProps);
 
-    return clientEntity
+    return clientEntity;
   }
 
   async getClient(
     pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientList>> {
-    const snapshot = await this.firebaseRepository
-      .collection('Client')
-      .get();
+    const snapshot = await this.firebaseRepository.collection('Client').get();
 
     const clientList: ClientList[] = [];
     snapshot.forEach((element) => {
@@ -57,64 +63,82 @@ export class ClientFirebaseRepository implements ClientRepository {
 
   async createClient(client: Client): Promise<Client | null> {
     try {
-      const {id,...clientData} = client.toObject();
-      const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
+      const { id, ...clientData } = client.toObject();
+      const db = await this.firebaseRepository
+        .collection('Client')
+        .doc(id)
+        .set(clientData);
       return client;
-
     } catch (error) {
-      console.log("🚀 ~ ClientFirebaseRepository ~ createClient ~ error:", error)
+      console.log(
+        '🚀 ~ ClientFirebaseRepository ~ createClient ~ error:',
+        error,
+      );
       return null;
     }
   }
 
   async updateClient(client: Client): Promise<Client | null> {
     try {
-      const {id,...clientData} = client.toObject();
-      console.log("🚀 ~ ClientFirebaseRepository ~ updateClient ~ clientData:", clientData)
-      const db = await this.firebaseRepository.collection('Client').doc(id).set(clientData);
+      const { id, ...clientData } = client.toObject();
+      console.log(
+        '🚀 ~ ClientFirebaseRepository ~ updateClient ~ clientData:',
+        clientData,
+      );
+      const db = await this.firebaseRepository
+        .collection('Client')
+        .doc(id)
+        .set(clientData);
       return client;
-
     } catch (error) {
-      console.log("🚀 ~ ClientFirebaseRepository ~ createClient ~ error:", error)
+      console.log(
+        '🚀 ~ ClientFirebaseRepository ~ createClient ~ error:',
+        error,
+      );
       return null;
     }
   }
 
   async getClientById(id: string): Promise<Client | null> {
     const snapshot = await this.firebaseRepository
-    .collection('Client')
+      .collection('Client')
       .doc(id)
       .get();
 
-    if(!snapshot.exists) {
+    if (!snapshot.exists) {
       return null;
     }
 
     const clientProps = {
       id: snapshot.id,
-      ...snapshot.data()
-    } as ClientProps
-    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", snapshot.data())
+      ...snapshot.data(),
+    } as ClientProps;
+    console.log(
+      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
+      snapshot.data(),
+    );
 
-    const clientEntity = new Client(clientProps)
+    const clientEntity = new Client(clientProps);
 
-    return clientEntity
+    return clientEntity;
   }
 
-  async deleteClient(id: string): Promise<void> {
+  async deleteClient(id: string): Promise<boolean> {
     try {
       const snapshot = await this.firebaseRepository
         .collection('Client')
         .doc(id)
         .get();
-  
+
       if (!snapshot.exists) {
-        return;
+        return false;
       }
-  
+
       await this.firebaseRepository.collection('Client').doc(id).delete();
+
+      return true;
     } catch (error) {
-      return;
+      return false;
     }
   }
 }

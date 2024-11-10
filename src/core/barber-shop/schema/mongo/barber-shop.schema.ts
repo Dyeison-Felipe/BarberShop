@@ -16,4 +16,4 @@ const barberShopSchema = new Schema({
   clientId: String,
 });
 
-export const BarberShopSchema = model('BarberShopSchema', barberShopSchema);
+export const BarberShopSchema = model('barber_shop', barberShopSchema);

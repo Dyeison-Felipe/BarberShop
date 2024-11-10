@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import {
   Body,
   Controller,
@@ -41,6 +41,14 @@ export class ClientController {
     return result;
   }
 
+  @Middleware('AuthMiddleware')
+  @Get('client-id')
+  async getClientById(): Promise<ReturnGetClientDto> {
+    const client = await this.clientService.getClientById();
+
+    return client;
+  }
+
   @Post()
   async createClient(
     @Body() createClientDto: CreateClientDto,
@@ -52,14 +60,12 @@ export class ClientController {
 
   @Middleware('AuthMiddleware')
   @Middleware(upload.single('file'), parseFormDataDto)
-  @Put('/:id')
+  @Put()
   async updateClient(
     req: Request,
-    @Param('id') id: string,
     @Body() updateClient: UpdateClientDto,
   ): Promise<ReturnUpdateClientDto> {
     const client = await this.clientService.updateClient({
-      id,
       photo: ImageFirebaseStorageService.imageAdapter(req.file),
       ...updateClient,
     });
@@ -67,18 +73,10 @@ export class ClientController {
     return client;
   }
 
-  @Get('/:id')
-  async getClientById(@Param('id') id: string): Promise<ReturnGetClientDto> {
-    const client = await this.clientService.getClientById(id);
-
-    return client;
-  }
-
   @Middleware('AuthMiddleware')
-  @Delete('/:id')
-  async deleteClient(@Param('id') id: string): Promise<void> {
-    const client = await this.clientService.deleteClient(id);
-
-    return client;
+  @Delete()
+  async deleteClient(res: Response): Promise<void> {
+    await this.clientService.deleteClient();
+    res.status(204).send();
   }
 }

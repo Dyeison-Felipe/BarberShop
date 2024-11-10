@@ -1,9 +1,6 @@
-import { Document, Query } from 'mongoose';
 import { Meta, PaginationInput } from '../pagination.repository.js';
-import { BarberShopSchema } from '../../../core/barber-shop/schema/mongo/barber-shop.schema.js';
-import { BarberShopProps } from '../../../core/barber-shop/entities/barber-shop.entity.js';
 
-type Output<> = {
+type Output = {
   documents: any[];
   meta: Meta;
 };
