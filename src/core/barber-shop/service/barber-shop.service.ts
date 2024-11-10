@@ -1,9 +1,9 @@
 import {
   PaginationInput,
   PaginationOutput,
-} from "../../../shared/repositories/pagination.repository.js";
-import { Image } from "../../../shared/services/image/image.service.js";
-import { BarberShopList } from "../repositories/barber-shop.repository.js";
+} from '../../../shared/repositories/pagination.repository.js';
+import { Image } from '../../../shared/services/image/image.service.js';
+import { BarberShopList } from '../repositories/barber-shop.repository.js';
 
 export type BarberShopInput = {
   name: string;
@@ -44,29 +44,28 @@ export type BarberShopProfileInput = {
   id: string;
 };
 
-export type BarberShopByIdClientInput = 
-{
+export type BarberShopByIdClientInput = {
   clientId: string;
 };
 
 export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
-    search?: string
+    search?: string,
   ): Promise<PaginationOutput<BarberShopList>>;
 
   getBarbersShopProfile({
     id,
   }: BarberShopProfileInput): Promise<BarberShopOutput>;
 
-  getBarberShopByClientId(): Promise<BarberShopOutput>;
+  getBarberShopByClientId(): Promise<BarberShopOutput | null>;
 
   createBarberShop(
-    createBarberShopInput: CreateBarberShopInput
+    createBarberShopInput: CreateBarberShopInput,
   ): Promise<BarberShopOutput>;
 
   updateBarberShop(
-    updateBarberShopInput: UpdateBarberShopInput
+    updateBarberShopInput: UpdateBarberShopInput,
   ): Promise<BarberShopOutput>;
 
   deleteBarberShop(id: string): Promise<void>;

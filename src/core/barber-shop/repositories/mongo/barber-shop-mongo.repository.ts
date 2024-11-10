@@ -137,6 +137,7 @@ export class BarberShopMongoRepository implements BarberShopRepository {
       phone: document.phone!,
       rating: document.rating!,
       clientId: document.clientId!,
+      photoUrl: document.photoUrl,
     };
 
     const barberShopEntity = new BarberShop(barberShopProps);

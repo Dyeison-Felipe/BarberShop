@@ -28,7 +28,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     private readonly storageRequestService: StorageRequestService,
   ) {}
 
-  async getBarberShopByClientId(): Promise<BarberShopOutput> {
+  async getBarberShopByClientId(): Promise<BarberShopOutput | null> {
     const loggedUser = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
@@ -38,7 +38,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
 
     if (!barberShop) {
-      throw new Error('Barbearia não encontrada');
+      return null;
     }
 
     const barberShopOutput = barberShop.toObject();
