@@ -16,13 +16,13 @@ const routes: {
 
 const requestMapping = (path: string, method: string) => {
   return function (target: any, propertyKey: string) {
-    const formatedPath = formatPath(path);
+    const formattedPath = formatPath(path);
     if (!routes[target.constructor.name]) {
       routes[target.constructor.name] = [];
     }
     routes[target.constructor.name].push({
       method: method,
-      path: formatedPath,
+      path: formattedPath,
       handler: target[propertyKey],
     });
   };
@@ -56,8 +56,8 @@ export function Delete(path = '') {
 // Decorator `@Controller()` para agrupar rotas
 export function Controller(prefix: string = '') {
   return function (target: any) {
-    const formatedPrefix = formatPath(prefix);
-    target.prototype.prefix = formatedPrefix;
+    const formattedPrefix = formatPath(prefix);
+    target.prototype.prefix = formattedPrefix;
   };
 }
 
@@ -158,6 +158,7 @@ export function resolveRouteParams(
 }
 
 export const validateRoutes = (res: Response, error: unknown) => {
+  console.error('Error: ', error);
   if (error instanceof Error) {
     res.status(500).send({
       statusCode: 500,
@@ -179,7 +180,7 @@ export const applyRoutes = (
   app: any,
   controllerInstance: any,
   // Todos os middlewares da aplicação, baseados em classe
-  controllerMiddleares?: Middleware[],
+  controllerMiddlewares?: Middleware[],
 ) => {
   const controllerName = controllerInstance.constructor.name;
   const controllerRoutes = routes[controllerName];
@@ -192,11 +193,11 @@ export const applyRoutes = (
       const middlewareProvides: string[] | Function[] =
         controllerInstance.middlewares?.[route.handler.name] || [];
 
-      const classBasedMiddlewares = controllerMiddleares?.filter(
+      const classBasedMiddlewares = controllerMiddlewares?.filter(
         (controllerMiddleware) =>
           middlewareProvides.some(
-            (middleareProvide) =>
-              middleareProvide === controllerMiddleware.provide,
+            (middlewareProvide) =>
+              middlewareProvide === controllerMiddleware.provide,
           ),
       );
 
@@ -204,9 +205,8 @@ export const applyRoutes = (
         (middlewareProvide) => typeof middlewareProvide === 'function',
       );
 
-      // Obtem a classe de validação do body da rota
+      // Obtém a classe de validação do body da rota
       const classBody = controllerInstance.body?.[route.handler.name]?.[0];
-      console.log('classBody', classBody);
       functionBasedMiddlewares.push(
         (req: Request, res: Response, next: NextFunction) =>
           bodyValidationMiddleware(req, res, next, classBody),
@@ -215,10 +215,10 @@ export const applyRoutes = (
       app[route.method](
         fullPath,
         ...(classBasedMiddlewares?.map(
-          (middleare) =>
+          (middleware) =>
             async (req: Request, res: Response, next: NextFunction) => {
               try {
-                return await middleare.instance.use.bind(middleare.instance)(
+                return await middleware.instance.use.bind(middleware.instance)(
                   req,
                   res,
                   next,

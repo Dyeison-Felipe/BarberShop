@@ -1,6 +1,5 @@
 import { IsInt, IsString } from 'class-validator';
 
-// TODO Adicionar rua
 export class CreateBarberShopDto {
   @IsString()
   name: string;

@@ -5,7 +5,7 @@ import { applyRoutes } from './shared/decorators/http/request-mapping.decorator.
 import { Middleware } from './shared/modules/module.js';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import { mongooseConnect } from './shared/repositories/mongodb/config.js';
+import { mongooseConnect } from './shared/repositories/mongo/config.js';
 
 async function start() {
   const app = express();

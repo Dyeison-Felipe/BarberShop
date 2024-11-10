@@ -50,8 +50,7 @@ export class BarberShopController {
   @Middleware('AuthMiddleware')
   @Get('/barber-shop-client-id')
   async getBarberShopByClientById(): Promise<ReturnGetBarberShopClientDto> {
-
-    const output = await this.barberShopService.getBarberShopByClientId()
+    const output = await this.barberShopService.getBarberShopByClientId();
 
     return output;
   }
