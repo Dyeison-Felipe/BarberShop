@@ -16,7 +16,7 @@ import {
   CreateClientOutput,
 } from '../client.service.js';
 import { ImageService } from '../../../../shared/services/image/image.service.js';
-import { HashService } from '../../../../shared/hashService/hash-service.js';
+import { HashService } from '../../../../shared/hash-service/hash-service.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 import { Constants } from '../../../../shared/utils/constants.js';
 

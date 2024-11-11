@@ -1,4 +1,4 @@
-import { HashBcryptService } from '../../../shared/hashService/bcrypt/hash-bcrypt-service.js';
+import { HashBcryptService } from '../../../shared/hash-service/bcrypt/hash-bcrypt-service.js';
 import { BuildModule, IModule } from '../../../shared/modules/module.js';
 import { db } from '../../../shared/repositories/firebase/config.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
