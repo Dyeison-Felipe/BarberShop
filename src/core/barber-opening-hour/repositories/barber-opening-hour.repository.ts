@@ -1,4 +1,4 @@
-import { OpeningHours } from "../entities/barber-opening-hour.entity.js";
+import { OpeningHours } from '../entities/barber-opening-hour.entity.js';
 
 export type GetAllBarberOpeningHours = {
   id: string;
@@ -9,11 +9,15 @@ export type GetAllBarberOpeningHours = {
 };
 
 export interface BarberOpeningHoursRepository {
-  getAllByBarberShopId(
-    barberShopId: string,
-  ): Promise<OpeningHours[]>;
-  createOpeningHours(openingHours: OpeningHours): Promise<OpeningHours | null>;
-  updateManyOpeningHours(updateOpeningHours: OpeningHours[]): Promise<OpeningHours[] | null>;
-  deleteOpeningHours(id: string): Promise<void| null>;
+  getAllByBarberShopId(barberShopId: string): Promise<OpeningHours[]>;
+
   getOpeningHourById(openingHourId: string): Promise<OpeningHours | null>;
+
+  createOpeningHours(openingHours: OpeningHours): Promise<OpeningHours | null>;
+
+  updateManyOpeningHours(
+    updateOpeningHours: OpeningHours[],
+  ): Promise<OpeningHours[] | null>;
+
+  deleteOpeningHours(id: string): Promise<boolean>;
 }

@@ -1,69 +1,82 @@
-import { OpeningHours, OpeningHoursProps } from "../../entities/barber-opening-hour.entity.js";
-import { BarberOpeningHoursRepository } from "../barber-opening-hour.repository.js";
+import {
+  OpeningHours,
+  OpeningHoursProps,
+} from '../../entities/barber-opening-hour.entity.js';
+import { BarberOpeningHoursRepository } from '../barber-opening-hour.repository.js';
 
 export class BarberOpeningHoursFirebaseRepository
   implements BarberOpeningHoursRepository
 {
   constructor(
-    private readonly firebaseRepository: FirebaseFirestore.Firestore
+    private readonly firebaseRepository: FirebaseFirestore.Firestore,
   ) {}
-  async getOpeningHourById(openingHourId: string): Promise<OpeningHours | null> {
+  async getOpeningHourById(
+    openingHourId: string,
+  ): Promise<OpeningHours | null> {
     const snapshot = await this.firebaseRepository
-    .collection('Barber-Opening-Hours')
+      .collection('Barber-Opening-Hours')
       .doc(openingHourId)
       .get();
 
-    if(!snapshot.exists) {
+    if (!snapshot.exists) {
       return null;
     }
 
     const openingHoursProps = {
       id: snapshot.id,
-      ...snapshot.data()
-    } as OpeningHoursProps
-    console.log("🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():", snapshot.data())
+      ...snapshot.data(),
+    } as OpeningHoursProps;
+    console.log(
+      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
+      snapshot.data(),
+    );
 
-    const openingHoursEntity = new OpeningHours(openingHoursProps)
+    const openingHoursEntity = new OpeningHours(openingHoursProps);
 
     return openingHoursEntity;
   }
 
-  async deleteOpeningHours(id: string): Promise<void | null> {
+  async deleteOpeningHours(id: string): Promise<boolean> {
     try {
       const snapshot = await this.firebaseRepository
         .collection('Barber-Opening-Hours')
         .doc(id)
         .get();
-  
+
       if (!snapshot.exists) {
-        return null;
+        return false;
       }
-  
-      await this.firebaseRepository.collection('Barber-Opening-Hours').doc(id).delete();
+
+      await this.firebaseRepository
+        .collection('Barber-Opening-Hours')
+        .doc(id)
+        .delete();
+
+      return true;
     } catch (error) {
-      return null;
+      return false;
     }
   }
 
   async updateManyOpeningHours(
-    updateOpeningHours: OpeningHours[]
+    updateOpeningHours: OpeningHours[],
   ): Promise<OpeningHours[] | null> {
     try {
       await Promise.all(
         updateOpeningHours.map((updateOpeningHour) => {
           const { id, ...openingHoursData } = updateOpeningHour.toObject();
           return this.firebaseRepository
-            .collection("Barber-Opening-Hours")
+            .collection('Barber-Opening-Hours')
             .doc(id)
             .set(openingHoursData);
-        })
+        }),
       );
 
       return updateOpeningHours;
     } catch (error) {
       console.log(
-        "🚀 ~ OpeningHoursFirebaseRepository ~ createOpeningHours ~ error:",
-        error
+        '🚀 ~ OpeningHoursFirebaseRepository ~ createOpeningHours ~ error:',
+        error,
       );
       return null;
     }
@@ -71,8 +84,8 @@ export class BarberOpeningHoursFirebaseRepository
 
   async getAllByBarberShopId(barberShopId: string): Promise<OpeningHours[]> {
     const snapshot = await this.firebaseRepository
-      .collection("Barber-Opening-Hours")
-      .where("barberShopId", "==", barberShopId)
+      .collection('Barber-Opening-Hours')
+      .where('barberShopId', '==', barberShopId)
       .get();
 
     const barberShopList: OpeningHours[] = [];
@@ -92,19 +105,19 @@ export class BarberOpeningHoursFirebaseRepository
   }
 
   async createOpeningHours(
-    openingHours: OpeningHours
+    openingHours: OpeningHours,
   ): Promise<OpeningHours | null> {
     try {
       const { id, ...openingHoursData } = openingHours.toObject();
       await this.firebaseRepository
-        .collection("Barber-Opening-Hours")
+        .collection('Barber-Opening-Hours')
         .doc(id)
         .set(openingHoursData);
       return openingHours;
     } catch (error) {
       console.log(
-        "🚀 ~ OpeningHoursFirebaseRepository ~ createOpeningHours ~ error:",
-        error
+        '🚀 ~ OpeningHoursFirebaseRepository ~ createOpeningHours ~ error:',
+        error,
       );
       return null;
     }
