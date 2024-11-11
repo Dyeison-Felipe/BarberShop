@@ -5,7 +5,7 @@ import {
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
 import { BarberShopList } from '../../../barber-shop/repositories/barber-shop.repository.js';
-import { Appointment } from '../../entities/appoiment.entity.js';
+import { Appointment } from '../../entities/appointment.js';
 import {
   AppointmentRepository,
   BarberShopAppointment,

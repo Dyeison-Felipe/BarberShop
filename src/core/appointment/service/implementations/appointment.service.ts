@@ -5,7 +5,7 @@ import {
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 import { Constants } from '../../../../shared/utils/constants.js';
 import { ClientProps } from '../../../client/entities/client.entity.js';
-import { Appointment } from '../../entities/appoiment.entity.js';
+import { Appointment } from '../../entities/appointment.js';
 import {
   AppointmentRepository,
   BarberShopAppointment,

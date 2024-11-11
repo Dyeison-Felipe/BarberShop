@@ -2,7 +2,7 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
-import { Appointment } from '../entities/appoiment.entity.js';
+import { Appointment } from '../entities/appointment.js';
 
 type AppointmentBase = {
   id: string;
