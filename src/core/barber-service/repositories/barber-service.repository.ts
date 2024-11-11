@@ -1,7 +1,3 @@
-import {
-  PaginationInput,
-  PaginationOutput,
-} from '../../../shared/repositories/pagination.repository.js';
 import { BarberService } from '../entities/barber-service.entity.js';
 
 export type ServiceList = {
@@ -23,5 +19,5 @@ export interface BarberServiceRepository {
     barberService: BarberService,
   ): Promise<BarberService | null>;
 
-  deleteBarberService(barberServiceId: string): Promise<void | null>;
+  deleteBarberService(barberServiceId: string): Promise<boolean>;
 }

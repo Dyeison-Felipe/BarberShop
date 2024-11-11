@@ -103,14 +103,16 @@ export class BarberServiceFirebaseRepository
     }
   }
 
-  async deleteBarberService(barberServiceId: string): Promise<void | null> {
+  async deleteBarberService(barberServiceId: string): Promise<boolean> {
     try {
       await this.firebaseRepository
         .collection('Barber-Service')
         .doc(barberServiceId)
         .delete();
+
+      return true;
     } catch (error) {
-      return null;
+      return false;
     }
   }
 }

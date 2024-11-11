@@ -91,14 +91,14 @@ export class BarberServiceServiceImpl implements BarberServiceService {
       await this.barberServiceRepository.getBarberServiceById(barberServiceId);
 
     if (!barberService) {
-      throw new Error(`Serviço com o ID ${barberServiceId} não foi econtrado`);
+      throw new Error(`Serviço com o ID ${barberServiceId} não foi encontrado`);
     }
 
     const deleteRes = await this.barberServiceRepository.deleteBarberService(
       barberServiceId,
     );
 
-    if (deleteRes === null) {
+    if (!deleteRes) {
       throw new Error('Falha ao deletar serviço');
     }
   }
