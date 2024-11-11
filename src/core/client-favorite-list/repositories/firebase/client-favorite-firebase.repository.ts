@@ -1,47 +1,47 @@
-import { admin } from "../../../../shared/repositories/firebase/config.js";
-import { FirebasePagination } from "../../../../shared/repositories/firebase/pagination.js";
+import { admin } from '../../../../shared/repositories/firebase/config.js';
+import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
 import {
   PaginationInput,
   PaginationOutput,
-} from "../../../../shared/repositories/pagination.repository.js";
-import { FavoriteList } from "../../entities/client-favorite-list.entity.js";
+} from '../../../../shared/repositories/pagination.repository.js';
+import { FavoriteList } from '../../entities/client-favorite-list.entity.js';
 import {
   ClientFavoriteList,
   ClientFavoriteRepository,
-} from "../client-favorite.repository.js";
+} from '../client-favorite.repository.js';
 
 export class ClientFavoriteFirebaseRepository
   implements ClientFavoriteRepository
 {
   constructor(
-    private readonly firebaseRepository: FirebaseFirestore.Firestore
+    private readonly firebaseRepository: FirebaseFirestore.Firestore,
   ) {}
 
   async getClientFavoriteList(
     clientId: string,
-    pagination: PaginationInput
+    pagination: PaginationInput,
   ): Promise<PaginationOutput<ClientFavoriteList>> {
     const query = this.firebaseRepository
-      .collection("Favorite")
-      .where("clientId", "==", clientId)
+      .collection('Favorite')
+      .where('clientId', '==', clientId)
       .orderBy(admin.firestore.FieldPath.documentId());
 
     const { snapshot, meta } = await FirebasePagination.paginate(
       query,
-      pagination
+      pagination,
     );
 
     const clientFavoriteList: ClientFavoriteList[] = await Promise.all(
       snapshot.docs.map(async (document) => {
         const barberShopSnapShot = await this.firebaseRepository
-          .collection("Barber-Shop")
+          .collection('Barber-Shop')
           .doc(document.data().barberShopId)
           .get();
 
         const clientFavoriteListData = barberShopSnapShot.data();
 
         if (!clientFavoriteListData) {
-          throw new Error("houve um erro ao encontrar a barbearia");
+          throw new Error('houve um erro ao encontrar a barbearia');
         }
 
         return {
@@ -53,7 +53,7 @@ export class ClientFavoriteFirebaseRepository
           },
           clientId: document.id,
         };
-      })
+      }),
     );
 
     return {
@@ -63,7 +63,7 @@ export class ClientFavoriteFirebaseRepository
   }
 
   async createClientFavorite(
-    favoriteList: FavoriteList
+    favoriteList: FavoriteList,
   ): Promise<FavoriteList | null> {
     try {
       const { id, ...favoriteListData } = favoriteList.toObject();
@@ -81,20 +81,22 @@ export class ClientFavoriteFirebaseRepository
     }
   }
 
-  async deleteClientFavoriteList(id: string): Promise<void> {
+  async deleteClientFavoriteList(id: string): Promise<boolean> {
     try {
       const snapshot = await this.firebaseRepository
-        .collection("Favorite")
+        .collection('Favorite')
         .doc(id)
         .get();
 
       if (!snapshot.exists) {
-        return;
+        return false;
       }
 
-      await this.firebaseRepository.collection("Favorite").doc(id).delete();
+      await this.firebaseRepository.collection('Favorite').doc(id).delete();
+
+      return true;
     } catch (error) {
-      return;
+      return false;
     }
   }
 }
