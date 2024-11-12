@@ -9,6 +9,6 @@ const barberOpeningHoursSchema = new Schema({
 });
 
 export const BarberOpeningHoursSchema = model(
-  'barber_opening_hors',
+  'barber_opening_hours',
   barberOpeningHoursSchema,
 );
