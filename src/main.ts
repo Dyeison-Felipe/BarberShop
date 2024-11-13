@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import { AppModule } from './app.module.js';
-import { applyRoutes } from './shared/decorators/http/request-mapping.decorator.js';
 import { Middleware } from './shared/modules/module.js';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { mongooseConnect } from './shared/repositories/mongo/config.js';
+import { applyRoutes } from './shared/decorators/utils/request-mapping.js';
 
 async function start() {
   const app = express();

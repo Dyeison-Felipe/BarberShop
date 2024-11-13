@@ -1,11 +1,10 @@
-import { NextFunction, request, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Middleware,
-  Param,
   Post,
   Put,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
@@ -15,7 +14,10 @@ import {
 } from '../../../shared/repositories/pagination.repository.js';
 import { BarberShopService } from '../service/barber-shop.service.js';
 import { ReturnGetBarberShopDto } from '../dto/return-get-barber-shop.dto.js';
-import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
+import {
+  Param,
+  Query,
+} from '../../../shared/decorators/http/route-param.decorator.js';
 import { CreateBarberShopDto } from '../dto/create-barber-shop.dto.js';
 import { ReturnCreateBarberShopDto } from '../dto/return-create-barber-shop.dto.js';
 import { ReturnUpdateBarberShopDto } from '../dto/return-update-barber-shop.dto.js';
@@ -26,8 +28,11 @@ import { ImageFirebaseStorageService } from '../../../shared/services/image/fire
 import { ReturnGetBarberShopProfileDto } from '../dto/return-get-barber-shop-profile.dto.js';
 import { ReturnGetBarberShopClientDto } from '../dto/return-barber-shop-client.dto.js';
 
+// Uso do padrão decorator para controle das rotas, método HTTP, middlewares e outros
 @Controller('/api/barber-shop/v1')
 export class BarberShopController {
+  // Implementação da injeção de dependência, fazendo com que as dependências sejam invertidas
+  // Possibilita não depender de implementações, mas de abstrações, como a interface BarberShopService
   constructor(private readonly barberShopService: BarberShopService) {}
 
   @Get()

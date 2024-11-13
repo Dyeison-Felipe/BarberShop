@@ -21,6 +21,7 @@ import { StorageRequestService } from '../../../../shared/storage-request-servic
 import { ClientProps } from '../../../client/entities/client.entity.js';
 import { Constants } from '../../../../shared/utils/constants.js';
 
+// Classe que implementa a interface a fim de realizar a inversão de dependência
 export class BarberShopServiceImpl implements BarberShopService {
   constructor(
     private readonly barberShopRepository: BarberShopRepository,

@@ -1,5 +1,5 @@
 import exp from 'constants';
-import { HashService } from '../../../../shared/hashService/hash-service.js';
+import { HashService } from '../../../../shared/hash-service/hash-service.js';
 import { JwtService } from '../../../../shared/jwt-service/jwt-service.js';
 import { ClientRepository } from '../../../client/repositories/client.repository.js';
 import {

@@ -1,4 +1,4 @@
-import { HashBcryptService } from '../../../shared/hashService/bcrypt/hash-bcrypt-service.js';
+import { HashBcryptService } from '../../../shared/hash-service/bcrypt/hash-bcrypt-service.js';
 import { JsonWebTokenService } from '../../../shared/jwt-service/json-web-token/json-web-token-service.js';
 import { BuildModule, IModule } from '../../../shared/modules/module.js';
 import { db } from '../../../shared/repositories/firebase/config.js';

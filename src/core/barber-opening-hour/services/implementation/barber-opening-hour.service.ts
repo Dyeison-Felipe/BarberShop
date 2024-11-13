@@ -20,7 +20,7 @@ export class BarberOpeningHoursServiceImpl
       await this.barberOpeningHoursRepository.getOpeningHourById(id);
 
     if (!openingHour) {
-      throw new Error('Usuario não encontrado');
+      throw new Error('Usuário não encontrado');
     }
 
     const deleteOpeningHours =

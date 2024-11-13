@@ -1,7 +1,5 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import { StorageRequestService } from '../storage-request-service.js';
-
-export const asyncLocalStorage = new AsyncLocalStorage<Map<string, unknown>>();
+import { asyncLocalStorage } from './async-local-storage.js';
 
 export class AsyncLocalStorageService implements StorageRequestService {
   run(store: Map<string, unknown>, callback: () => unknown): unknown {
