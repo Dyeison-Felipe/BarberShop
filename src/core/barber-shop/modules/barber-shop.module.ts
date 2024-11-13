@@ -13,11 +13,15 @@ export class BarberShopModule implements IModule {
     const barberShopRepository = new BarberShopMongoRepository();
     const imageService = new ImageFirebaseStorageService();
     const asyncLocalStorageService = new AsyncLocalStorageService();
+
+    // criação da instância da classe de serviço do barbeiro
     const barberShopService = new BarberShopServiceImpl(
       barberShopRepository,
       imageService,
       asyncLocalStorageService,
     );
+
+    // Injeção da classe de serviço, possibilitando a inversão de dependências
     const barberShopController = new BarberShopController(barberShopService);
 
     return {

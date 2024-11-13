@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import { resolveQueryParams } from './route-param.decorator.js';
+import { Request } from 'express';
 import { Middleware } from '../../modules/module.js';
-import { bodyValidationMiddleware } from '../../middlewares/body-validation.middleware.js';
+
+// Arquivo de implementação dos decorators utilizados no sistema
+// Contém decorators voltados para requisições web
 
 const formatPath = (path: string) => (path.startsWith('/') ? path : `/${path}`);
 
-const routes: {
+export const routes: {
   [key: string]: {
     method: string;
     path: string;
@@ -77,7 +78,7 @@ export function Middleware(...middlewares: string[] | Function[]) {
   };
 }
 
-// Decorator para capturar o corpo da requisição
+// Decorator @Body() para capturar o corpo da requisição
 export function Body(param?: string) {
   return function (target: any, propertyKey: string, parameterIndex: number) {
     if (!target.bodyParams) {
@@ -92,7 +93,7 @@ export function Body(param?: string) {
   };
 }
 
-// Decorator @Valid para capturar o corpo da requisição
+// Decorator @Valid() para capturar o corpo da requisição
 export function Valid(classDto?: new () => unknown) {
   return function (target: any, propertyKey: string, parameterIndex: number) {
     if (!target.body) {
@@ -124,133 +125,3 @@ export function resolveBodyParams(
     }
   });
 }
-
-export function Param(param?: string) {
-  return function (target: any, propertyKey: string, parameterIndex: number) {
-    if (!target.routeParams) {
-      target.routeParams = {};
-    }
-
-    if (!target.routeParams[propertyKey]) {
-      target.routeParams[propertyKey] = [];
-    }
-
-    target.routeParams[propertyKey][parameterIndex] = param;
-  };
-}
-
-// Função para resolver e injetar os parâmetros de rota
-export function resolveRouteParams(
-  req: Request,
-  target: any,
-  propertyKey: string,
-  args: any[],
-) {
-  const routeParams = target.routeParams?.[propertyKey] || [];
-
-  routeParams.forEach((param: string | undefined, index: number) => {
-    if (param) {
-      args[index] = req.params[param]; // Injeta o valor do parâmetro de rota específico
-    } else {
-      args[index] = req.params; // Injeta o objeto completo de parâmetros de rota
-    }
-  });
-}
-
-export const validateRoutes = (res: Response, error: unknown) => {
-  console.error('Error: ', error);
-  if (error instanceof Error) {
-    res.status(500).send({
-      statusCode: 500,
-      error: error.name,
-      message: error.message ?? '',
-    });
-    return;
-  }
-
-  res.status(500).send({
-    statusCode: 500,
-    error: 'Internal Server Error',
-    message: JSON.stringify(error),
-  });
-};
-
-// Função para aplicar rotas no Express
-export const applyRoutes = (
-  app: any,
-  controllerInstance: any,
-  // Todos os middlewares da aplicação, baseados em classe
-  controllerMiddlewares?: Middleware[],
-) => {
-  const controllerName = controllerInstance.constructor.name;
-  const controllerRoutes = routes[controllerName];
-  const prefix = controllerInstance.prefix || '';
-
-  if (controllerRoutes) {
-    controllerRoutes.forEach((route) => {
-      const fullPath = `${prefix}${route.path}`;
-      // Todos os middlewares do método atual (nome das classes e funções)
-      const middlewareProvides: string[] | Function[] =
-        controllerInstance.middlewares?.[route.handler.name] || [];
-
-      const classBasedMiddlewares = controllerMiddlewares?.filter(
-        (controllerMiddleware) =>
-          middlewareProvides.some(
-            (middlewareProvide) =>
-              middlewareProvide === controllerMiddleware.provide,
-          ),
-      );
-
-      const functionBasedMiddlewares = middlewareProvides.filter(
-        (middlewareProvide) => typeof middlewareProvide === 'function',
-      );
-
-      // Obtém a classe de validação do body da rota
-      const classBody = controllerInstance.body?.[route.handler.name]?.[0];
-      functionBasedMiddlewares.push(
-        (req: Request, res: Response, next: NextFunction) =>
-          bodyValidationMiddleware(req, res, next, classBody),
-      );
-
-      app[route.method](
-        fullPath,
-        ...(classBasedMiddlewares?.map(
-          (middleware) =>
-            async (req: Request, res: Response, next: NextFunction) => {
-              try {
-                return await middleware.instance.use.bind(middleware.instance)(
-                  req,
-                  res,
-                  next,
-                );
-              } catch (error) {
-                validateRoutes(res, error);
-              }
-            },
-        ) ?? []),
-        ...functionBasedMiddlewares,
-        async (req: Request, res: Response) => {
-          // try {
-          const args: any[] = [req, res];
-          // Resolver query params
-          resolveQueryParams(req, controllerInstance, route.handler.name, args);
-
-          resolveBodyParams(req, controllerInstance, route.handler.name, args);
-
-          // Resolver route params (parâmetros da URL)
-          resolveRouteParams(req, controllerInstance, route.handler.name, args);
-          // Executar o método do controlador e capturar o retorno
-          try {
-            const result = await route.handler.apply(controllerInstance, args);
-            if (result !== undefined) {
-              // Enviar automaticamente o resultado como resposta
-              res.send(result);
-            }
-          } catch (error) {
-            validateRoutes(res, error);
-          }
-        },
-      );
-    });
-  }
-};

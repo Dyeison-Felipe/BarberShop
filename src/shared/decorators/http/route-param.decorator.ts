@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+// Arquivo de implementação dos decorators utilizados no sistema
+// Contém decorators voltados para o tratamento dos parâmetros das requisições web
 
-// Decorator para query params
+// Decorator @Query() para query params
 export function Query(param?: string) {
   return function (target: any, propertyKey: string, parameterIndex: number) {
     if (!target.queryParams) {
@@ -15,20 +16,17 @@ export function Query(param?: string) {
   };
 }
 
-// Função para resolver e injetar os query params
-export function resolveQueryParams(
-  req: Request,
-  target: any,
-  propertyKey: string,
-  args: any[],
-) {
-  const queryParams = target.queryParams?.[propertyKey] || [];
-
-  queryParams.forEach((param: string | undefined, index: number) => {
-    if (param) {
-      args[index] = req.query[param]; // Injeta o valor específico do parâmetro
-    } else {
-      args[index] = req.query; // Injeta o objeto completo de query string
+// Decorator @Param() para obter os parâmetros da URL
+export function Param(param?: string) {
+  return function (target: any, propertyKey: string, parameterIndex: number) {
+    if (!target.routeParams) {
+      target.routeParams = {};
     }
-  });
+
+    if (!target.routeParams[propertyKey]) {
+      target.routeParams[propertyKey] = [];
+    }
+
+    target.routeParams[propertyKey][parameterIndex] = param;
+  };
 }

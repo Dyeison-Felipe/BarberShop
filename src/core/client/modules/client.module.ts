@@ -2,10 +2,7 @@ import { HashBcryptService } from '../../../shared/hash-service/bcrypt/hash-bcry
 import { BuildModule, IModule } from '../../../shared/modules/module.js';
 import { db } from '../../../shared/repositories/firebase/config.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
-import {
-  asyncLocalStorage,
-  AsyncLocalStorageService,
-} from '../../../shared/storage-request-service/async-local-storage/async-local-storage-service.js';
+import { AsyncLocalStorageService } from '../../../shared/storage-request-service/async-local-storage/async-local-storage-service.js';
 import { ClientController } from '../controller/client.controller.js';
 import { ClientMongoRepository } from '../repositories/mongo/client-mongo.repository.js';
 import { ClientServiceImpl } from '../service/implementation/client.service.js';

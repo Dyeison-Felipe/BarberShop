@@ -48,6 +48,7 @@ export type BarberShopByIdClientInput = {
   clientId: string;
 };
 
+// Implementação da inversão de dependências
 export interface BarberShopService {
   getBarbersShop(
     pagination: PaginationInput,
