@@ -16,11 +16,17 @@ export type PaginationInputFavorite = {
   offset: number;
 };
 
+export type FavoriteClientAndBarberShop = {
+  barberShopId: string;
+  clientId: string;
+}
+
 export interface ClientFavoriteRepository {
   getClientFavoriteList(
     clientId: string,
     pagination: PaginationInput
   ): Promise<PaginationOutput<ClientFavoriteList>>;
   createClientFavorite(favoriteList: FavoriteList): Promise<FavoriteList | null>;
-  deleteClientFavoriteList(id: string): Promise<void>;
+  deleteClientFavoriteList(clientId: string, barberShopId: string): Promise<boolean>;
+  findFavoriteInClientByIdAndBarberShopById({clientId, barberShopId}: FavoriteClientAndBarberShop): Promise<FavoriteList | null>;
 }

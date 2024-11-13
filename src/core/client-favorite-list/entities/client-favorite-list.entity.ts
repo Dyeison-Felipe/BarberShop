@@ -10,7 +10,7 @@ export type CreateFavorite = {
 };
 
 export class FavoriteList {
-  private constructor(private props: FavoriteListProps) {}
+  constructor(private props: FavoriteListProps) {}
 
   get id() {
     return this.props.id;

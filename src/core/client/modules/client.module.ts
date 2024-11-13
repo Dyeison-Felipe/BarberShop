@@ -7,6 +7,7 @@ import {
   AsyncLocalStorageService,
 } from '../../../shared/storage-request-service/async-local-storage/async-local-storage-service.js';
 import { ClientController } from '../controller/client.controller.js';
+import { ClientFirebaseRepository } from '../repositories/firebase/client-firebase.repository.js';
 import { ClientMongoRepository } from '../repositories/mongo/client-mongo.repository.js';
 import { ClientServiceImpl } from '../service/implementation/client.service.js';
 

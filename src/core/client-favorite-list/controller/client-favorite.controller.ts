@@ -53,13 +53,13 @@ export class ClientFavoriteController {
   }
 
   @Middleware('AuthMiddleware')
-  @Delete('/:id')
+  @Delete('/:barberShopId')
   async deleteBarberShop(
-    @Param('id') id: string,
+    @Param('barberShopId') barberShopId: string,
     res: Response,
   ): Promise<void> {
     try {
-      await this.clientFavoriteService.deleteClientFavorite(id);
+      await this.clientFavoriteService.deleteClientFavorite(barberShopId);
       res.status(200).json({ message: 'Barbearia excluída com sucesso.' });
     } catch (error) {
       res.status(404).json({ message: 'Erro ao deletar' });

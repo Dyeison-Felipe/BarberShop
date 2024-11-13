@@ -2,6 +2,7 @@ import {
   PaginationInput,
   PaginationOutput,
 } from "../../../shared/repositories/pagination.repository.js";
+import { FavoriteList } from "../entities/client-favorite-list.entity.js";
 import { ClientFavoriteList } from "../repositories/client-favorite.repository.js";
 
 export type CreateFavoriteInput = {
@@ -26,5 +27,5 @@ export interface ClientFavoriteService {
   createClientFavorite(
     createFavoriteInput: CreateFavoriteInput
   ): Promise<CreateFavoriteListOutput>;
-  deleteClientFavorite(id: string): Promise<void>;
+  deleteClientFavorite(barberShopId: string): Promise<void>;
 }

@@ -4,10 +4,14 @@ import {
   PaginationInput,
   PaginationOutput,
 } from "../../../../shared/repositories/pagination.repository.js";
-import { FavoriteList } from "../../entities/client-favorite-list.entity.js";
+import {
+  FavoriteList,
+  FavoriteListProps,
+} from "../../entities/client-favorite-list.entity.js";
 import {
   ClientFavoriteList,
   ClientFavoriteRepository,
+  FavoriteClientAndBarberShop,
 } from "../client-favorite.repository.js";
 
 export class ClientFavoriteFirebaseRepository
@@ -16,6 +20,36 @@ export class ClientFavoriteFirebaseRepository
   constructor(
     private readonly firebaseRepository: FirebaseFirestore.Firestore
   ) {}
+
+  async findFavoriteInClientByIdAndBarberShopById({
+    clientId,
+    barberShopId,
+  }: FavoriteClientAndBarberShop): Promise<FavoriteList | null> {
+    const snapshot = await this.firebaseRepository
+      .collection("Favorite")
+      .where("clientId", "==", clientId)
+      .where("barberShopId", "==", barberShopId)
+      .get();
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const favoriteFound = snapshot.docs[0];
+
+    const favoriteProps = {
+      id: favoriteFound.id,
+      ...favoriteFound.data(),
+    } as FavoriteListProps;
+    console.log(
+      "🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():",
+      favoriteFound.data()
+    );
+
+    const barberShopEntity = new FavoriteList(favoriteProps);
+
+    return barberShopEntity;
+  }
 
   async getClientFavoriteList(
     clientId: string,
@@ -68,33 +102,44 @@ export class ClientFavoriteFirebaseRepository
     try {
       const { id, ...favoriteListData } = favoriteList.toObject();
       await this.firebaseRepository
-        .collection('Favorite')
+        .collection("Favorite")
         .doc(id)
         .set(favoriteListData);
       return favoriteList;
     } catch (error) {
       console.log(
-        '🚀 ~ FavoriteListFirebaseRepository ~ createFavoriteList ~ error:',
-        error,
+        "🚀 ~ FavoriteListFirebaseRepository ~ createFavoriteList ~ error:",
+        error
       );
       return null;
     }
   }
 
-  async deleteClientFavoriteList(id: string): Promise<void> {
+  async deleteClientFavoriteList(
+    clientId: string,
+    barberShopId: string
+  ): Promise<boolean> {
     try {
       const snapshot = await this.firebaseRepository
         .collection("Favorite")
-        .doc(id)
+        .where("barberShopId", "==", barberShopId)
+        .where("clientId", "==", clientId)
         .get();
 
-      if (!snapshot.exists) {
-        return;
+      if (snapshot.empty) {
+        return false;
       }
 
-      await this.firebaseRepository.collection("Favorite").doc(id).delete();
+      const batch = this.firebaseRepository.batch();
+      snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit(); 
+      return true;
     } catch (error) {
-      return;
+      console.error("Erro ao deletar favorito:", error);
+      return false;
     }
   }
 }
