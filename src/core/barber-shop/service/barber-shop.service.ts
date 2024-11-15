@@ -19,7 +19,7 @@ export type BarberShopInput = {
 
 export type CreateBarberShopInput = BarberShopInput;
 
-export type UpdateBarberShopInput = Partial<BarberShopInput> & {
+export type UpdateBarberShopInput = BarberShopInput & {
   id: string;
   photo?: Image | null;
 };

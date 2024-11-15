@@ -27,12 +27,13 @@ type UpsertBarberShop = {
   city: string;
   state: string;
   phone: string;
+};
+
+export type CreateBarberShop = UpsertBarberShop & {
   clientId: string;
 };
 
-export type CreateBarberShop = UpsertBarberShop;
-
-type UpdateBarberShop = Partial<UpsertBarberShop> & {
+type UpdateBarberShop = UpsertBarberShop & {
   photoUrl?: string;
 };
 
@@ -111,7 +112,15 @@ export class BarberShop {
   updateBarberShop(update: UpdateBarberShop) {
     this.props = {
       ...this.props,
-      ...update,
+      name: update.name,
+      cnpj: update.cnpj,
+      cep: update.cep,
+      number: update.number,
+      neighborhood: update.neighborhood,
+      street: update.street,
+      city: update.city,
+      state: update.state,
+      phone: update.phone,
       photoUrl: update.photoUrl ?? '',
     };
   }
