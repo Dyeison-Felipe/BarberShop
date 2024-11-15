@@ -47,7 +47,7 @@ export class ClientServiceImpl implements ClientService {
       throw new Error('Cliente não encontrado');
     }
 
-    const { password, ...clientOutput } = client?.toObject();
+    const { password, ...clientOutput } = client?.toJSON();
 
     return clientOutput;
   }

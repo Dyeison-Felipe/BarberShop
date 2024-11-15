@@ -61,7 +61,7 @@ export class ClientMongoRepository implements ClientRepository {
 
   async createClient(client: Client): Promise<Client | null> {
     try {
-      const { id, ...json } = client.toObject();
+      const { id, ...json } = client.toJSON();
       const clientSchema = new ClientSchema({ _id: id, ...json });
       await clientSchema.save();
       return client;
@@ -73,7 +73,7 @@ export class ClientMongoRepository implements ClientRepository {
 
   async updateClient(client: Client): Promise<Client | null> {
     try {
-      const { id, ...json } = client.toObject();
+      const { id, ...json } = client.toJSON();
       const clientSchema = new ClientSchema({ _id: id, ...json });
       clientSchema.isNew = false;
       await clientSchema.save();

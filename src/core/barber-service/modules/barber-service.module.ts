@@ -7,8 +7,8 @@ import { BarberServiceServiceImpl } from '../services/implementation/barber-serv
 
 export class BarberServiceModule implements IModule {
   buildModule(): BuildModule {
-    // const barberServiceRepository = new BarberServiceFirebaseRepository(db);
-    const barberServiceRepository = new BarberServiceMongoRepository();
+    const barberServiceRepository = new BarberServiceFirebaseRepository(db);
+    // const barberServiceRepository = new BarberServiceMongoRepository();
     const barberServiceService = new BarberServiceServiceImpl(
       barberServiceRepository,
     );

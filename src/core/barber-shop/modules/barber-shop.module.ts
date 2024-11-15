@@ -9,8 +9,8 @@ import { BarberShopServiceImpl } from '../service/implementations/barber-shop.se
 
 export class BarberShopModule implements IModule {
   buildModule(): BuildModule {
-    // const barberShopRepository = new BarberShopFirebaseRepository(db);
-    const barberShopRepository = new BarberShopMongoRepository();
+    const barberShopRepository = new BarberShopFirebaseRepository(db);
+    // const barberShopRepository = new BarberShopMongoRepository();
     const imageService = new ImageFirebaseStorageService();
     const asyncLocalStorageService = new AsyncLocalStorageService();
 

@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Get,
-  Param,
   Put,
   Delete,
   Middleware,
@@ -17,6 +16,7 @@ import {
   BarberServiceOutput,
   BarberServiceService,
 } from '../services/barber-service.service.js';
+import { Param } from '../../../shared/decorators/http/route-param.decorator.js';
 
 @Controller('/api/barber-service/v1')
 export class BarberServiceController {

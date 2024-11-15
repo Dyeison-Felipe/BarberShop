@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Middleware,
-  Param,
   Post,
   Put,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
@@ -21,6 +20,7 @@ import {
 } from '../dtos/update-opening-hours.dto.js';
 import { ReturnOpeningHoursDto } from '../dtos/return-update-opening-hours.dto.js';
 import { Request, Response } from 'express';
+import { Param } from '../../../shared/decorators/http/route-param.decorator.js';
 
 @Controller('/api/barber-opening-hours/v1')
 export class BarberOpeningHoursController {

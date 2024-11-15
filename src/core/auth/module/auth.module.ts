@@ -11,8 +11,8 @@ import { AuthServiceImpl } from '../services/implementation/auth.service.js';
 
 export class AuthModule implements IModule {
   buildModule(): BuildModule {
-    // const clientRepository = new ClientFirebaseRepository(db);
-    const clientRepository = new ClientMongoRepository();
+    const clientRepository = new ClientFirebaseRepository(db);
+    // const clientRepository = new ClientMongoRepository();
     const hashService = new HashBcryptService();
     const jwtService = new JsonWebTokenService();
     const authService = new AuthServiceImpl(

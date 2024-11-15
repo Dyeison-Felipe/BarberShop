@@ -3,10 +3,12 @@ import {
   Post,
   Body,
   Get,
-  Param,
   Middleware,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
-import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
+import {
+  Param,
+  Query,
+} from '../../../shared/decorators/http/route-param.decorator.js';
 import {
   PaginationOutput,
   PaginationInput,

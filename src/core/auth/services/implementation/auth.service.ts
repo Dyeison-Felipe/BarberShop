@@ -21,7 +21,7 @@ export class AuthServiceImpl implements AuthService {
       loginInput.email,
     );
 
-    if (!client) {
+    if (!client || client?.isDeleted) {
       throw new Error('email ou senha inválidos');
     }
 
@@ -52,7 +52,7 @@ export class AuthServiceImpl implements AuthService {
       { expiresIn },
     );
 
-    const { password, ...clientOutput } = client.toObject();
+    const { password, ...clientOutput } = client.toJSON();
 
     return { client: clientOutput, token };
   }

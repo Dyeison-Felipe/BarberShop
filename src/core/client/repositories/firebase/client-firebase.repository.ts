@@ -63,7 +63,7 @@ export class ClientFirebaseRepository implements ClientRepository {
 
   async createClient(client: Client): Promise<Client | null> {
     try {
-      const { id, ...clientData } = client.toObject();
+      const { id, ...clientData } = client.toJSON();
       const db = await this.firebaseRepository
         .collection('Client')
         .doc(id)
@@ -80,7 +80,7 @@ export class ClientFirebaseRepository implements ClientRepository {
 
   async updateClient(client: Client): Promise<Client | null> {
     try {
-      const { id, ...clientData } = client.toObject();
+      const { id, ...clientData } = client.toJSON();
       console.log(
         '🚀 ~ ClientFirebaseRepository ~ updateClient ~ clientData:',
         clientData,
@@ -125,16 +125,10 @@ export class ClientFirebaseRepository implements ClientRepository {
 
   async deleteClient(id: string): Promise<boolean> {
     try {
-      const snapshot = await this.firebaseRepository
+      await this.firebaseRepository
         .collection('Client')
         .doc(id)
-        .get();
-
-      if (!snapshot.exists) {
-        return false;
-      }
-
-      await this.firebaseRepository.collection('Client').doc(id).delete();
+        .update({ isDeleted: true });
 
       return true;
     } catch (error) {

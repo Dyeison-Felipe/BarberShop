@@ -31,18 +31,22 @@ export class AuthMiddleware implements IMiddleware {
 
       const isJwtValid = this.jwtService.verifyJwt(token, jwtSecret);
 
-      if (!isJwtValid) {
-        throw new Error('Acesso não autorizado');
-      }
-
       const jwtPayload = this.jwtService.decodeJwt<LoginPayload>(token);
 
       const loggedUser = await this.clientRepository.getClientById(
         jwtPayload.id,
       );
 
+      console.log(
+        '🚀 ~ AuthMiddleware ~ use ~ loggedUser?.isDeleted:',
+        loggedUser?.isDeleted,
+      );
+      if (!isJwtValid || loggedUser?.isDeleted) {
+        throw new Error('Acesso não autorizado');
+      }
+
       this.storageRequestService.run(new Map<string, Client>(), () => {
-        this.storageRequestService.set('logged_user', loggedUser?.toObject());
+        this.storageRequestService.set('logged_user', loggedUser?.toJSON());
 
         next();
       });
