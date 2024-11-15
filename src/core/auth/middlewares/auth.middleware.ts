@@ -5,6 +5,7 @@ import { JwtService } from '../../../shared/jwt-service/jwt-service.js';
 import { StorageRequestService } from '../../../shared/storage-request-service/storage-request-service.js';
 import { LoginPayload } from '../services/auth.service.js';
 import { Client } from '../../client/entities/client.entity.js';
+import { Constants } from '../../../shared/utils/constants.js';
 
 export class AuthMiddleware implements IMiddleware {
   constructor(
@@ -44,9 +45,11 @@ export class AuthMiddleware implements IMiddleware {
       if (!isJwtValid || loggedUser?.isDeleted) {
         throw new Error('Acesso não autorizado');
       }
-
       this.storageRequestService.run(new Map<string, Client>(), () => {
-        this.storageRequestService.set('logged_user', loggedUser?.toJSON());
+        this.storageRequestService.set(
+          Constants.loggedUser,
+          loggedUser?.toJSON(),
+        );
 
         next();
       });

@@ -8,7 +8,11 @@ export type ClientProps = {
   isDeleted: boolean;
 };
 
-export type UpdateClient = { photoUrl?: string; name?: string };
+export type UpdateClient = {
+  photoUrl?: string;
+  name?: string;
+  phoneNumber?: string;
+};
 
 export type CreateClient = {
   name: string;
@@ -63,6 +67,7 @@ export class Client {
     this.props = {
       ...this.props,
       photoUrl: update.photoUrl ?? '',
+      phoneNumber: update.phoneNumber ?? '',
       name: update.name ?? '',
     };
   }

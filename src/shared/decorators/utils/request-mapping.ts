@@ -64,6 +64,7 @@ export const applyRoutes = (
 
       app[route.method](
         fullPath,
+        ...functionBasedMiddlewares,
         ...(classBasedMiddlewares?.map(
           (middleware) =>
             async (req: Request, res: Response, next: NextFunction) => {
@@ -78,7 +79,6 @@ export const applyRoutes = (
               }
             },
         ) ?? []),
-        ...functionBasedMiddlewares,
         async (req: Request, res: Response) => {
           // try {
           const args: any[] = [req, res];
