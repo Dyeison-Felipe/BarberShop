@@ -42,7 +42,7 @@ export class BarberShopServiceImpl implements BarberShopService {
       return null;
     }
 
-    const barberShopOutput = barberShop.toObject();
+    const barberShopOutput = barberShop.toJSON();
     return barberShopOutput;
   }
 
@@ -55,7 +55,7 @@ export class BarberShopServiceImpl implements BarberShopService {
       throw new Error('Barbearia não encontrada');
     }
 
-    const barberShopOutput = barberShop.toObject();
+    const barberShopOutput = barberShop.toJSON();
 
     return barberShopOutput;
   }

@@ -1,6 +1,3 @@
-// import { OpeningWeekDays } from './opening-week-days.entity.js';
-// import { Services } from "./service.entity.js";
-
 export type BarberShopProps = {
   id: string;
   name: string;
@@ -15,6 +12,7 @@ export type BarberShopProps = {
   rating: number;
   photoUrl?: string | null;
   clientId: string;
+  isDeleted: boolean;
 };
 
 type UpsertBarberShop = {
@@ -91,6 +89,10 @@ export class BarberShop {
     return this.props.clientId;
   }
 
+  get isDeleted() {
+    return this.props.isDeleted;
+  }
+
   static createBarberShop(create: CreateBarberShop): BarberShop {
     return new BarberShop({
       id: crypto.randomUUID().toString(),
@@ -106,6 +108,7 @@ export class BarberShop {
       clientId: create.clientId,
       rating: 5,
       photoUrl: null,
+      isDeleted: false,
     });
   }
 
@@ -125,7 +128,7 @@ export class BarberShop {
     };
   }
 
-  toObject(): BarberShopProps {
+  toJSON(): BarberShopProps {
     return {
       ...this.props,
     };

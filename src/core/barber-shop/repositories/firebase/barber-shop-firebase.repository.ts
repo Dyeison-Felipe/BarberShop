@@ -1,5 +1,6 @@
 import { admin } from '../../../../shared/repositories/firebase/config.js';
 import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
+import { FirebaseRemoveDeleted } from '../../../../shared/repositories/firebase/remove-deleted.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -22,9 +23,9 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
     pagination: PaginationInput,
     search?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
-    let query = this.firebaseRepository
-      .collection('Barber-Shop')
-      .orderBy(admin.firestore.FieldPath.documentId());
+    let query = FirebaseRemoveDeleted.remove(
+      this.firebaseRepository.collection('Barber-Shop'),
+    ).orderBy(admin.firestore.FieldPath.documentId());
 
     if (search) {
       query = query.where('name', '==', search);
@@ -53,8 +54,9 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   }
 
   async getBarberShopByClientId(clientId: string): Promise<BarberShop | null> {
-    const snapshot = await this.firebaseRepository
-      .collection('Barber-Shop')
+    const snapshot = await FirebaseRemoveDeleted.remove(
+      this.firebaseRepository.collection('Barber-Shop'),
+    )
       .where('clientId', '==', clientId)
       .get();
 
@@ -68,10 +70,6 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       id: barberShopFound.id,
       ...barberShopFound.data(),
     } as BarberShopProps;
-    console.log(
-      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
-      barberShopFound.data(),
-    );
 
     const barberShopEntity = new BarberShop(barberShopProps);
 
@@ -84,7 +82,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       .doc(id)
       .get();
 
-    if (!snapshot.exists) {
+    if (!snapshot.exists || snapshot.data()?.isDelete) {
       return null;
     }
 
@@ -92,10 +90,6 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       id: snapshot.id,
       ...snapshot.data(),
     } as BarberShopProps;
-    console.log(
-      '🚀 ~ BarberShopFirebaseRepository ~ getBarberShopById ~ barberShopProps.snapshot.data():',
-      snapshot.data(),
-    );
 
     const barberShopEntity = new BarberShop(barberShopProps);
 
@@ -103,10 +97,11 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   }
 
   async getBarberShopByCnpj(cnpj: string): Promise<BarberShop | null> {
-    const snapshot = await this.firebaseRepository
-      .collection('Barber-Shop')
-      .where('cnpj', '==', cnpj)
-      .get();
+    const snapshot = await FirebaseRemoveDeleted.remove(
+      this.firebaseRepository
+        .collection('Barber-Shop')
+        .where('cnpj', '==', cnpj),
+    ).get();
 
     if (snapshot.empty) {
       return null;
@@ -118,10 +113,6 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
       id: barberShopFound.id,
       ...barberShopFound.data(),
     } as BarberShopProps;
-    console.log(
-      '🚀 ~ ClientFirebaseRepository ~ getClientById ~ clientProps.snapshot.data():',
-      barberShopFound.data(),
-    );
 
     const barberShopEntity = new BarberShop(barberShopProps);
 
@@ -130,14 +121,14 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
-      const { id, ...barberShopData } = barberShop.toObject();
+      const { id, ...barberShopData } = barberShop.toJSON();
       await this.firebaseRepository
         .collection('Barber-Shop')
         .doc(id)
         .set(barberShopData);
       return barberShop;
     } catch (error) {
-      console.log(
+      console.error(
         '🚀 ~ BarberShopFirebaseRepository ~ createBarberShop ~ error:',
         error,
       );
@@ -147,7 +138,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
   async update(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
-      const { id, ...barberShopData } = barberShop.toObject();
+      const { id, ...barberShopData } = barberShop.toJSON();
       const db = await this.firebaseRepository
         .collection('Barber-Shop')
         .doc(id)
@@ -164,16 +155,11 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
   async deleteBarberShop(id: string): Promise<boolean> {
     try {
-      const snapshot = await this.firebaseRepository
+      await this.firebaseRepository
         .collection('Barber-Shop')
         .doc(id)
-        .get();
+        .update({ isDeleted: true });
 
-      if (!snapshot.exists) {
-        return false;
-      }
-
-      await this.firebaseRepository.collection('Barber-Shop').doc(id).delete();
       return true;
     } catch (error) {
       return false;
