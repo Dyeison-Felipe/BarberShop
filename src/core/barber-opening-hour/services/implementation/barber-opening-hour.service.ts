@@ -95,12 +95,12 @@ export class BarberOpeningHoursServiceImpl
   }
 
   async createOpeningHours(
-    createOpeningHoursInput: CreateOpeningHoursInput[],
+    createOpeningHoursInput: CreateOpeningHoursInput,
   ): Promise<UpsertOpeningHoursOutput> {
     const createdOpeningHours = await Promise.all(
-      createOpeningHoursInput.map(async (hours) => {
+      createOpeningHoursInput.created.map(async (hoursCreated) => {
         const openingHoursEntity = OpeningHours.createOpeningHours({
-          ...hours,
+          ...hoursCreated,
         });
 
         const newOpeningHours =
@@ -114,6 +114,12 @@ export class BarberOpeningHoursServiceImpl
 
         return newOpeningHours;
       }),
+    );
+
+    await Promise.all(
+      createOpeningHoursInput.deleted.map((hoursDeleted) =>
+        this.barberOpeningHoursRepository.deleteOpeningHours(hoursDeleted.id),
+      ),
     );
 
     const createOpeningHoursOutput: UpsertOpeningHoursOutput = {

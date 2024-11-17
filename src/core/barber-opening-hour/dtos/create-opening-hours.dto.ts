@@ -5,6 +5,11 @@ export class CreateOpeningHoursDto {
   barberShopId: string;
 }
 
+export class DeleteOpeningHours {
+  id: string;
+}
+
 export class CreateOpeningHoursDtoArray {
-  weekdays: CreateOpeningHoursDto[];
+  created: CreateOpeningHoursDto[];
+  deleted: DeleteOpeningHours[];
 }

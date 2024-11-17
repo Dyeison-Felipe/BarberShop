@@ -38,15 +38,6 @@ export class BarberOpeningHoursFirebaseRepository
 
   async deleteOpeningHours(id: string): Promise<boolean> {
     try {
-      const snapshot = await this.firebaseRepository
-        .collection('Barber-Opening-Hours')
-        .doc(id)
-        .get();
-
-      if (!snapshot.exists) {
-        return false;
-      }
-
       await this.firebaseRepository
         .collection('Barber-Opening-Hours')
         .doc(id)

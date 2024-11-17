@@ -40,17 +40,13 @@ export class BarberOpeningHoursController {
   }
 
   @Middleware('AuthMiddleware')
-  @Post('/create')
+  @Post()
   async createOpeningHours(
     @Body() createOpeningHoursDtoArray: CreateOpeningHoursDtoArray,
   ): Promise<ReturnCreateOpeningHoursDto> {
-    console.log(
-      '🚀 ~ BarberOpeningHoursController ~ createOpeningHours ~ createOpeningHoursDtoArray:',
-      createOpeningHoursDtoArray,
-    );
     const createOpeningHours =
       await this.barberOpeningHoursService.createOpeningHours(
-        createOpeningHoursDtoArray.weekdays,
+        createOpeningHoursDtoArray,
       );
 
     return createOpeningHours;

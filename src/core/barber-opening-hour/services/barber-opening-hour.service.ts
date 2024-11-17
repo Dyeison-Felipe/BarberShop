@@ -9,7 +9,14 @@ type WeekdayOutput = {
   openingHours: OpeningHourOutput[];
 };
 
-export type CreateOpeningHoursInput = UpsertOpeningHours;
+export type DeletedOpeningHours = {
+  id: string;
+};
+
+export type CreateOpeningHoursInput = {
+  created: UpsertOpeningHours[];
+  deleted: DeletedOpeningHours[];
+};
 
 export type UpdateOpeningHours = UpsertOpeningHours & { id: string };
 
@@ -21,7 +28,7 @@ export type UpsertOpeningHours = {
 };
 
 export type UpsertOpeningHoursOutput = {
-  weekdays: (CreateOpeningHoursInput & { id: string })[];
+  weekdays: (UpsertOpeningHours & { id: string })[];
 };
 
 export type ReturnGetBarberOpeningHoursOutput = {
@@ -30,13 +37,13 @@ export type ReturnGetBarberOpeningHoursOutput = {
 
 export interface BarberOpeningHoursService {
   getBarberOpeningHours(
-    barberShopId: string
+    barberShopId: string,
   ): Promise<ReturnGetBarberOpeningHoursOutput>;
   createOpeningHours(
-    createOpeningHoursInput: CreateOpeningHoursInput[]
+    createOpeningHoursInput: CreateOpeningHoursInput,
   ): Promise<UpsertOpeningHoursOutput>;
   updateOpeningHours(
-    updateOpeningHours: UpdateOpeningHours[]
+    updateOpeningHours: UpdateOpeningHours[],
   ): Promise<UpsertOpeningHoursOutput>;
   deleteOpeningHours(id: string): Promise<void>;
 }
