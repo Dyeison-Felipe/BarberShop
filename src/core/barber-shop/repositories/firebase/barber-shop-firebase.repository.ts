@@ -22,6 +22,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
   async getBarbersShop(
     pagination: PaginationInput,
     search?: string,
+    clientId?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
     let query = FirebaseRemoveDeleted.remove(
       this.firebaseRepository.collection('Barber-Shop'),
@@ -38,7 +39,7 @@ export class BarberShopFirebaseRepository implements BarberShopRepository {
 
     const barberShopList: BarberShopList[] = [];
     snapshot.forEach((element) => {
-      const elementData = element.data();
+      const elementData = element?.data();
       barberShopList.push({
         id: element.id,
         name: elementData.name,

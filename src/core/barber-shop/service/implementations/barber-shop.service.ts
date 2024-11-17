@@ -64,9 +64,14 @@ export class BarberShopServiceImpl implements BarberShopService {
     pagination: PaginationInput,
     search?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
+
     const barbersShop = await this.barberShopRepository.getBarbersShop(
       pagination,
       search,
+      client?.id,
     );
 
     return barbersShop;
@@ -86,11 +91,9 @@ export class BarberShopServiceImpl implements BarberShopService {
     const client = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
-    console.log('🚀 ~ BarberShopServiceImpl ~ client:', client);
 
     const barberShopEntity = BarberShop.createBarberShop({
       ...createBarberShopInput,
-      // TODO Colocar o ID do cliente logado
       clientId: client!.id,
     });
     const createdBarberShop = await this.barberShopRepository.createBarberShop(

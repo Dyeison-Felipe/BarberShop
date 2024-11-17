@@ -35,8 +35,10 @@ export class BarberShopController {
   // Possibilita não depender de implementações, mas de abstrações, como a interface BarberShopService
   constructor(private readonly barberShopService: BarberShopService) {}
 
+  @Middleware('LoggedClientMiddleware')
   @Get()
   async getBarberShop(
+    req: Request,
     @Query('limit') limit: string,
     @Query('page') page: string,
     @Query('search') search?: string,
