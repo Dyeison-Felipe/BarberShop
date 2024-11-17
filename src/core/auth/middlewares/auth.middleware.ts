@@ -17,7 +17,9 @@ export class AuthMiddleware implements IMiddleware {
   }
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const token = this.extractTokenFromHeader(req);
+    // const token = this.extractTokenFromHeader(req);
+    const token = req.cookies.token;
+    console.log('🚀 ~ AuthMiddleware ~ use ~ token:', token);
 
     try {
       const jwtSecret = process.env.JWT_SECRET;

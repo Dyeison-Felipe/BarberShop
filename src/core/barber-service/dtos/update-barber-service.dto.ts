@@ -1,15 +1,15 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
 export class UpdateBarberServiceDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsInt()
+  @IsPositive()
   @IsNotEmpty()
   price: number;
 
-  @IsInt()
+  @IsPositive()
   @IsNotEmpty()
   duration: number;
 }
