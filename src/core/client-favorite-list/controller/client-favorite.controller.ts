@@ -6,6 +6,7 @@ import {
   Get,
   Middleware,
   Post,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { ClientFavoriteService } from '../service/client-favorite.service.js';
 import {
@@ -45,7 +46,9 @@ export class ClientFavoriteController {
   @Middleware('AuthMiddleware')
   @Post('/create-favorite')
   async createFavoriteList(
-    @Body() createFavoriteListDto: CreateFavoriteListDto,
+    @Valid(CreateFavoriteListDto)
+    @Body()
+    createFavoriteListDto: CreateFavoriteListDto,
   ): Promise<ReturnCreateFavoriteListDto> {
     const favoriteList = await this.clientFavoriteService.createClientFavorite(
       createFavoriteListDto,

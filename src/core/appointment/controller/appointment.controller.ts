@@ -4,6 +4,7 @@ import {
   Body,
   Get,
   Middleware,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import {
   Param,
@@ -62,7 +63,9 @@ export class AppointmentController {
   @Middleware('AuthMiddleware')
   @Post()
   async createAppointment(
-    @Body() createAppointmentDto: CreateAppointmentDto,
+    @Valid(CreateAppointmentDto)
+    @Body()
+    createAppointmentDto: CreateAppointmentDto,
   ): Promise<ReturnCreateAppointmentDto> {
     const appointment = await this.appointmentService.createAppointment(
       createAppointmentDto,

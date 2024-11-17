@@ -14,7 +14,7 @@ export class AuthController {
 
   @Post('/login')
   async login(
-    req: Request,
+    _: Request,
     res: Response,
     @Valid(LoginDto) @Body() login: LoginDto,
   ) {

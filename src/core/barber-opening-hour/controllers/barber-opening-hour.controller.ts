@@ -6,6 +6,7 @@ import {
   Middleware,
   Post,
   Put,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { ReturnGetBarberOpeningHoursDto } from '../dtos/return-get-barber-opening-hours.dto.js';
 import {
@@ -42,7 +43,9 @@ export class BarberOpeningHoursController {
   @Middleware('AuthMiddleware')
   @Post()
   async createOpeningHours(
-    @Body() createOpeningHoursDtoArray: CreateOpeningHoursDtoArray,
+    @Valid(CreateOpeningHoursDtoArray)
+    @Body()
+    createOpeningHoursDtoArray: CreateOpeningHoursDtoArray,
   ): Promise<ReturnCreateOpeningHoursDto> {
     const createOpeningHours =
       await this.barberOpeningHoursService.createOpeningHours(
@@ -55,7 +58,9 @@ export class BarberOpeningHoursController {
   @Middleware('AuthMiddleware')
   @Put('/update')
   async updateOpeningHours(
-    @Body() updateOpeningHoursDto: UpdateOpeningHoursArrayDto,
+    @Valid(UpdateOpeningHoursArrayDto)
+    @Body()
+    updateOpeningHoursDto: UpdateOpeningHoursArrayDto,
   ): Promise<ReturnOpeningHoursDto> {
     const updateOpeningHours =
       await this.barberOpeningHoursService.updateOpeningHours(

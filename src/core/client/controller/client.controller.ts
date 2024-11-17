@@ -7,6 +7,7 @@ import {
   Middleware,
   Post,
   Put,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
 import {
@@ -50,7 +51,7 @@ export class ClientController {
 
   @Post()
   async createClient(
-    @Body() createClientDto: CreateClientDto,
+    @Valid(CreateClientDto) @Body() createClientDto: CreateClientDto,
   ): Promise<ReturnCreateClientDto> {
     const client = await this.clientService.createClient(createClientDto);
 
@@ -62,7 +63,7 @@ export class ClientController {
   @Put()
   async updateClient(
     req: Request,
-    @Body() updateClient: UpdateClientDto,
+    @Valid(UpdateClientDto) @Body() updateClient: UpdateClientDto,
   ): Promise<ReturnUpdateClientDto> {
     const client = await this.clientService.updateClient({
       photo: ImageFirebaseStorageService.imageAdapter(req.file),
