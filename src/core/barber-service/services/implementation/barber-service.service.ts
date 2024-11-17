@@ -104,7 +104,7 @@ export class BarberServiceServiceImpl implements BarberServiceService {
   }
 
   private toUpdateOutput(barberService: BarberService): BarberServiceOutput {
-    const barberServiceObject = barberService.toObject();
+    const barberServiceObject = barberService.toJSON();
 
     const output: BarberServiceOutput = {
       barberShopId: barberServiceObject.barberShopId,

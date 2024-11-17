@@ -15,7 +15,6 @@ import {
   BarberShopOutput,
   UpdateBarberShopInput,
   BarberShopProfileInput,
-  BarberShopByIdClientInput,
 } from '../barber-shop.service.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 import { ClientProps } from '../../../client/entities/client.entity.js';
@@ -33,9 +32,17 @@ export class BarberShopServiceImpl implements BarberShopService {
     const loggedUser = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
+    console.log(
+      '🚀 ~ BarberShopServiceImpl ~ getBarberShopByClientId ~ loggedUser:',
+      loggedUser,
+    );
 
     const barberShop = await this.barberShopRepository.getBarberShopByClientId(
       loggedUser!.id,
+    );
+    console.log(
+      '🚀 ~ BarberShopServiceImpl ~ getBarberShopByClientId ~ barberShop:',
+      barberShop,
     );
 
     if (!barberShop) {

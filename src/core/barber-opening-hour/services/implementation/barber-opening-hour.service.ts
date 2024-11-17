@@ -15,6 +15,51 @@ export class BarberOpeningHoursServiceImpl
   constructor(
     private readonly barberOpeningHoursRepository: BarberOpeningHoursRepository,
   ) {}
+  async getBarberOpeningHours(
+    barberShopId: string,
+  ): Promise<ReturnGetBarberOpeningHoursOutput> {
+    const barberOpeningHours =
+      await this.barberOpeningHoursRepository.getAllByBarberShopId(
+        barberShopId,
+      );
+
+    const weekdaysMap: Record<string, OpeningHourOutput[]> = {};
+
+    // Agrupa os horários por dia da semana
+    barberOpeningHours.forEach(({ weekday, start, end, id }) => {
+      if (!weekdaysMap[weekday]) {
+        weekdaysMap[weekday] = [];
+      }
+      weekdaysMap[weekday].push({ start, end, id });
+    });
+
+    // Converte o mapa em um array de objetos no formato ReturnGetBarberOpeningHoursOutput
+    const weekdays = Object.entries(weekdaysMap).map(
+      ([name, openingHours]) => ({
+        name,
+        openingHours: openingHours.sort(
+          (a, b) => +a.start.split(':')[0] - +b.start.split(':')[0],
+        ),
+      }),
+    );
+
+    const correctOrder = [
+      'Domingo',
+      'Segunda',
+      'Terça',
+      'Quarta',
+      'Quinta',
+      'Sexta',
+      'Sábado',
+    ];
+
+    weekdays.sort(
+      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name),
+    );
+
+    return { weekdays };
+  }
+
   async deleteOpeningHours(id: string): Promise<void> {
     const openingHour =
       await this.barberOpeningHoursRepository.getOpeningHourById(id);
@@ -57,41 +102,6 @@ export class BarberOpeningHoursServiceImpl
     }
 
     return { weekdays: updatedOpeningHours };
-  }
-
-  async getBarberOpeningHours(
-    barberShopId: string,
-  ): Promise<ReturnGetBarberOpeningHoursOutput> {
-    const barberOpeningHours =
-      await this.barberOpeningHoursRepository.getAllByBarberShopId(
-        barberShopId,
-      );
-
-    const weekdaysMap: Record<string, OpeningHourOutput[]> = {};
-
-    // Agrupa os horários por dia da semana
-    barberOpeningHours.forEach(({ weekday, start, end, id }) => {
-      if (!weekdaysMap[weekday]) {
-        weekdaysMap[weekday] = [];
-      }
-      weekdaysMap[weekday].push({ start, end, id });
-    });
-
-    // Converte o mapa em um array de objetos no formato ReturnGetBarberOpeningHoursOutput
-    const weekdays = Object.entries(weekdaysMap).map(
-      ([name, openingHours]) => ({
-        name,
-        openingHours,
-      }),
-    );
-
-    const correctOrder = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
-
-    weekdays.sort(
-      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name),
-    );
-
-    return { weekdays };
   }
 
   async createOpeningHours(

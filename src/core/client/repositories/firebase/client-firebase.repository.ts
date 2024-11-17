@@ -62,6 +62,10 @@ export class ClientFirebaseRepository implements ClientRepository {
   }
 
   async createClient(client: Client): Promise<Client | null> {
+    console.log(
+      '🚀 ~ ClientFirebaseRepository ~ createClient ~ client:',
+      client,
+    );
     try {
       const { id, ...clientData } = client.toJSON();
       const db = await this.firebaseRepository
