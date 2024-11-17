@@ -6,6 +6,7 @@ import { StorageRequestService } from '../../../shared/storage-request-service/s
 import { LoginPayload } from '../services/auth.service.js';
 import { Client } from '../../client/entities/client.entity.js';
 import { Constants } from '../../../shared/utils/constants.js';
+import { UnauthorizedError } from '../../../shared/errors/unauthorized-error.js';
 
 export class AuthMiddleware implements IMiddleware {
   constructor(
@@ -25,11 +26,11 @@ export class AuthMiddleware implements IMiddleware {
       const jwtSecret = process.env.JWT_SECRET;
 
       if (!jwtSecret) {
-        throw new Error('jwtSecret invalido');
+        throw new UnauthorizedError('jwtSecret invalido');
       }
 
       if (!token) {
-        throw new Error('Acesso não autorizado');
+        throw new UnauthorizedError('Acesso não autorizado');
       }
 
       const isJwtValid = this.jwtService.verifyJwt(token, jwtSecret);
@@ -45,7 +46,7 @@ export class AuthMiddleware implements IMiddleware {
         loggedUser?.isDeleted,
       );
       if (!isJwtValid || loggedUser?.isDeleted) {
-        throw new Error('Acesso não autorizado');
+        throw new UnauthorizedError('Acesso não autorizado');
       }
       this.storageRequestService.run(new Map<string, Client>(), () => {
         this.storageRequestService.set(
@@ -56,7 +57,7 @@ export class AuthMiddleware implements IMiddleware {
         next();
       });
     } catch (error) {
-      throw new Error('Acesso não autorizado');
+      throw new UnauthorizedError('Acesso não autorizado');
     }
   }
 

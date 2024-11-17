@@ -1,3 +1,5 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import { OpeningHours } from '../../entities/barber-opening-hour.entity.js';
 import { BarberOpeningHoursRepository } from '../../repositories/barber-opening-hour.repository.js';
 import {
@@ -65,14 +67,14 @@ export class BarberOpeningHoursServiceImpl
       await this.barberOpeningHoursRepository.getOpeningHourById(id);
 
     if (!openingHour) {
-      throw new Error('Usuário não encontrado');
+      throw new ResourceNotFoundError('Usuário não encontrado');
     }
 
     const deleteOpeningHours =
       await this.barberOpeningHoursRepository.deleteOpeningHours(id);
 
     if (deleteOpeningHours === null) {
-      throw new Error('Erro ao deletar');
+      throw new InternalServerError('Erro ao deletar');
     }
   }
 
@@ -98,7 +100,7 @@ export class BarberOpeningHoursServiceImpl
       );
 
     if (!updatedOpeningHours) {
-      throw new Error('Erro ao atualizar horários');
+      throw new InternalServerError('Erro ao atualizar horários');
     }
 
     return { weekdays: updatedOpeningHours };
@@ -119,7 +121,7 @@ export class BarberOpeningHoursServiceImpl
           );
 
         if (!newOpeningHours) {
-          throw new Error('Erro ao criar as horas');
+          throw new InternalServerError('Erro ao criar as horas');
         }
 
         return newOpeningHours;

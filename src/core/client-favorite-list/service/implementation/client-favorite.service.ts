@@ -1,3 +1,5 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -52,7 +54,7 @@ export class ClientFavoriteServiceImpl implements ClientFavoriteService {
       await this.clientFavoriteRepository.createClientFavorite(favoriteEntity);
 
     if (!createFavorite) {
-      throw new Error('erro ao adicionar aos favoritos');
+      throw new InternalServerError('erro ao adicionar aos favoritos');
     }
 
     const favoriteOutput: CreateFavoriteListOutput = {
@@ -66,7 +68,7 @@ export class ClientFavoriteServiceImpl implements ClientFavoriteService {
   async deleteClientFavorite(id: string): Promise<void> {
     const favorite = this.clientFavoriteRepository.deleteClientFavoriteList(id);
     if (!favorite) {
-      throw new Error(`favorite id ${id} NotFound`);
+      throw new ResourceNotFoundError(`favorite id ${id} NotFound`);
     }
   }
 }

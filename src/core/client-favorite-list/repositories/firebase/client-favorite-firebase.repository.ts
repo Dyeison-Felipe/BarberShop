@@ -1,3 +1,4 @@
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import { admin } from '../../../../shared/repositories/firebase/config.js';
 import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
 import {
@@ -41,7 +42,9 @@ export class ClientFavoriteFirebaseRepository
         const clientFavoriteListData = barberShopSnapShot.data();
 
         if (!clientFavoriteListData) {
-          throw new Error('houve um erro ao encontrar a barbearia');
+          throw new ResourceNotFoundError(
+            'houve um erro ao encontrar a barbearia',
+          );
         }
 
         return {

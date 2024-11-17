@@ -1,3 +1,4 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -76,7 +77,7 @@ export class AppointmentServiceImpl implements AppointmentService {
       await this.appointmentRepository.createAppointment(appointmentEntity);
 
     if (!createdAppointment) {
-      throw new Error('Erro ao criar usuário');
+      throw new InternalServerError('Erro ao criar usuário');
     }
 
     const appointmentOutput: AppointmentOutput = {

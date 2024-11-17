@@ -10,6 +10,8 @@ import {
   LoginPayload,
   SetCookie,
 } from '../auth.service.js';
+import { BadRequestError } from '../../../../shared/errors/bad-request-error.js';
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
 
 export class AuthServiceImpl implements AuthService {
   constructor(
@@ -27,7 +29,7 @@ export class AuthServiceImpl implements AuthService {
     );
 
     if (!client || client?.isDeleted) {
-      throw new Error('email ou senha inválidos');
+      throw new BadRequestError('email ou senha inválidos');
     }
 
     const isPasswordValid = this.hashService.compareHash(
@@ -36,19 +38,19 @@ export class AuthServiceImpl implements AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error('email ou senha inválidos');
+      throw new BadRequestError('email ou senha inválidos');
     }
 
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!jwtSecret) {
-      throw new Error('jwtSecret inválido');
+      throw new InternalServerError('jwtSecret inválido');
     }
 
     const expiresIn = process.env.JWT_EXPIRES_IN;
 
     if (!expiresIn) {
-      throw new Error('expiresIn invalido');
+      throw new InternalServerError('expiresIn invalido');
     }
 
     const { token } = this.jwtService.generateJwt<LoginPayload>(

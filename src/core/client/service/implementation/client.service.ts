@@ -19,6 +19,9 @@ import { ImageService } from '../../../../shared/services/image/image.service.js
 import { HashService } from '../../../../shared/hash-service/hash-service.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 import { Constants } from '../../../../shared/utils/constants.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
+import { ResourceAlreadyInUseError } from '../../../../shared/errors/resource-already-in-use-error.js';
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
 
 export class ClientServiceImpl implements ClientService {
   constructor(
@@ -44,7 +47,7 @@ export class ClientServiceImpl implements ClientService {
     const client = await this.clientRepository.getClientById(loggedClient!.id);
 
     if (!client) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     const { password, ...clientOutput } = client?.toJSON();
@@ -64,7 +67,9 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (findByEmail) {
-      throw new Error(`O email ${createClientInput.email} já esta em uso`);
+      throw new ResourceAlreadyInUseError(
+        `O email ${createClientInput.email} já esta em uso`,
+      );
     }
 
     const ClientEntity = Client.createClient({
@@ -76,7 +81,7 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!createdClient) {
-      throw new Error('Erro ao criar usuário');
+      throw new InternalServerError('Erro ao criar usuário');
     }
 
     const createClientOutput: CreateClientOutput = {
@@ -96,7 +101,7 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!client?.id) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     const existingClient = await this.clientRepository.getClientById(
@@ -104,7 +109,7 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!existingClient) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     let photoUrl: string | undefined = undefined;
@@ -128,7 +133,7 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!updatedClient) {
-      throw new Error('Erro ao atualizar cliente');
+      throw new InternalServerError('Erro ao atualizar cliente');
     }
 
     const updateClientOutput: ClientOutput = {
@@ -148,7 +153,7 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!loggedClient?.id) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     const foundClient = await this.clientRepository.getClientById(
@@ -156,13 +161,13 @@ export class ClientServiceImpl implements ClientService {
     );
 
     if (!foundClient) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     const client = await this.clientRepository.deleteClient(loggedClient.id);
 
     if (!client) {
-      throw new Error('Falha ao deletar cliente');
+      throw new InternalServerError('Falha ao deletar cliente');
     }
   }
 }
