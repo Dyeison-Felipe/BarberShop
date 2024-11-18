@@ -5,10 +5,11 @@ import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
-import { FavoriteList } from '../../entities/client-favorite-list.entity.js';
+import { FavoriteList, FavoriteListProps } from '../../entities/client-favorite-list.entity.js';
 import {
   ClientFavoriteList,
   ClientFavoriteRepository,
+  FavoriteClientAndBarberShop,
 } from '../client-favorite.repository.js';
 
 export class ClientFavoriteFirebaseRepository

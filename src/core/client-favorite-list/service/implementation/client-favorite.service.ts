@@ -78,10 +78,16 @@ export class ClientFavoriteServiceImpl implements ClientFavoriteService {
     return favoriteOutput;
   }
 
-  async deleteClientFavorite(id: string): Promise<void> {
-    const favorite = this.clientFavoriteRepository.deleteClientFavoriteList(id);
-    if (!favorite) {
-      throw new ResourceNotFoundError(`favorite id ${id} NotFound`);
+  async deleteClientFavorite(
+    barberShopId: string): Promise<void> {
+      const client = this.storageRequestService.get<ClientProps>(
+        Constants.loggedUser
+      );
+      const favorite = await this.clientFavoriteRepository.findFavoriteInClientByIdAndBarberShopById({clientId: client!.id,barberShopId})
+      if (!favorite) {
+        throw new ResourceNotFoundError(`favorite id NotFound`);
+      }
+
+      const deleteFavorite = this.clientFavoriteRepository.deleteClientFavoriteList(client!.id,barberShopId);
     }
-  }
 }
