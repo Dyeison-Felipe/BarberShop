@@ -77,6 +77,7 @@ export class ClientController {
   @Delete()
   async deleteClient(_: Request, res: Response): Promise<void> {
     await this.clientService.deleteClient();
+    res.clearCookie('token');
     res.status(204).send();
   }
 }
