@@ -10,6 +10,7 @@ import { HttpError } from '../../errors/http-error.js';
 
 export const validateRoutes = (res: Response, error: unknown) => {
   if (error instanceof HttpError) {
+    console.error(JSON.stringify(error));
     res.status(error.httpStatusCode).send({
       statusCode: error.httpStatusCode,
       message: error.message ?? '',
@@ -18,6 +19,7 @@ export const validateRoutes = (res: Response, error: unknown) => {
     return;
   }
 
+  console.error(JSON.stringify(error));
   res.status(500).send({
     statusCode: 500,
     error: 'Internal Server Error',
