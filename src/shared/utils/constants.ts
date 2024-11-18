@@ -1,3 +1,3 @@
 export class Constants {
-  static loggedUser = 'logged_user';
+  static readonly loggedUser = 'logged_user';
 }

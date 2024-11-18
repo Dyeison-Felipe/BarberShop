@@ -8,8 +8,8 @@ import { AppointmentServiceImpl } from '../service/implementations/appointment.s
 
 export class AppointmentModule implements IModule {
   buildModule(): BuildModule {
-    // const appointmentRepository = new AppointmentFirebaseRepository(db);
-    const appointmentRepository = new AppointmentMongoRepository();
+    const appointmentRepository = new AppointmentFirebaseRepository(db);
+    // const appointmentRepository = new AppointmentMongoRepository();
     const asyncLocalStorageService = new AsyncLocalStorageService();
     const appointmentService = new AppointmentServiceImpl(
       appointmentRepository,

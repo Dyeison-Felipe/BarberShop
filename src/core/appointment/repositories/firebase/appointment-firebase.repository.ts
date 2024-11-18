@@ -1,10 +1,10 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
 import { admin } from '../../../../shared/repositories/firebase/config.js';
 import { FirebasePagination } from '../../../../shared/repositories/firebase/pagination.js';
 import {
   PaginationInput,
   PaginationOutput,
 } from '../../../../shared/repositories/pagination.repository.js';
-import { BarberShopList } from '../../../barber-shop/repositories/barber-shop.repository.js';
 import { Appointment } from '../../entities/appointment.js';
 import {
   AppointmentRepository,
@@ -58,11 +58,15 @@ export class AppointmentFirebaseRepository implements AppointmentRepository {
         const barberShop = barberShopSnapshot.data();
 
         if (!barberShop) {
-          throw new Error('Houve um erro ao encontrar a barbearia');
+          throw new InternalServerError(
+            'Houve um erro ao encontrar a barbearia',
+          );
         }
 
         if (!barberService) {
-          throw new Error('Houve um erro ao encontrar o serviço da barbearia');
+          throw new InternalServerError(
+            'Houve um erro ao encontrar o serviço da barbearia',
+          );
         }
 
         return {
@@ -131,11 +135,15 @@ export class AppointmentFirebaseRepository implements AppointmentRepository {
         const barberShop = barberShopSnapshot.data();
 
         if (!barberShop) {
-          throw new Error('Houve um erro ao encontrar a barbearia');
+          throw new InternalServerError(
+            'Houve um erro ao encontrar a barbearia',
+          );
         }
 
         if (!barberService) {
-          throw new Error('Houve um erro ao encontrar o serviço da barbearia');
+          throw new InternalServerError(
+            'Houve um erro ao encontrar o serviço da barbearia',
+          );
         }
 
         return {

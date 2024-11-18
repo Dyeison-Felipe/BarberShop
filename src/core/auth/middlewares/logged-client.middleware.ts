@@ -6,9 +6,8 @@ import { StorageRequestService } from '../../../shared/storage-request-service/s
 import { LoginPayload } from '../services/auth.service.js';
 import { Client } from '../../client/entities/client.entity.js';
 import { Constants } from '../../../shared/utils/constants.js';
-import { UnauthorizedError } from '../../../shared/errors/unauthorized-error.js';
 
-export class AuthMiddleware implements IMiddleware {
+export class LoggedClientMiddleware implements IMiddleware {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly jwtService: JwtService,
@@ -18,19 +17,15 @@ export class AuthMiddleware implements IMiddleware {
   }
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // const token = this.extractTokenFromHeader(req);
-    const token = req.cookies.token;
-    console.log('🚀 ~ AuthMiddleware ~ use ~ token:', token);
+    const token = this.extractTokenFromHeader(req);
+    console.log('🚀 ~ LoggedClientMiddleware ~ use ~ token:', token);
 
     try {
       const jwtSecret = process.env.JWT_SECRET;
 
-      if (!jwtSecret) {
-        throw new UnauthorizedError('jwtSecret invalido');
-      }
-
-      if (!token) {
-        throw new UnauthorizedError('Acesso não autorizado');
+      if (!jwtSecret || !token) {
+        next();
+        return;
       }
 
       const isJwtValid = this.jwtService.verifyJwt(token, jwtSecret);
@@ -41,23 +36,25 @@ export class AuthMiddleware implements IMiddleware {
         jwtPayload.id,
       );
 
-      console.log(
-        '🚀 ~ AuthMiddleware ~ use ~ loggedUser?.isDeleted:',
-        loggedUser?.isDeleted,
-      );
       if (!isJwtValid || loggedUser?.isDeleted) {
-        throw new UnauthorizedError('Acesso não autorizado');
+        next();
+        return;
       }
+
       this.storageRequestService.run(new Map<string, Client>(), () => {
         this.storageRequestService.set(
           Constants.loggedUser,
           loggedUser?.toJSON(),
         );
 
+        console.log(
+          '🚀 ~ LoggedClientMiddleware ~ this.storageRequestService.run ~ loggedUser:',
+          loggedUser,
+        );
         next();
       });
     } catch (error) {
-      throw new UnauthorizedError('Acesso não autorizado');
+      next();
     }
   }
 

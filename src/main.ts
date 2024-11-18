@@ -30,9 +30,9 @@ async function start() {
     }),
   );
 
-  await mongooseConnect();
+  // await mongooseConnect();
 
-  const port = 3333;
+  const port = process.env.PORT;
 
   const appModule = new AppModule();
   const { modules } = appModule.buildAppModule();

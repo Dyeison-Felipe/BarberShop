@@ -5,9 +5,14 @@ export type ClientProps = {
   password: string;
   phoneNumber: string;
   photoUrl: string;
+  isDeleted: boolean;
 };
 
-export type UpdateClient = { photoUrl?: string; name?: string };
+export type UpdateClient = {
+  photoUrl?: string;
+  name?: string;
+  phoneNumber?: string;
+};
 
 export type CreateClient = {
   name: string;
@@ -42,6 +47,10 @@ export class Client {
     return this.props.photoUrl;
   }
 
+  get isDeleted() {
+    return this.props.isDeleted;
+  }
+
   static createClient(create: CreateClient): Client {
     return new Client({
       id: crypto.randomUUID().toString(),
@@ -50,17 +59,20 @@ export class Client {
       password: create.password,
       phoneNumber: '',
       photoUrl: '',
+      isDeleted: false,
     });
   }
 
   updateClient(update: UpdateClient) {
     this.props = {
       ...this.props,
-      ...update,
+      photoUrl: update.photoUrl ?? '',
+      phoneNumber: update.phoneNumber ?? '',
+      name: update.name ?? '',
     };
   }
 
-  toObject() {
+  toJSON() {
     return {
       id: this.id,
       name: this.name,

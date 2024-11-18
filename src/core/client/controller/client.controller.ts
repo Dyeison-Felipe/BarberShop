@@ -5,9 +5,9 @@ import {
   Delete,
   Get,
   Middleware,
-  Param,
   Post,
   Put,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
 import {
@@ -15,11 +15,11 @@ import {
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
 import { ClientService } from '../service/client.service.js';
-import { CreateClientDto } from './dto/create-client.dto.js';
-import { ReturnCreateClientDto } from './dto/return-create-client.dto.js';
-import { ReturnGetClientDto } from './dto/return-get-client.dto.js';
-import { ReturnUpdateClientDto } from './dto/return-update-client.dto.js';
-import { UpdateClientDto } from './dto/update-client.dto.js';
+import { CreateClientDto } from '../dto/create-client.dto.js';
+import { ReturnCreateClientDto } from '../dto/return-create-client.dto.js';
+import { ReturnGetClientDto } from '../dto/return-get-client.dto.js';
+import { ReturnUpdateClientDto } from '../dto/return-update-client.dto.js';
+import { UpdateClientDto } from '../dto/update-client.dto.js';
 import { upload } from '../../../shared/configs/multer-config.js';
 import { parseFormDataDto } from '../../../shared/middlewares/parse-form-data-dto.middleware.js';
 import { ImageFirebaseStorageService } from '../../../shared/services/image/firestore/image-firebase-storage.service.js';
@@ -51,7 +51,7 @@ export class ClientController {
 
   @Post()
   async createClient(
-    @Body() createClientDto: CreateClientDto,
+    @Valid(CreateClientDto) @Body() createClientDto: CreateClientDto,
   ): Promise<ReturnCreateClientDto> {
     const client = await this.clientService.createClient(createClientDto);
 
@@ -63,7 +63,7 @@ export class ClientController {
   @Put()
   async updateClient(
     req: Request,
-    @Body() updateClient: UpdateClientDto,
+    @Valid(UpdateClientDto) @Body() updateClient: UpdateClientDto,
   ): Promise<ReturnUpdateClientDto> {
     const client = await this.clientService.updateClient({
       photo: ImageFirebaseStorageService.imageAdapter(req.file),
@@ -75,8 +75,9 @@ export class ClientController {
 
   @Middleware('AuthMiddleware')
   @Delete()
-  async deleteClient(res: Response): Promise<void> {
+  async deleteClient(_: Request, res: Response): Promise<void> {
     await this.clientService.deleteClient();
+    res.clearCookie('token');
     res.status(204).send();
   }
 }

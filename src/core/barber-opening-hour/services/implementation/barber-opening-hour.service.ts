@@ -1,3 +1,5 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import { OpeningHours } from '../../entities/barber-opening-hour.entity.js';
 import { BarberOpeningHoursRepository } from '../../repositories/barber-opening-hour.repository.js';
 import {
@@ -15,19 +17,64 @@ export class BarberOpeningHoursServiceImpl
   constructor(
     private readonly barberOpeningHoursRepository: BarberOpeningHoursRepository,
   ) {}
+  async getBarberOpeningHours(
+    barberShopId: string,
+  ): Promise<ReturnGetBarberOpeningHoursOutput> {
+    const barberOpeningHours =
+      await this.barberOpeningHoursRepository.getAllByBarberShopId(
+        barberShopId,
+      );
+
+    const weekdaysMap: Record<string, OpeningHourOutput[]> = {};
+
+    // Agrupa os horários por dia da semana
+    barberOpeningHours.forEach(({ weekday, start, end, id }) => {
+      if (!weekdaysMap[weekday]) {
+        weekdaysMap[weekday] = [];
+      }
+      weekdaysMap[weekday].push({ start, end, id });
+    });
+
+    // Converte o mapa em um array de objetos no formato ReturnGetBarberOpeningHoursOutput
+    const weekdays = Object.entries(weekdaysMap).map(
+      ([name, openingHours]) => ({
+        name,
+        openingHours: openingHours.sort(
+          (a, b) => +a.start.split(':')[0] - +b.start.split(':')[0],
+        ),
+      }),
+    );
+
+    const correctOrder = [
+      'Domingo',
+      'Segunda',
+      'Terça',
+      'Quarta',
+      'Quinta',
+      'Sexta',
+      'Sábado',
+    ];
+
+    weekdays.sort(
+      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name),
+    );
+
+    return { weekdays };
+  }
+
   async deleteOpeningHours(id: string): Promise<void> {
     const openingHour =
       await this.barberOpeningHoursRepository.getOpeningHourById(id);
 
     if (!openingHour) {
-      throw new Error('Usuário não encontrado');
+      throw new ResourceNotFoundError('Usuário não encontrado');
     }
 
     const deleteOpeningHours =
       await this.barberOpeningHoursRepository.deleteOpeningHours(id);
 
     if (deleteOpeningHours === null) {
-      throw new Error('Erro ao deletar');
+      throw new InternalServerError('Erro ao deletar');
     }
   }
 
@@ -53,54 +100,19 @@ export class BarberOpeningHoursServiceImpl
       );
 
     if (!updatedOpeningHours) {
-      throw new Error('Erro ao atualizar horários');
+      throw new InternalServerError('Erro ao atualizar horários');
     }
 
     return { weekdays: updatedOpeningHours };
   }
 
-  async getBarberOpeningHours(
-    barberShopId: string,
-  ): Promise<ReturnGetBarberOpeningHoursOutput> {
-    const barberOpeningHours =
-      await this.barberOpeningHoursRepository.getAllByBarberShopId(
-        barberShopId,
-      );
-
-    const weekdaysMap: Record<string, OpeningHourOutput[]> = {};
-
-    // Agrupa os horários por dia da semana
-    barberOpeningHours.forEach(({ weekday, start, end, id }) => {
-      if (!weekdaysMap[weekday]) {
-        weekdaysMap[weekday] = [];
-      }
-      weekdaysMap[weekday].push({ start, end, id });
-    });
-
-    // Converte o mapa em um array de objetos no formato ReturnGetBarberOpeningHoursOutput
-    const weekdays = Object.entries(weekdaysMap).map(
-      ([name, openingHours]) => ({
-        name,
-        openingHours,
-      }),
-    );
-
-    const correctOrder = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
-
-    weekdays.sort(
-      (a, b) => correctOrder.indexOf(a.name) - correctOrder.indexOf(b.name),
-    );
-
-    return { weekdays };
-  }
-
   async createOpeningHours(
-    createOpeningHoursInput: CreateOpeningHoursInput[],
+    createOpeningHoursInput: CreateOpeningHoursInput,
   ): Promise<UpsertOpeningHoursOutput> {
     const createdOpeningHours = await Promise.all(
-      createOpeningHoursInput.map(async (hours) => {
+      createOpeningHoursInput.created.map(async (hoursCreated) => {
         const openingHoursEntity = OpeningHours.createOpeningHours({
-          ...hours,
+          ...hoursCreated,
         });
 
         const newOpeningHours =
@@ -109,11 +121,17 @@ export class BarberOpeningHoursServiceImpl
           );
 
         if (!newOpeningHours) {
-          throw new Error('Erro ao criar as horas');
+          throw new InternalServerError('Erro ao criar as horas');
         }
 
         return newOpeningHours;
       }),
+    );
+
+    await Promise.all(
+      createOpeningHoursInput.deleted.map((hoursDeleted) =>
+        this.barberOpeningHoursRepository.deleteOpeningHours(hoursDeleted.id),
+      ),
     );
 
     const createOpeningHoursOutput: UpsertOpeningHoursOutput = {

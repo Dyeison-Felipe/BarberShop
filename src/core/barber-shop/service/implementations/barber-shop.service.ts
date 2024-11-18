@@ -15,11 +15,13 @@ import {
   BarberShopOutput,
   UpdateBarberShopInput,
   BarberShopProfileInput,
-  BarberShopByIdClientInput,
 } from '../barber-shop.service.js';
 import { StorageRequestService } from '../../../../shared/storage-request-service/storage-request-service.js';
 import { ClientProps } from '../../../client/entities/client.entity.js';
 import { Constants } from '../../../../shared/utils/constants.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
+import { ResourceAlreadyInUseError } from '../../../../shared/errors/resource-already-in-use-error.js';
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
 
 // Classe que implementa a interface a fim de realizar a inversão de dependência
 export class BarberShopServiceImpl implements BarberShopService {
@@ -33,16 +35,24 @@ export class BarberShopServiceImpl implements BarberShopService {
     const loggedUser = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
+    console.log(
+      '🚀 ~ BarberShopServiceImpl ~ getBarberShopByClientId ~ loggedUser:',
+      loggedUser,
+    );
 
     const barberShop = await this.barberShopRepository.getBarberShopByClientId(
       loggedUser!.id,
+    );
+    console.log(
+      '🚀 ~ BarberShopServiceImpl ~ getBarberShopByClientId ~ barberShop:',
+      barberShop,
     );
 
     if (!barberShop) {
       return null;
     }
 
-    const barberShopOutput = barberShop.toObject();
+    const barberShopOutput = barberShop.toJSON();
     return barberShopOutput;
   }
 
@@ -52,10 +62,10 @@ export class BarberShopServiceImpl implements BarberShopService {
     const barberShop = await this.barberShopRepository.getBarberShopById(id);
 
     if (!barberShop) {
-      throw new Error('Barbearia não encontrada');
+      throw new ResourceNotFoundError('Barbearia não encontrada');
     }
 
-    const barberShopOutput = barberShop.toObject();
+    const barberShopOutput = barberShop.toJSON();
 
     return barberShopOutput;
   }
@@ -64,9 +74,14 @@ export class BarberShopServiceImpl implements BarberShopService {
     pagination: PaginationInput,
     search?: string,
   ): Promise<PaginationOutput<BarberShopList>> {
+    const client = this.storageRequestService.get<ClientProps>(
+      Constants.loggedUser,
+    );
+
     const barbersShop = await this.barberShopRepository.getBarbersShop(
       pagination,
       search,
+      client?.id,
     );
 
     return barbersShop;
@@ -80,17 +95,17 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
 
     if (findCnpj) {
-      throw new Error(`CNPJ ${createBarberShopInput.cnpj} já esta em uso`);
+      throw new ResourceAlreadyInUseError(
+        `CNPJ ${createBarberShopInput.cnpj} já esta em uso`,
+      );
     }
 
     const client = this.storageRequestService.get<ClientProps>(
       Constants.loggedUser,
     );
-    console.log('🚀 ~ BarberShopServiceImpl ~ client:', client);
 
     const barberShopEntity = BarberShop.createBarberShop({
       ...createBarberShopInput,
-      // TODO Colocar o ID do cliente logado
       clientId: client!.id,
     });
     const createdBarberShop = await this.barberShopRepository.createBarberShop(
@@ -98,7 +113,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
 
     if (!createdBarberShop) {
-      throw new Error('Erro ao criar usuário');
+      throw new InternalServerError('Erro ao criar usuário');
     }
 
     const barberShopOutput: BarberShopOutput = {
@@ -127,7 +142,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
 
     if (!foundBarberShop) {
-      throw new Error('Cliente não encontrado');
+      throw new ResourceNotFoundError('Cliente não encontrado');
     }
 
     let photoUrl: string | undefined = foundBarberShop.photoUrl ?? '';
@@ -156,7 +171,7 @@ export class BarberShopServiceImpl implements BarberShopService {
     );
 
     if (!updatedBarberShop) {
-      throw new Error('Erro ao atualizar cliente');
+      throw new InternalServerError('Erro ao atualizar cliente');
     }
 
     const updateBarberShopOutput: BarberShopOutput = {
@@ -182,7 +197,9 @@ export class BarberShopServiceImpl implements BarberShopService {
     const barberShop = await this.barberShopRepository.getBarberShopById(id);
 
     if (!barberShop) {
-      throw new Error(`Barbeiro com o ID ${id} não foi encontrado`);
+      throw new ResourceNotFoundError(
+        `Barbeiro com o ID ${id} não foi encontrado`,
+      );
     }
 
     await this.barberShopRepository.deleteBarberShop(id);

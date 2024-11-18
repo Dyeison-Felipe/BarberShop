@@ -1,3 +1,5 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import {
   PaginationInput,
   PaginationOutput,
@@ -65,7 +67,7 @@ export class ClientFavoriteServiceImpl implements ClientFavoriteService {
       await this.clientFavoriteRepository.createClientFavorite(favoriteEntity);
 
     if (!createFavorite) {
-      throw new Error("erro ao adicionar aos favoritos");
+      throw new InternalServerError('erro ao adicionar aos favoritos');
     }
 
     const favoriteOutput: CreateFavoriteListOutput = {
@@ -76,31 +78,10 @@ export class ClientFavoriteServiceImpl implements ClientFavoriteService {
     return favoriteOutput;
   }
 
-  async deleteClientFavorite(barberShopId: string): Promise<void> {
-    try {
-      const client = this.storageRequestService.get<ClientProps>(
-        Constants.loggedUser
-      );
-
-      if (!client) {
-        throw new Error("Client not found");
-      }
-
-      const favoriteDeleted =
-        await this.clientFavoriteRepository.deleteClientFavoriteList(
-          client.id,
-          barberShopId
-        );
-
-      if (!favoriteDeleted) {
-        throw new Error(
-          `Favorite with id ${barberShopId} not found or could not be deleted`
-        );
-      }
-
-    } catch (error) {
-      console.error("Error deleting favorite:", error);
-      throw error;
+  async deleteClientFavorite(id: string): Promise<void> {
+    const favorite = this.clientFavoriteRepository.deleteClientFavoriteList(id);
+    if (!favorite) {
+      throw new ResourceNotFoundError(`favorite id ${id} NotFound`);
     }
   }
 }

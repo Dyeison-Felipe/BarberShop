@@ -7,12 +7,13 @@ import { ClientFirebaseRepository } from '../../client/repositories/firebase/cli
 import { ClientMongoRepository } from '../../client/repositories/mongo/client-mongo.repository.js';
 import { AuthController } from '../controller/auth.controller.js';
 import { AuthMiddleware } from '../middlewares/auth.middleware.js';
+import { LoggedClientMiddleware } from '../middlewares/logged-client.middleware.js';
 import { AuthServiceImpl } from '../services/implementation/auth.service.js';
 
 export class AuthModule implements IModule {
   buildModule(): BuildModule {
-    // const clientRepository = new ClientFirebaseRepository(db);
-    const clientRepository = new ClientMongoRepository();
+    const clientRepository = new ClientFirebaseRepository(db);
+    // const clientRepository = new ClientMongoRepository();
     const hashService = new HashBcryptService();
     const jwtService = new JsonWebTokenService();
     const authService = new AuthServiceImpl(
@@ -27,9 +28,17 @@ export class AuthModule implements IModule {
       jwtService,
       asyncLocalStorageService,
     );
+    const loggedClientMiddleware = new LoggedClientMiddleware(
+      clientRepository,
+      jwtService,
+      asyncLocalStorageService,
+    );
     return {
       controllers: [authController],
-      middlewares: [{ provide: 'AuthMiddleware', instance: authMiddleware }],
+      middlewares: [
+        { provide: 'AuthMiddleware', instance: authMiddleware },
+        { provide: 'LoggedClientMiddleware', instance: loggedClientMiddleware },
+      ],
     };
   }
 }

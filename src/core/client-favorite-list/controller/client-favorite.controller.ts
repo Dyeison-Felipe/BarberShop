@@ -5,8 +5,8 @@ import {
   Delete,
   Get,
   Middleware,
-  Param,
   Post,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import { ClientFavoriteService } from '../service/client-favorite.service.js';
 import {
@@ -14,7 +14,10 @@ import {
   PaginationOutput,
 } from '../../../shared/repositories/pagination.repository.js';
 import { ReturnGetClientFavoriteList } from '../dtos/return-get-client-favorite-list.dto.js';
-import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
+import {
+  Param,
+  Query,
+} from '../../../shared/decorators/http/route-param.decorator.js';
 import { CreateFavoriteListDto } from '../dtos/create-favorite-list.dto.js';
 import { ReturnCreateFavoriteListDto } from '../dtos/return-favorite-list.dto.js';
 
@@ -43,7 +46,9 @@ export class ClientFavoriteController {
   @Middleware('AuthMiddleware')
   @Post('/create-favorite')
   async createFavoriteList(
-    @Body() createFavoriteListDto: CreateFavoriteListDto,
+    @Valid(CreateFavoriteListDto)
+    @Body()
+    createFavoriteListDto: CreateFavoriteListDto,
   ): Promise<ReturnCreateFavoriteListDto> {
     const favoriteList = await this.clientFavoriteService.createClientFavorite(
       createFavoriteListDto,

@@ -7,6 +7,7 @@ import {
   Middleware,
   Post,
   Put,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
 import {
   PaginationInput,
@@ -35,8 +36,10 @@ export class BarberShopController {
   // Possibilita não depender de implementações, mas de abstrações, como a interface BarberShopService
   constructor(private readonly barberShopService: BarberShopService) {}
 
+  @Middleware('LoggedClientMiddleware')
   @Get()
   async getBarberShop(
+    req: Request,
     @Query('limit') limit: string,
     @Query('page') page: string,
     @Query('search') search?: string,
@@ -73,7 +76,9 @@ export class BarberShopController {
   @Middleware('AuthMiddleware')
   @Post()
   async createBarberShop(
-    @Body() createBarberShopDto: CreateBarberShopDto,
+    @Valid(CreateBarberShopDto)
+    @Body()
+    createBarberShopDto: CreateBarberShopDto,
   ): Promise<ReturnCreateBarberShopDto> {
     const barberShop = await this.barberShopService.createBarberShop(
       createBarberShopDto,
@@ -88,7 +93,10 @@ export class BarberShopController {
   async updateBarberShop(
     req: Request,
     @Param('id') id: string,
-    @Body() updateBarberShopDto: UpdateBarberShopDto,
+
+    @Valid(UpdateBarberShopDto)
+    @Body()
+    updateBarberShopDto: UpdateBarberShopDto,
   ): Promise<ReturnUpdateBarberShopDto> {
     console.log('🚀 ~ BarberShopController ~ req.file:', req.file);
     const barberShop = await this.barberShopService.updateBarberShop({

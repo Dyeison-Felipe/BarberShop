@@ -40,7 +40,7 @@ export class BarberServiceMongoRepository implements BarberServiceRepository {
 
   async save(barberService: BarberService): Promise<BarberService | null> {
     try {
-      const { id, ...json } = barberService.toObject();
+      const { id, ...json } = barberService.toJSON();
       const barberServiceSchema = new BarberServiceSchema({ _id: id, ...json });
       await barberServiceSchema.save();
       return barberService;
@@ -54,7 +54,7 @@ export class BarberServiceMongoRepository implements BarberServiceRepository {
     barberService: BarberService,
   ): Promise<BarberService | null> {
     try {
-      const { id, ...json } = barberService.toObject();
+      const { id, ...json } = barberService.toJSON();
       const barberServiceSchema = new BarberServiceSchema({ _id: id, ...json });
       barberServiceSchema.isNew = false;
       await barberServiceSchema.save();

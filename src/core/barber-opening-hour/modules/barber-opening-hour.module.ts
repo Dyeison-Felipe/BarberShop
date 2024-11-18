@@ -7,10 +7,10 @@ import { BarberOpeningHoursServiceImpl } from '../services/implementation/barber
 
 export class BarberOpeningHoursModule implements IModule {
   buildModule(): BuildModule {
-    // const barberOpeningHoursRepository =
-    //   new BarberOpeningHoursFirebaseRepository(db);
     const barberOpeningHoursRepository =
-      new BarberOpeningHoursMongoRepository();
+      new BarberOpeningHoursFirebaseRepository(db);
+    // const barberOpeningHoursRepository =
+    //   new BarberOpeningHoursMongoRepository();
     const barberOpeningHoursService = new BarberOpeningHoursServiceImpl(
       barberOpeningHoursRepository,
     );

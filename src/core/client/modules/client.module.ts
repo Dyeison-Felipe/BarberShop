@@ -10,8 +10,8 @@ import { ClientServiceImpl } from '../service/implementation/client.service.js';
 
 export class ClientModule implements IModule {
   buildModule(): BuildModule {
-    // const clientRepository = new ClientFirebaseRepository(db);
-    const clientRepository = new ClientMongoRepository();
+    const clientRepository = new ClientFirebaseRepository(db);
+    // const clientRepository = new ClientMongoRepository();
     const imageService = new ImageFirebaseStorageService();
     const hashService = new HashBcryptService();
     const asyncLocalStorageService = new AsyncLocalStorageService();

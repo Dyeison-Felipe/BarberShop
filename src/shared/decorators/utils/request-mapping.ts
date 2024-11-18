@@ -6,14 +6,14 @@ import {
   routes,
 } from '../http/request-mapping.decorator.js';
 import { resolveQueryParams } from './route-param.js';
+import { HttpError } from '../../errors/http-error.js';
 
 export const validateRoutes = (res: Response, error: unknown) => {
-  console.error('Error: ', error);
-  if (error instanceof Error) {
-    res.status(500).send({
-      statusCode: 500,
-      error: error.name,
+  if (error instanceof HttpError) {
+    res.status(error.httpStatusCode).send({
+      statusCode: error.httpStatusCode,
       message: error.message ?? '',
+      ...error.options,
     });
     return;
   }
@@ -57,6 +57,7 @@ export const applyRoutes = (
 
       // Obtém a classe de validação do body da rota
       const classBody = controllerInstance.body?.[route.handler.name]?.[0];
+
       functionBasedMiddlewares.push(
         (req: Request, res: Response, next: NextFunction) =>
           bodyValidationMiddleware(req, res, next, classBody),
@@ -64,6 +65,16 @@ export const applyRoutes = (
 
       app[route.method](
         fullPath,
+        ...functionBasedMiddlewares.map(
+          (middleware) =>
+            async (req: Request, res: Response, next: NextFunction) => {
+              try {
+                return await middleware(req, res, next);
+              } catch (error) {
+                validateRoutes(res, error);
+              }
+            },
+        ),
         ...(classBasedMiddlewares?.map(
           (middleware) =>
             async (req: Request, res: Response, next: NextFunction) => {
@@ -78,7 +89,6 @@ export const applyRoutes = (
               }
             },
         ) ?? []),
-        ...functionBasedMiddlewares,
         async (req: Request, res: Response) => {
           // try {
           const args: any[] = [req, res];

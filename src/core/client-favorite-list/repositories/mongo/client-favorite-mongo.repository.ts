@@ -1,3 +1,4 @@
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import { MongoPagination } from '../../../../shared/repositories/mongo/pagination.js';
 import {
   PaginationInput,
@@ -28,7 +29,9 @@ export class ClientFavoriteMongoRepository implements ClientFavoriteRepository {
         const barberShopSnapShot = await BarberShopSchema.findById(document.id);
 
         if (!barberShopSnapShot) {
-          throw new Error('houve um erro ao encontrar a barbearia');
+          throw new ResourceNotFoundError(
+            'houve um erro ao encontrar a barbearia',
+          );
         }
 
         return {

@@ -4,6 +4,7 @@ export type BarberServiceProps = {
   price: number;
   duration: number;
   barberShopId: string;
+  isDeleted: boolean;
 };
 
 type UpsertBarberService = {
@@ -45,6 +46,10 @@ export class BarberService {
     return this.props.barberShopId;
   }
 
+  get isDeleted() {
+    return this.props.isDeleted;
+  }
+
   static createBarberService(create: CreateBarberService) {
     return new BarberService({
       id: crypto.randomUUID().toString(),
@@ -52,6 +57,7 @@ export class BarberService {
       duration: create.duration,
       price: create.price,
       name: create.name,
+      isDeleted: false,
     });
   }
 
@@ -62,13 +68,14 @@ export class BarberService {
     };
   }
 
-  toObject() {
+  toJSON(): BarberServiceProps {
     return {
       id: this.id,
       name: this.name,
       price: this.price,
       duration: this.duration,
       barberShopId: this.barberShopId,
+      isDeleted: this.isDeleted,
     };
   }
 }

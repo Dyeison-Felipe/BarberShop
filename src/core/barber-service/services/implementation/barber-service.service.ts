@@ -1,3 +1,5 @@
+import { InternalServerError } from '../../../../shared/errors/internal-server-error.js';
+import { ResourceNotFoundError } from '../../../../shared/errors/resource-not-found-error.js';
 import { BarberService } from '../../entities/barber-service.entity.js';
 import { BarberServiceRepository } from '../../repositories/barber-service.repository.js';
 import {
@@ -20,7 +22,7 @@ export class BarberServiceServiceImpl implements BarberServiceService {
     );
 
     if (!services) {
-      throw new Error('Nenhum serviço encontrado');
+      throw new ResourceNotFoundError('Nenhum serviço encontrado');
     }
 
     return services.map((service) => ({
@@ -44,7 +46,7 @@ export class BarberServiceServiceImpl implements BarberServiceService {
     );
 
     if (!createdBarberService) {
-      throw new Error('Erro ao criar usuário');
+      throw new ResourceNotFoundError('Erro ao criar usuário');
     }
 
     const barberServiceOutput: BarberServiceOutput = {
@@ -67,7 +69,7 @@ export class BarberServiceServiceImpl implements BarberServiceService {
       );
 
     if (!barberService) {
-      throw new Error(
+      throw new ResourceNotFoundError(
         `Serviço do barbeiro com o ID ${updateBarberServiceInput.id} não foi encontrado`,
       );
     }
@@ -78,7 +80,7 @@ export class BarberServiceServiceImpl implements BarberServiceService {
       await this.barberServiceRepository.updateBarberService(barberService);
 
     if (!updatedBarberService) {
-      throw new Error('Falha ao atualizar serviço do barbeiro');
+      throw new InternalServerError('Falha ao atualizar serviço do barbeiro');
     }
 
     const output = this.toUpdateOutput(updatedBarberService);
@@ -91,7 +93,9 @@ export class BarberServiceServiceImpl implements BarberServiceService {
       await this.barberServiceRepository.getBarberServiceById(barberServiceId);
 
     if (!barberService) {
-      throw new Error(`Serviço com o ID ${barberServiceId} não foi encontrado`);
+      throw new ResourceNotFoundError(
+        `Serviço com o ID ${barberServiceId} não foi encontrado`,
+      );
     }
 
     const deleteRes = await this.barberServiceRepository.deleteBarberService(
@@ -99,12 +103,12 @@ export class BarberServiceServiceImpl implements BarberServiceService {
     );
 
     if (!deleteRes) {
-      throw new Error('Falha ao deletar serviço');
+      throw new ResourceNotFoundError('Falha ao deletar serviço');
     }
   }
 
   private toUpdateOutput(barberService: BarberService): BarberServiceOutput {
-    const barberServiceObject = barberService.toObject();
+    const barberServiceObject = barberService.toJSON();
 
     const output: BarberServiceOutput = {
       barberShopId: barberServiceObject.barberShopId,

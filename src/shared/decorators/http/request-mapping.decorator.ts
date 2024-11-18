@@ -105,6 +105,11 @@ export function Valid(classDto?: new () => unknown) {
     }
 
     target.body[propertyKey][parameterIndex] = classDto;
+
+    // Remover os itens falsy do array, por causa do req e res
+    target.body[propertyKey] = target.body[propertyKey].filter(
+      (item: any) => !!item,
+    );
   };
 }
 

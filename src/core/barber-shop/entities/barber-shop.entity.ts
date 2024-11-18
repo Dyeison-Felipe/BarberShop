@@ -1,6 +1,3 @@
-// import { OpeningWeekDays } from './opening-week-days.entity.js';
-// import { Services } from "./service.entity.js";
-
 export type BarberShopProps = {
   id: string;
   name: string;
@@ -15,6 +12,7 @@ export type BarberShopProps = {
   rating: number;
   photoUrl?: string | null;
   clientId: string;
+  isDeleted: boolean;
 };
 
 type UpsertBarberShop = {
@@ -27,12 +25,13 @@ type UpsertBarberShop = {
   city: string;
   state: string;
   phone: string;
+};
+
+export type CreateBarberShop = UpsertBarberShop & {
   clientId: string;
 };
 
-export type CreateBarberShop = UpsertBarberShop;
-
-type UpdateBarberShop = Partial<UpsertBarberShop> & {
+type UpdateBarberShop = UpsertBarberShop & {
   photoUrl?: string;
 };
 
@@ -90,6 +89,10 @@ export class BarberShop {
     return this.props.clientId;
   }
 
+  get isDeleted() {
+    return this.props.isDeleted;
+  }
+
   static createBarberShop(create: CreateBarberShop): BarberShop {
     return new BarberShop({
       id: crypto.randomUUID().toString(),
@@ -105,18 +108,27 @@ export class BarberShop {
       clientId: create.clientId,
       rating: 5,
       photoUrl: null,
+      isDeleted: false,
     });
   }
 
   updateBarberShop(update: UpdateBarberShop) {
     this.props = {
       ...this.props,
-      ...update,
+      name: update.name,
+      cnpj: update.cnpj,
+      cep: update.cep,
+      number: update.number,
+      neighborhood: update.neighborhood,
+      street: update.street,
+      city: update.city,
+      state: update.state,
+      phone: update.phone,
       photoUrl: update.photoUrl ?? '',
     };
   }
 
-  toObject(): BarberShopProps {
+  toJSON(): BarberShopProps {
     return {
       ...this.props,
     };

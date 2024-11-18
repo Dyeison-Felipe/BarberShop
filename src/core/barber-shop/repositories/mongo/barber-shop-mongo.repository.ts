@@ -81,7 +81,7 @@ export class BarberShopMongoRepository implements BarberShopRepository {
 
   async createBarberShop(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
-      const { id, ...json } = barberShop.toObject();
+      const { id, ...json } = barberShop.toJSON();
       const barberShopSchema = new BarberShopSchema({ _id: id, ...json });
       await barberShopSchema.save();
       return barberShop;
@@ -93,7 +93,7 @@ export class BarberShopMongoRepository implements BarberShopRepository {
 
   async update(barberShop: BarberShop): Promise<BarberShop | null> {
     try {
-      const { id, ...json } = barberShop.toObject();
+      const { id, ...json } = barberShop.toJSON();
       const barberShopSchema = new BarberShopSchema({ _id: id, ...json });
       barberShopSchema.isNew = false;
       await barberShopSchema.save();

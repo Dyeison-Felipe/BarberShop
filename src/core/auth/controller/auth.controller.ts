@@ -18,13 +18,20 @@ export class AuthController {
     res: Response,
     @Valid(LoginDto) @Body() login: LoginDto,
   ) {
-    const loginOutput = await this.authService.login(login);
-
-    res.cookie('token', loginOutput.token, {
-      maxAge: Number(process.env.AUTH_COOKIES_EXPIRES_IN),
-      httpOnly: true,
-    });
+    const loginOutput = await this.authService.login(
+      login,
+      res.cookie.bind(res),
+    );
+    // req.session.isAuthenticated = true;
 
     return loginOutput;
+  }
+
+  @Post('/logout')
+  async logout(req: Request, res: Response) {
+    // req.session.isAuthenticated = false;
+    res.clearCookie('token');
+
+    res.status(204).send();
   }
 }

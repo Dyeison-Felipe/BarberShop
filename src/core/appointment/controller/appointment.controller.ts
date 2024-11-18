@@ -3,10 +3,13 @@ import {
   Post,
   Body,
   Get,
-  Param,
   Middleware,
+  Valid,
 } from '../../../shared/decorators/http/request-mapping.decorator.js';
-import { Query } from '../../../shared/decorators/http/route-param.decorator.js';
+import {
+  Param,
+  Query,
+} from '../../../shared/decorators/http/route-param.decorator.js';
 import {
   PaginationOutput,
   PaginationInput,
@@ -60,7 +63,9 @@ export class AppointmentController {
   @Middleware('AuthMiddleware')
   @Post()
   async createAppointment(
-    @Body() createAppointmentDto: CreateAppointmentDto,
+    @Valid(CreateAppointmentDto)
+    @Body()
+    createAppointmentDto: CreateAppointmentDto,
   ): Promise<ReturnCreateAppointmentDto> {
     const appointment = await this.appointmentService.createAppointment(
       createAppointmentDto,
