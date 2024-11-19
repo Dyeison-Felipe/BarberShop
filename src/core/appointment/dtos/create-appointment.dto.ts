@@ -9,7 +9,6 @@ export class CreateAppointmentDto {
   @IsNotEmpty()
   barberShopId: string;
 
-  @IsDate()
   @IsNotEmpty()
   date: Date;
 }
